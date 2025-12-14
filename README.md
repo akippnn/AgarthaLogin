@@ -11,8 +11,8 @@ Here's the new plugin repo: https://github.com/Navio1430/NavAuth. I'm open to li
 <br><br>
 <br><br>
 <div display="flex" justify-content="space-between" align="center">
- <h1>LibreLoginProd 🔐 - autologin plugin</h1>
-  <p>Fork of the <b>LibreLogin</b> (previously LibrePremium) which has caused many problems with newest minecraft versions.
+ <h1>AgarthaLogin 🔐 - autologin plugin</h1>
+  <p>Fork of the <b>LibreLoginProd</b> (previously LibreLogin/LibrePremium) which has caused many problems with newest minecraft versions.
 LibreLogin did not meet our expectations, which is why this fork was created.</p>
 </div>
 <br>
@@ -72,7 +72,7 @@ We are currently trying to go down to 500KB, but first we need
 to divide whole project into submodules.
 
 ### Will the folder name change after installation?
-No, we use the same folder and config names as original the **LibreLogin**.
+Yes, we use **AgarthaLogin** as the folder name. Note that this is compatible with previous database files (simply copy or mount them).
 
 # License
 

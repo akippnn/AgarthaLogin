@@ -20,6 +20,8 @@ import xyz.kyngs.librelogin.api.database.User;
 import xyz.kyngs.librelogin.common.AuthenticHandler;
 import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
 import xyz.kyngs.librelogin.common.command.commands.ChangePasswordCommand;
+import xyz.kyngs.librelogin.common.command.commands.agartha.AgarthaLoginCommand;
+import xyz.kyngs.librelogin.common.command.commands.authorization.AuthorizationCommand;
 import xyz.kyngs.librelogin.common.command.commands.authorization.LoginCommand;
 import xyz.kyngs.librelogin.common.command.commands.authorization.RegisterCommand;
 import xyz.kyngs.librelogin.common.command.commands.mail.ConfirmPasswordReset;
@@ -44,93 +46,31 @@ public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
     private final Cache<UUID, Object> confirmCache;
 
     public CommandProvider(AuthenticLibreLogin<P, S> plugin) {
-        super(plugin);
-
-        limiter = new RateLimiter<>(1, TimeUnit.SECONDS);
-
+        this.plugin = plugin;
         manager = plugin.provideManager();
 
-        injectMessages();
-
-        var contexts = manager.getCommandContexts();
-
-        contexts.registerIssuerAwareContext(
-                Audience.class,
-                context -> {
-                    if (limiter.tryAndLimit(context.getIssuer().getUniqueId()))
-                        throw new xyz.kyngs.librelogin.common.command.InvalidCommandArgument(
-                                plugin.getMessages().getMessage("error-throttle"));
-                    return plugin.getAudienceFromIssuer(context.getIssuer());
-                });
-
-        // Thanks type erasure
-        contexts.registerIssuerAwareContext(
-                Object.class,
-                context -> {
-                    var player = plugin.getPlayerFromIssuer(context.getIssuer());
-
-                    if (player == null)
-                        throw new co.aikar.commands.InvalidCommandArgument(
-                                MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
-
-                    return player;
-                });
-
-        contexts.registerIssuerAwareContext(
-                UUID.class,
-                context -> {
-                    var player = plugin.getPlayerFromIssuer(context.getIssuer());
-
-                    if (player == null)
-                        throw new co.aikar.commands.InvalidCommandArgument(
-                                MessageKeys.NOT_ALLOWED_ON_CONSOLE, false);
-
-                    return plugin.getPlatformHandle().getUUIDForPlayer(player);
-                });
-
-        manager.setDefaultExceptionHandler(
-                (command, registeredCommand, sender, args, t) -> {
-                    if (!(t
-                            instanceof
-                            xyz.kyngs.librelogin.common.command.InvalidCommandArgument ourEx)) {
-                        var logger = plugin.getLogger();
-
-                        logger.error(
-                                "An unexpected exception occurred while performing command, please"
-                                        + " attach the stacktrace below and report this issue.");
-
-                        t.printStackTrace();
-
-                        return false;
-                    }
-
-                    plugin.getAudienceFromIssuer(sender).sendMessage(ourEx.getUserFuckUp());
-
-                    return true;
-                },
-                false);
-
-        confirmCache = Caffeine.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build();
-
+        manager.registerCommand(new AgarthaLoginCommand<>(plugin));
+        
+        // Disabled commands in favor of Web Auth
+        /*
         manager.registerCommand(new LoginCommand<>(plugin));
         manager.registerCommand(new RegisterCommand<>(plugin));
-        manager.registerCommand(new PremiumEnableCommand<>(plugin));
+        manager.registerCommand(new ChangePasswordCommand<>(plugin));
+        manager.registerCommand(new TwoFactorAuthCommand<>(plugin));
+        manager.registerCommand(new TwoFactorConfirmCommand<>(plugin));
+        manager.registerCommand(new VerifyEMailCommand<>(plugin));
+        manager.registerCommand(new ResetPasswordViaEMailCommand<>(plugin));
+        manager.registerCommand(new ConfirmPasswordReset<>(plugin));
+        manager.registerCommand(new EMailCommand<>(plugin));
+        manager.registerCommand(new SetEMailCommand<>(plugin));
+        manager.registerCommand(new PremiumCommand<>(plugin));
         manager.registerCommand(new PremiumConfirmCommand<>(plugin));
         manager.registerCommand(new PremiumDisableCommand<>(plugin));
-        manager.registerCommand(new ChangePasswordCommand<>(plugin));
+        manager.registerCommand(new PremiumEnableCommand<>(plugin));
+        */
+        
         manager.registerCommand(new LibreLoginCommand<>(plugin));
-
-        if (plugin.getTOTPProvider() != null) {
-            manager.registerCommand(new TwoFactorAuthCommand<>(plugin));
-            manager.registerCommand(new TwoFactorConfirmCommand<>(plugin));
-        }
-
-        if (plugin.getEmailHandler() != null) {
-            manager.registerCommand(new SetEMailCommand<>(plugin));
-            manager.registerCommand(new VerifyEMailCommand<>(plugin));
-            manager.registerCommand(new ResetPasswordViaEMailCommand<>(plugin));
-            manager.registerCommand(new ConfirmPasswordReset<>(plugin));
-        }
+        manager.registerCommand(new StaffCommand<>(plugin));
     }
 
     public void registerConfirm(UUID uuid) {

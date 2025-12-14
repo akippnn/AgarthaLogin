@@ -33,7 +33,7 @@ blossom {
 tasks.withType<ShadowJar> {
     destinationDirectory.set(file("../target"))
 
-    archiveBaseName.set("LibreLoginProd")
+    archiveBaseName.set("AgarthaLogin")
     archiveClassifier = null
 
     dependencies {
@@ -57,6 +57,8 @@ tasks.withType<ShadowJar> {
     relocate("org.postgresql", "xyz.kyngs.librelogin.lib.postgresql")
     relocate("com.github.retrooper.packetevents", "xyz.kyngs.librelogin.lib.packetevents.api")
     relocate("io.github.retrooper.packetevents", "xyz.kyngs.librelogin.lib.packetevents.platform")
+    relocate("org.eclipse.jetty", "xyz.kyngs.librelogin.lib.jetty")
+    relocate("com.google.gson", "xyz.kyngs.librelogin.lib.gson")
 }
 
 java {
@@ -140,6 +142,11 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     implementation("com.github.retrooper:packetevents-spigot:2.11.0")
     compileOnly("org.apache.logging.log4j:log4j-core:2.25.1")
+
+    //Jetty
+    implementation("org.eclipse.jetty:jetty-server:11.0.20")
+    implementation("org.eclipse.jetty:jetty-servlet:11.0.20")
+    implementation("com.google.code.gson:gson:2.10.1")
 
     //Libby
     implementation("xyz.kyngs.libby:libby-bukkit:1.6.0")

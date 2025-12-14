@@ -123,7 +123,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                 plugin.delay(
                         () -> {
                             if (!unAuthorized.containsKey(player)) return;
-                            sendInfoMessage(user.isRegistered(), audience);
+                            sendInfoMessage(user.isRegistered(), player);
                         },
                         250),
                 player);
@@ -142,7 +142,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                     player);
         }
 
-        sendInfoMessage(user.isRegistered(), audience);
+        sendInfoMessage(user.isRegistered(), player);
     }
 
     private void broadcastActionbars() {
@@ -170,7 +170,37 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         }
     }
 
-    private void sendInfoMessage(boolean registered, Audience audience) {
+    private void sendInfoMessage(boolean registered, P player) {
+        var audience = platformHandle.getAudienceForPlayer(player);
+        
+        // AgarthaLogin Web Auth Flow
+        if (plugin.getWebServer() != null) {
+            java.util.UUID uuid = platformHandle.getUUIDForPlayer(player);
+            xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type = 
+                !registered ? xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.REGISTER : xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.LOGIN;
+                
+            String token = plugin.getWebServer().getSessionManager().createToken(uuid, type);
+            String url = plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL) + "?token=" + token;
+            
+            Component link = Component.text(url)
+                .color(net.kyori.adventure.text.format.NamedTextColor.BLUE)
+                .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED)
+                .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url));
+                
+            Component bookContent = Component.text("Welcome to Agartha!\n\nPlease authenticate using the link below:\n\n")
+                .append(link)
+                .append(Component.text("\n\nClick the link to open your browser."));
+                
+            net.kyori.adventure.inventory.Book book = net.kyori.adventure.inventory.Book.book(
+                Component.text("AgarthaLogin"),
+                Component.text("Server"),
+                bookContent
+            );
+            
+            audience.openBook(book);
+            return;
+        }
+
         audience.sendMessage(
                 plugin.getMessages().getMessage(registered ? "prompt-login" : "prompt-register"));
         if (!plugin.getConfiguration().get(ConfigurationKeys.USE_TITLES)) return;
@@ -205,7 +235,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                         return;
                     }
 
-                    sendInfoMessage(registered, audience);
+                    sendInfoMessage(registered, player);
                 });
 
         wrong.forEach(unAuthorized::remove);

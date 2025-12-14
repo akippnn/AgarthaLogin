@@ -107,6 +107,7 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
     private FloodgateIntegration floodgateApi;
     private LuckPermsIntegration<P, S> luckpermsApi;
     private SemanticVersion version;
+    private xyz.kyngs.librelogin.common.web.WebServer webServer;
     private HoconPluginConfiguration configuration;
     private HoconMessages messages;
     private AuthenticAuthorizationProvider<P, S> authorizationProvider;
@@ -123,6 +124,10 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
         platformHandle = providePlatformHandle();
         forbiddenPasswords = new HashSet<>();
         cancelOnExit = HashMultimap.create();
+    }
+    
+    public xyz.kyngs.librelogin.common.web.WebServer getWebServer() {
+        return webServer;
     }
 
     public Map<Class<?>, DatabaseConnectorRegistration<?, ?>> getDatabaseConnectors() {
@@ -301,6 +306,11 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
         registerCryptoProvider(new BCrypt2ACryptoProvider());
         registerCryptoProvider(new Argon2IDCryptoProvider(logger));
         registerCryptoProvider(new LogITMessageDigestCryptoProvider("LOGIT-SHA-256", "SHA-256"));
+
+        // Initialize WebServer
+        int port = configuration.get(WEB_PORT); 
+        webServer = new xyz.kyngs.librelogin.common.web.WebServer(this, port);
+        webServer.start();
 
         setupDB();
 
@@ -799,6 +809,9 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
     }
 
     protected void disable() {
+        if (webServer != null) {
+            webServer.stop();
+        }
         if (databaseConnector != null) {
             try {
                 databaseConnector.disconnect();

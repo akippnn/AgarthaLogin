@@ -416,4 +416,25 @@ Verifies whether the IP the players had used when authenticating to Mojang match
                     "!!THIS OPTION IS IRRELEVANT WHEN USING PAPER!! Defines port(s) that limbo"
                             + " server can be bounded to.",
                     ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<?> WEB_SERVER =
+            ConfigurationKey.getComment(
+                    "web-server",
+                    """
+                    Configuration for the built-in web server used for authentication.
+                    """);
+
+    public static final ConfigurationKey<Integer> WEB_PORT =
+            new ConfigurationKey<>("web-server.port", Integer.class, 8080);
+    public static final ConfigurationKey<String> WEB_PUBLIC_URL =
+            new ConfigurationKey<>("web-server.public-url", String.class, "http://localhost:8080");
+
+    public static final ConfigurationKey<List<String>> ADMIN_LIST =
+            new ConfigurationKey<>(
+                    "admin-list",
+                    List.of(),
+                    "List of usernames that are allowed to access the admin panel via /agarthalogin adminpanel",
+                    ConfigurateHelper::getStringList);
+
+    private ConfigurationKeys() {}
 }

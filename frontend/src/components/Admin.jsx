@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from 'react'
-import { ShieldAlert, Users, Database, RefreshCw, Search, ChevronLeft, ChevronRight, 
-         LogIn, Crown, User, Key, ArrowRight, UserPlus, UserMinus, Trash2, 
-         Check, X, AlertTriangle, Copy, Download, Upload } from 'lucide-react'
+import {
+  ShieldAlert, Users, Database, RefreshCw, Search, ChevronLeft, ChevronRight,
+  LogIn, Crown, User, Key, ArrowRight, UserPlus, UserMinus, Trash2,
+  Check, X, AlertTriangle, Copy, Download, Upload
+} from 'lucide-react'
 
 const API_BASE = '/api'
 
@@ -62,8 +64,8 @@ function ConfirmDialog({ title, message, confirmText, onConfirm, onCancel, requi
         )}
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
           <button style={{ ...styles.button, ...styles.buttonSecondary }} onClick={onCancel}>Cancel</button>
-          <button 
-            style={{ ...styles.button, ...styles.buttonDanger, opacity: canConfirm ? 1 : 0.5 }} 
+          <button
+            style={{ ...styles.button, ...styles.buttonDanger, opacity: canConfirm ? 1 : 0.5 }}
             onClick={onConfirm}
             disabled={!canConfirm}
           >
@@ -116,11 +118,11 @@ function UserModal({ user, onClose, onAction, sessionId }) {
         <div style={{ marginBottom: '1.5rem' }}>
           <p style={{ color: '#909296', marginBottom: '0.5rem' }}>UUID: <span style={{ color: '#c1c2c5' }}>{user.uuid}</span></p>
           <p style={{ color: '#909296', marginBottom: '0.5rem' }}>
-            Status: {user.premium 
+            Status: {user.premium
               ? <span style={{ ...styles.badge, ...styles.badgePremium }}>Premium</span>
               : <span style={{ ...styles.badge, ...styles.badgeCracked }}>Cracked</span>}
             {' '}
-            {user.online 
+            {user.online
               ? <span style={{ ...styles.badge, ...styles.badgeOnline }}>Online</span>
               : <span style={{ ...styles.badge, ...styles.badgeOffline }}>Offline</span>}
           </p>
@@ -158,15 +160,15 @@ function UserModal({ user, onClose, onAction, sessionId }) {
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ color: '#909296', display: 'block', marginBottom: '0.5rem' }}>Change Password</label>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input 
-              style={{ ...styles.input, flex: 1 }} 
-              type="password" 
-              value={newPassword} 
+            <input
+              style={{ ...styles.input, flex: 1 }}
+              type="password"
+              value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               placeholder="New password"
             />
-            <button 
-              style={{ ...styles.button, ...styles.buttonPrimary }} 
+            <button
+              style={{ ...styles.button, ...styles.buttonPrimary }}
               onClick={() => doAction('password', { password: newPassword })}
               disabled={loading || !newPassword}
             >
@@ -178,14 +180,14 @@ function UserModal({ user, onClose, onAction, sessionId }) {
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ color: '#909296', display: 'block', marginBottom: '0.5rem' }}>Migrate Username</label>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <input 
-              style={{ ...styles.input, flex: 1 }} 
-              value={newUsername} 
+            <input
+              style={{ ...styles.input, flex: 1 }}
+              value={newUsername}
               onChange={e => setNewUsername(e.target.value)}
               placeholder="New username"
             />
-            <button 
-              style={{ ...styles.button, ...styles.buttonPrimary }} 
+            <button
+              style={{ ...styles.button, ...styles.buttonPrimary }}
               onClick={() => doAction('migrate', { newUsername })}
               disabled={loading || !newUsername}
             >
@@ -382,7 +384,7 @@ function UsersTab({ sessionId }) {
                 </td>
                 <td style={styles.td}>{user.username}</td>
                 <td style={styles.td}>
-                  {user.premium 
+                  {user.premium
                     ? <span style={{ ...styles.badge, ...styles.badgePremium }}>Premium</span>
                     : <span style={{ ...styles.badge, ...styles.badgeCracked }}>Cracked</span>}
                 </td>
@@ -408,16 +410,16 @@ function UsersTab({ sessionId }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
           <span style={{ color: '#909296' }}>Total: {total} users</span>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            <button 
-              style={{ ...styles.button, ...styles.buttonSecondary }} 
+            <button
+              style={{ ...styles.button, ...styles.buttonSecondary }}
               onClick={() => setPage(p => Math.max(0, p - 1))}
               disabled={page === 0}
             >
               <ChevronLeft size={16} />
             </button>
             <span style={{ color: '#c1c2c5', padding: '0.5rem' }}>Page {page + 1}</span>
-            <button 
-              style={{ ...styles.button, ...styles.buttonSecondary }} 
+            <button
+              style={{ ...styles.button, ...styles.buttonSecondary }}
               onClick={() => setPage(p => p + 1)}
               disabled={(page + 1) * 20 >= total}
             >
@@ -428,10 +430,10 @@ function UsersTab({ sessionId }) {
       </div>
 
       {selectedUser && (
-        <UserModal 
-          user={selectedUser} 
+        <UserModal
+          user={selectedUser}
           sessionId={sessionId}
-          onClose={() => setSelectedUser(null)} 
+          onClose={() => setSelectedUser(null)}
           onAction={(type, text) => {
             setMessage({ type, text })
             if (type === 'success') {
@@ -532,25 +534,25 @@ function AddUserTab({ sessionId }) {
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ color: '#909296', display: 'block', marginBottom: '0.5rem' }}>Username</label>
-          <input 
-            style={styles.input} 
-            value={username} 
+          <input
+            style={styles.input}
+            value={username}
             onChange={e => setUsername(e.target.value)}
             required
           />
         </div>
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ color: '#909296', display: 'block', marginBottom: '0.5rem' }}>Password</label>
-          <input 
-            style={styles.input} 
+          <input
+            style={styles.input}
             type="password"
-            value={password} 
+            value={password}
             onChange={e => setPassword(e.target.value)}
             required
           />
         </div>
-        <button 
-          style={{ ...styles.button, ...styles.buttonSuccess }} 
+        <button
+          style={{ ...styles.button, ...styles.buttonSuccess }}
           type="submit"
           disabled={loading}
         >
@@ -593,11 +595,11 @@ function DatabaseTab({ sessionId }) {
           <Database size={20} /> Database Optimization
         </h2>
         <p style={{ color: '#909296', marginBottom: '1rem' }}>
-          Check how many users are using legacy password hash algorithms. 
+          Check how many users are using legacy password hash algorithms.
           Hashes are automatically upgraded to the preferred algorithm on next login.
         </p>
-        <button 
-          style={{ ...styles.button, ...styles.buttonPrimary }} 
+        <button
+          style={{ ...styles.button, ...styles.buttonPrimary }}
           onClick={handleOptimize}
           disabled={loading}
         >
@@ -653,17 +655,17 @@ function GameCodeDisplay({ gameCode }) {
       <p style={{ color: '#909296', marginBottom: '1rem' }}>
         Run this command in-game to complete authentication:
       </p>
-      <div style={{ 
-        display: 'flex', 
-        gap: '0.5rem', 
-        backgroundColor: '#1a1b1e', 
-        padding: '1rem', 
+      <div style={{
+        display: 'flex',
+        gap: '0.5rem',
+        backgroundColor: '#1a1b1e',
+        padding: '1rem',
         borderRadius: '4px',
         fontFamily: 'monospace',
         alignItems: 'center'
       }}>
         <span style={{ color: '#40c057', flex: 1 }}>{command}</span>
-        <button 
+        <button
           style={{ ...styles.button, ...styles.buttonSecondary }}
           onClick={copyToClipboard}
         >
@@ -691,8 +693,9 @@ export default function Admin({ token, onSuccess }) {
       const data = await res.json()
       if (res.ok && data.success) {
         setGameCode(data.gameCode)
+        setGameCode(data.gameCode)
         setSessionId(data.sessionId)
-        onSuccess()
+        // onSuccess() - Keep Admin component mounted to show the panel
       } else {
         throw new Error(data.error || "Failed to apply")
       }
@@ -711,10 +714,10 @@ export default function Admin({ token, onSuccess }) {
           <p style={{ color: '#909296', textAlign: 'center', marginBottom: '2rem' }}>
             You are about to access the admin panel. Click below to authenticate.
           </p>
-          
+
           {error && <div style={styles.error}>{error}</div>}
 
-          <button 
+          <button
             onClick={handleApply}
             style={{ ...styles.button, ...styles.buttonDanger, width: '100%', justifyContent: 'center' }}
           >
@@ -730,7 +733,7 @@ export default function Admin({ token, onSuccess }) {
     return (
       <div style={{ maxWidth: '500px', margin: '0 auto', padding: '2rem' }}>
         <GameCodeDisplay gameCode={gameCode} />
-        <button 
+        <button
           style={{ ...styles.button, ...styles.buttonSuccess, width: '100%', justifyContent: 'center', marginTop: '1rem' }}
           onClick={() => {
             localStorage.setItem('admin_code_dismissed_' + gameCode, 'true')
@@ -753,19 +756,19 @@ export default function Admin({ token, onSuccess }) {
       </div>
 
       <div style={styles.tabs}>
-        <button 
+        <button
           style={{ ...styles.tab, ...(activeTab === 'users' ? styles.tabActive : styles.tabInactive) }}
           onClick={() => setActiveTab('users')}
         >
           <Users size={16} style={{ marginRight: '0.5rem' }} /> Users
         </button>
-        <button 
+        <button
           style={{ ...styles.tab, ...(activeTab === 'add' ? styles.tabActive : styles.tabInactive) }}
           onClick={() => setActiveTab('add')}
         >
           <UserPlus size={16} style={{ marginRight: '0.5rem' }} /> Add User
         </button>
-        <button 
+        <button
           style={{ ...styles.tab, ...(activeTab === 'database' ? styles.tabActive : styles.tabInactive) }}
           onClick={() => setActiveTab('database')}
         >

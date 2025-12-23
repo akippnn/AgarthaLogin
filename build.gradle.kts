@@ -7,7 +7,7 @@ plugins {
 
 defaultTasks("updateLicenses", "shadowJar")
 
-version = "0.26.0-SNAPSHOT"
+version = "0.27.0-SNAPSHOT"
 
 subprojects {
     version = rootProject.version

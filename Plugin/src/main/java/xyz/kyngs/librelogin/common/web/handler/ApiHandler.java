@@ -80,6 +80,8 @@ public class ApiHandler extends HttpServlet {
         try {
             if ("/user".equals(path)) {
                 handleGetUser(req, resp);
+            } else if ("/check-premium".equals(path)) {
+                handleCheckPremium(req, resp);
             } else if (path != null && path.startsWith("/admin/")) {
                 handleAdminGet(req, resp, path);
             } else {
@@ -350,6 +352,9 @@ public class ApiHandler extends HttpServlet {
             }
 
             user.setPremiumUUID(premiumUser.uuid());
+            // Remove password hash for premium users - they authenticate via Mojang
+            user.setHashedPassword(null);
+            user.setSecret(null);
             plugin.getDatabaseProvider().updateUser(user);
 
             plugin.getEventProvider().unsafeFire(
@@ -382,6 +387,15 @@ public class ApiHandler extends HttpServlet {
         if (user == null) {
             resp.setStatus(404);
             resp.getWriter().write(gson.toJson(new ErrorResponse("User not found")));
+            return;
+        }
+
+        // Cracked users need a password to authenticate
+        if (user.getHashedPassword() == null) {
+            resp.setStatus(400);
+            resp.getWriter().write(gson.toJson(new ErrorResponse(
+                    "User must have a password set before switching to cracked mode. " +
+                            "Use the password change feature first.")));
             return;
         }
 
@@ -542,12 +556,18 @@ public class ApiHandler extends HttpServlet {
             return;
         }
 
-        // If online, kick back to limbo
-        Object player = plugin.getPlatformHandle().getPlayer(user.getUuid());
-        if (player != null) {
-            AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
-            rawPlugin.getAuthorizationProvider().unauthorize(player);
+        // Require user to be online so they can re-register via web-auth
+        AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
+        Object player = rawPlugin.getPlatformHandle().getPlayer(user.getUuid());
+        if (player == null) {
+            resp.setStatus(400);
+            resp.getWriter().write(gson.toJson(new ErrorResponse(
+                    "User must be online to unregister. They need to re-register via web-auth.")));
+            return;
         }
+
+        // Send back to limbo for re-registration
+        rawPlugin.getAuthorizationProvider().unauthorize(player);
 
         // Reset auth data but keep user record
         user.setHashedPassword(null);
@@ -745,6 +765,13 @@ public class ApiHandler extends HttpServlet {
             return;
         }
 
+        // Check if user is registered (has password)
+        if (user.getHashedPassword() == null) {
+            resp.setStatus(400);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("User is not registered. Please register first.")));
+            return;
+        }
+
         var provider = plugin.getCryptoProvider(user.getHashedPassword().algo());
         if (provider == null) {
             provider = plugin.getDefaultCryptoProvider();
@@ -909,6 +936,28 @@ public class ApiHandler extends HttpServlet {
         response.addProperty("sessionId", sessionId);
         response.addProperty("gameCode", gameCode);
 
+        resp.getWriter().write(gson.toJson(response));
+    }
+
+    private void handleCheckPremium(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
+        String username = req.getParameter("username");
+        if (username == null || username.isEmpty()) {
+            resp.setStatus(400);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("Username required")));
+            return;
+        }
+
+        JsonObject response = new JsonObject();
+        try {
+            var premiumUser = plugin.getPremiumProvider().getUserForName(username);
+            response.addProperty("isPremium", premiumUser != null);
+            if (premiumUser != null) {
+                response.addProperty("exactName", premiumUser.name());
+            }
+        } catch (Exception e) {
+            response.addProperty("isPremium", false);
+        }
         resp.getWriter().write(gson.toJson(response));
     }
 

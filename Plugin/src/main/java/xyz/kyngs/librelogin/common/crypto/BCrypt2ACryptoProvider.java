@@ -31,7 +31,12 @@ public class BCrypt2ACryptoProvider implements CryptoProvider {
 
     @Override
     public boolean matches(String input, HashedPassword password) {
-        var raw = CryptoUtil.rawBcryptFromHashed(password).toCharArray();
+        char[] raw;
+        try {
+            raw = CryptoUtil.rawBcryptFromHashed(password).toCharArray();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
         BCrypt.Result result;
         try {
             result = VERIFIER.verify(input.toCharArray(), raw);

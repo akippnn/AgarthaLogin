@@ -152,6 +152,12 @@ dependencies {
     implementation("xyz.kyngs.libby:libby-bukkit:1.6.0")
     implementation("xyz.kyngs.libby:libby-velocity:1.6.0")
     implementation("xyz.kyngs.libby:libby-paper:1.6.0")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
 tasks.withType<ProcessResources> {

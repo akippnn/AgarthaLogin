@@ -29,6 +29,9 @@ public class CryptoUtil {
 
     public static BiHolder<String, String> convertHash(String hash) {
         var split = hash.split("\\$");
+        if (split.length < 2) {
+            throw new IllegalArgumentException("Invalid hash format: missing $ separator");
+        }
 
         return new BiHolder<>(split[0], split[1]);
     }
@@ -78,5 +81,6 @@ public class CryptoUtil {
                         .build());
     }
 
-    public record Argon2IDHashedPassword(byte[] hash, Argon2Parameters parameters) {}
+    public record Argon2IDHashedPassword(byte[] hash, Argon2Parameters parameters) {
+    }
 }

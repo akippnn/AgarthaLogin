@@ -114,7 +114,12 @@ public class ApiHandler extends HttpServlet {
             return;
         }
 
-        if (plugin.getDefaultCryptoProvider().matches(password, user.getHashedPassword())) {
+        var provider = plugin.getCryptoProvider(user.getHashedPassword().algo());
+        if (provider == null) {
+            provider = plugin.getDefaultCryptoProvider();
+        }
+
+        if (provider.matches(password, user.getHashedPassword())) {
             // Success
             sessionManager.invalidateToken(tokenStr);
             String sessionId = sessionManager.createSession(user, false);

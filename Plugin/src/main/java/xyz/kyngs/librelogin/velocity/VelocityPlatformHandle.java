@@ -29,6 +29,11 @@ public class VelocityPlatformHandle implements PlatformHandle<Player, Registered
     }
 
     @Override
+    public Player getPlayer(UUID uuid) {
+        return plugin.getServer().getPlayer(uuid).orElse(null);
+    }
+
+    @Override
     public Audience getAudienceForPlayer(Player player) {
         return player;
     }

@@ -85,6 +85,10 @@ public class VelocityListeners
 
     @Subscribe(order = PostOrder.LAST)
     public void onPostLogin(PostLoginEvent event) {
+        plugin.getLogger()
+                .info(
+                        "DEBUG: VelocityListeners onPostLogin fired for "
+                                + event.getPlayer().getUsername());
         onPostLogin(event.getPlayer(), null);
     }
 
@@ -155,6 +159,10 @@ public class VelocityListeners
 
     @Subscribe(order = PostOrder.LAST)
     public void chooseServer(PlayerChooseInitialServerEvent event) {
+        plugin.getLogger()
+                .info(
+                        "DEBUG: VelocityListeners chooseServer fired for "
+                                + event.getPlayer().getUsername());
         var server = chooseServer(event.getPlayer(), null, null);
 
         if (server.value() == null) {

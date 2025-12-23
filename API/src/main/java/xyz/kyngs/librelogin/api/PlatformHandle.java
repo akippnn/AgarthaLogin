@@ -23,6 +23,14 @@ import xyz.kyngs.librelogin.api.server.ServerPing;
 public interface PlatformHandle<P, S> {
 
     /**
+     * Retrieves the player object associated with the given UUID.
+     *
+     * @param uuid the UUID of the player
+     * @return the player object, or null if not found
+     */
+    P getPlayer(UUID uuid);
+
+    /**
      * Retrieves the audience associated with the given player.
      *
      * @param player the player for which to retrieve the audience

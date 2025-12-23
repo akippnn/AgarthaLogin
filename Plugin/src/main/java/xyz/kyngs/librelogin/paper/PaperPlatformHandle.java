@@ -31,6 +31,11 @@ public class PaperPlatformHandle implements PlatformHandle<Player, World> {
     }
 
     @Override
+    public Player getPlayer(UUID uuid) {
+        return Bukkit.getPlayer(uuid);
+    }
+
+    @Override
     public Audience getAudienceForPlayer(Player player) {
         return player;
     }

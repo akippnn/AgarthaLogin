@@ -33,9 +33,9 @@ function App() {
         body: JSON.stringify({ token: t })
       })
       const data = await res.json()
-      
+
       if (!res.ok) throw new Error(data.error || "Invalid Token")
-      
+
       setTokenInfo(data)
 
       if (data.type === 'ADMIN_ACCESS') {
@@ -70,11 +70,23 @@ function App() {
   }
 
   const onAuthorized = (sid) => {
-    if(sid) {
-        localStorage.setItem('session_id', sid)
-        setSessionId(sid)
+    if (sid) {
+      localStorage.setItem('session_id', sid)
+      setSessionId(sid)
     }
     setView('authorized')
+  }
+
+  // Admin panel uses full width
+  if (view === 'admin') {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        backgroundColor: '#1a1b1e', color: '#e0e0e0'
+      }}>
+        <Admin token={token} onSuccess={() => { }} />
+      </div>
+    )
   }
 
   return (
@@ -86,14 +98,12 @@ function App() {
         backgroundColor: '#25262b', padding: '2rem', borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0,0,0,0.3)', width: '100%', maxWidth: '400px', textAlign: 'center'
       }}>
-        {view === 'loading' && <div style={{display:'flex', justifyContent:'center'}}><Loader2 className="animate-spin" /> Loading...</div>}
-        {view === 'error' && <div style={{color: '#ff6b6b', background: 'rgba(255,107,107,0.1)', padding: '0.5rem', borderRadius: '4px'}}>{error}</div>}
-        
+        {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
+        {view === 'error' && <div style={{ color: '#ff6b6b', background: 'rgba(255,107,107,0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}
+
         {view === 'login' && <Login token={token} username={tokenInfo?.username} onSuccess={onAuthorized} />}
         {view === 'register' && <Register token={token} username={tokenInfo?.username} onSuccess={onAuthorized} />}
         {view === 'prompt' && <SessionAuth token={token} sessionId={sessionId} username={sessionUser?.username} onSuccess={onAuthorized} onLogout={() => { localStorage.removeItem('session_id'); location.reload() }} />}
-        {view === 'admin' && <Admin token={token} onSuccess={() => setView('success_admin')} />}
-        {view === 'success_admin' && <div style={{color: '#40c057'}}>Admin action applied successfully! Check game chat.</div>}
         {view === 'authorized' && <Authorized />}
       </div>
     </div>

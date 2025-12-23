@@ -693,9 +693,8 @@ export default function Admin({ token, onSuccess }) {
       const data = await res.json()
       if (res.ok && data.success) {
         setGameCode(data.gameCode)
-        setGameCode(data.gameCode)
         setSessionId(data.sessionId)
-        // onSuccess() - Keep Admin component mounted to show the panel
+        onSuccess()
       } else {
         throw new Error(data.error || "Failed to apply")
       }

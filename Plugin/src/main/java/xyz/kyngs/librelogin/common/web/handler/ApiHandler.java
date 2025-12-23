@@ -446,8 +446,10 @@ public class ApiHandler extends HttpServlet {
     AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
     Object player = rawPlugin.getPlatformHandle().getPlayer(user.getUuid());
     if (player != null) {
-      rawPlugin.getPlatformHandle().getAudienceForPlayer(player)
-          .sendMessage(rawPlugin.getMessages().getMessage("info-password-changed"));
+      var message = rawPlugin.getMessages().getMessage("info-password-changed");
+      if (message != null) {
+        rawPlugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(message);
+      }
     }
 
     JsonObject response = new JsonObject();
@@ -568,6 +570,9 @@ public class ApiHandler extends HttpServlet {
 
     // Send back to limbo for re-registration
     rawPlugin.getAuthorizationProvider().unauthorize(player);
+
+    // Invalidate all sessions and tokens for this user
+    sessionManager.invalidateSessionsByUser(user.getUuid());
 
     // Reset auth data but keep user record
     user.setHashedPassword(null);

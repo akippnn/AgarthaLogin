@@ -125,7 +125,7 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
         forbiddenPasswords = new HashSet<>();
         cancelOnExit = HashMultimap.create();
     }
-    
+
     public xyz.kyngs.librelogin.common.web.WebServer getWebServer() {
         return webServer;
     }
@@ -307,16 +307,16 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
         registerCryptoProvider(new Argon2IDCryptoProvider(logger));
         registerCryptoProvider(new LogITMessageDigestCryptoProvider("LOGIT-SHA-256", "SHA-256"));
 
-        // Initialize WebServer
-        int port = configuration.get(WEB_PORT); 
-        webServer = new xyz.kyngs.librelogin.common.web.WebServer(this, port);
-        webServer.start();
-
         setupDB();
 
         checkDataFolder();
 
         loadConfigs();
+
+        // Initialize WebServer
+        int port = configuration.get(WEB_PORT);
+        webServer = new xyz.kyngs.librelogin.common.web.WebServer(this, port);
+        webServer.start();
 
         logger.info("Loading forbidden passwords...");
 

@@ -425,15 +425,25 @@ Verifies whether the IP the players had used when authenticating to Mojang match
                     """);
 
     public static final ConfigurationKey<Integer> WEB_PORT =
-            new ConfigurationKey<>("web-server.port", Integer.class, 8080);
+            new ConfigurationKey<>(
+                    "web-server.port",
+                    8080,
+                    "The port for the embedded web server.",
+                    ConfigurateHelper::getInt);
+
     public static final ConfigurationKey<String> WEB_PUBLIC_URL =
-            new ConfigurationKey<>("web-server.public-url", String.class, "http://localhost:8080");
+            new ConfigurationKey<>(
+                    "web-server.public-url",
+                    "http://localhost:8080",
+                    "The public URL for the authentication page.",
+                    ConfigurateHelper::getString);
 
     public static final ConfigurationKey<List<String>> ADMIN_LIST =
             new ConfigurationKey<>(
                     "admin-list",
                     List.of(),
-                    "List of usernames that are allowed to access the admin panel via /agarthalogin adminpanel",
+                    "List of usernames that are allowed to access the admin panel via /agarthalogin"
+                            + " adminpanel",
                     ConfigurateHelper::getStringList);
 
     private ConfigurationKeys() {}

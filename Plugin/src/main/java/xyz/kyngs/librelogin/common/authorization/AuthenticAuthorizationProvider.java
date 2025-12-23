@@ -171,33 +171,48 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
     }
 
     private void sendInfoMessage(boolean registered, P player) {
+        plugin.getLogger()
+                .info(
+                        "Sending auth message to player: "
+                                + platformHandle.getUsernameForPlayer(player));
         var audience = platformHandle.getAudienceForPlayer(player);
-        
+
         // AgarthaLogin Web Auth Flow
         if (plugin.getWebServer() != null) {
             java.util.UUID uuid = platformHandle.getUUIDForPlayer(player);
-            xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type = 
-                !registered ? xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.REGISTER : xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.LOGIN;
-                
+            xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type =
+                    !registered
+                            ? xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.REGISTER
+                            : xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.LOGIN;
+
             String token = plugin.getWebServer().getSessionManager().createToken(uuid, type);
-            String url = plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL) + "?token=" + token;
-            
-            Component link = Component.text(url)
-                .color(net.kyori.adventure.text.format.NamedTextColor.BLUE)
-                .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED)
-                .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url));
-                
-            Component bookContent = Component.text("Welcome to Agartha!\n\nPlease authenticate using the link below:\n\n")
-                .append(link)
-                .append(Component.text("\n\nClick the link to open your browser."));
-                
-            net.kyori.adventure.inventory.Book book = net.kyori.adventure.inventory.Book.book(
-                Component.text("AgarthaLogin"),
-                Component.text("Server"),
-                bookContent
-            );
-            
-            audience.openBook(book);
+            String url =
+                    plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL)
+                            + "?token="
+                            + token;
+
+            Component link =
+                    Component.text(url)
+                            .color(net.kyori.adventure.text.format.NamedTextColor.BLUE)
+                            .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED)
+                            .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url));
+
+            Component message =
+                    Component.text("\nWelcome to Agartha!\n\n")
+                            .color(net.kyori.adventure.text.format.NamedTextColor.GOLD)
+                            .append(
+                                    Component.text("Please authenticate using the link below:\n")
+                                            .color(
+                                                    net.kyori.adventure.text.format.NamedTextColor
+                                                            .GRAY))
+                            .append(link)
+                            .append(
+                                    Component.text("\n\nClick the link to open your browser.\n")
+                                            .color(
+                                                    net.kyori.adventure.text.format.NamedTextColor
+                                                            .GRAY));
+
+            audience.sendMessage(message);
             return;
         }
 

@@ -1,14 +1,19 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package xyz.kyngs.librelogin.common.web.handler;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
 
 public class FrontendHandler extends HttpServlet {
 
@@ -19,7 +24,8 @@ public class FrontendHandler extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         String path = req.getRequestURI();
         if (path.equals("/") || !path.contains(".")) {
             path = "/index.html";

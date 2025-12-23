@@ -1,17 +1,18 @@
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
+
 package xyz.kyngs.librelogin.common.web;
 
 import com.google.gson.Gson;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
 import xyz.kyngs.librelogin.common.web.handler.ApiHandler;
 import xyz.kyngs.librelogin.common.web.handler.FrontendHandler;
-
-import java.io.IOException;
 
 public class WebServer {
 
@@ -36,20 +37,23 @@ public class WebServer {
         server.setHandler(context);
 
         // API Handler
-        context.addServlet(new ServletHolder(new ApiHandler(plugin, sessionManager, gson)), "/api/*");
-        
+        context.addServlet(
+                new ServletHolder(new ApiHandler(plugin, sessionManager, gson)), "/api/*");
+
         // Frontend Handler (Static files)
         context.addServlet(new ServletHolder(new FrontendHandler(plugin)), "/*");
 
-        new Thread(() -> {
-            try {
-                server.start();
-                server.join();
-                plugin.getLogger().info("Web server started on port " + port);
-            } catch (Exception e) {
-                plugin.getLogger().error("Failed to start web server", e);
-            }
-        }).start();
+        new Thread(
+                        () -> {
+                            try {
+                                server.start();
+                                server.join();
+                                plugin.getLogger().info("Web server started on port " + port);
+                            } catch (Exception e) {
+                                plugin.getLogger().error("Failed to start web server", e);
+                            }
+                        })
+                .start();
     }
 
     public void stop() {

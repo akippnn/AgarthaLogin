@@ -1,7 +1,10 @@
-package xyz.kyngs.librelogin.common.web;
+/*
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/.
+ */
 
-import xyz.kyngs.librelogin.api.database.User;
-import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
+package xyz.kyngs.librelogin.common.web;
 
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -9,78 +12,130 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import xyz.kyngs.librelogin.api.database.User;
+import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
 
 public class WebSessionManager {
 
     private final AuthenticLibreLogin<?, ?> plugin;
     private final Map<String, TokenInfo> tokens = new ConcurrentHashMap<>();
+    private final Map<UUID, String> activeTokens = new ConcurrentHashMap<>();
     private final Map<String, SessionInfo> sessions = new ConcurrentHashMap<>();
     private final Map<String, Runnable> pendingAdminActions = new ConcurrentHashMap<>();
     private final SecureRandom random = new SecureRandom();
 
     public WebSessionManager(AuthenticLibreLogin<?, ?> plugin) {
         this.plugin = plugin;
-        
+
         // Cleanup task
-        plugin.getPlatformHandle().getScheduler().runRepeating(() -> {
-            long now = System.currentTimeMillis();
-            tokens.entrySet().removeIf(entry -> entry.getValue().expiration < now);
-            sessions.entrySet().removeIf(entry -> entry.getValue().expiration < now);
-            // Actions expire after 5 minutes
-            // (Simplification: We assume actions are short lived, a separate timestamp map would be better but this is a prototype)
-        }, 1L, TimeUnit.MINUTES);
+        plugin.repeat(
+                () -> {
+                    long now = System.currentTimeMillis();
+                    tokens.entrySet()
+                            .removeIf(
+                                    entry -> {
+                                        if (entry.getValue().expiration < now) {
+                                            if (entry.getValue().playerUuid != null) {
+                                                activeTokens.remove(
+                                                        entry.getValue().playerUuid,
+                                                        entry.getKey());
+                                            }
+                                            return true;
+                                        }
+                                        return false;
+                                    });
+                    sessions.entrySet().removeIf(entry -> entry.getValue().expiration < now);
+                    // Actions expire after 5 minutes
+                    // (Simplification: We assume actions are short lived, a separate timestamp map
+                    // would be better but this is a prototype)
+                },
+                1000L * 60,
+                1000L * 60);
     }
-    
+
     public String registerAdminAction(Runnable action) {
         String code = generateRandomString(6).substring(0, 6).toUpperCase();
         pendingAdminActions.put(code, action);
         // Auto-expire after 2 minutes
-        plugin.getPlatformHandle().getScheduler().runLater(() -> pendingAdminActions.remove(code), 2L, TimeUnit.MINUTES);
+        plugin.delay(() -> pendingAdminActions.remove(code), 1000L * 60 * 2);
         return code;
     }
-    
+
     public Runnable getAndRemoveAdminAction(String code) {
         return pendingAdminActions.remove(code.toUpperCase());
     }
 
     public String createToken(UUID playerUuid, TokenType type) {
-        String token = generateRandomString(32);
+        // Check for existing valid token
+        if (playerUuid != null) {
+            String existingToken = activeTokens.get(playerUuid);
+            if (existingToken != null) {
+                TokenInfo info = tokens.get(existingToken);
+                if (info != null
+                        && info.type == type
+                        && info.expiration > System.currentTimeMillis()) {
+                    return existingToken;
+                }
+            }
+        }
+
+        String token = generateRandomString(6);
         // Short lived token for query string (e.g. 5 mins)
-        tokens.put(token, new TokenInfo(playerUuid, type, System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)));
+        tokens.put(
+                token,
+                new TokenInfo(
+                        playerUuid,
+                        type,
+                        System.currentTimeMillis() + TimeUnit.MINUTES.toMillis(5)));
+
+        if (playerUuid != null) {
+            activeTokens.put(playerUuid, token);
+        }
         return token;
     }
-    
+
     public String createAdminToken() {
         String token = generateRandomString(64);
         // 15 seconds expiration for admin panel access
-        tokens.put(token, new TokenInfo(null, TokenType.ADMIN_ACCESS, System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15)));
+        tokens.put(
+                token,
+                new TokenInfo(
+                        null,
+                        TokenType.ADMIN_ACCESS,
+                        System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(15)));
         return token;
     }
 
     public TokenInfo getToken(String token) {
         return tokens.get(token);
     }
-    
+
     public void invalidateToken(String token) {
-        tokens.remove(token);
+        TokenInfo info = tokens.remove(token);
+        if (info != null && info.playerUuid != null) {
+            activeTokens.remove(info.playerUuid, token);
+        }
     }
 
     public String createSession(User user, boolean isAdmin) {
         String sessionId = generateRandomString(48);
-        sessions.put(sessionId, new SessionInfo(user, isAdmin, System.currentTimeMillis() + TimeUnit.HOURS.toMillis(2)));
+        sessions.put(
+                sessionId,
+                new SessionInfo(
+                        user, isAdmin, System.currentTimeMillis() + TimeUnit.HOURS.toMillis(2)));
         return sessionId;
     }
-    
+
     public SessionInfo getSession(String sessionId) {
         if (sessionId == null) return null;
         SessionInfo info = sessions.get(sessionId);
         if (info != null) {
             // Refresh session
-             info.expiration = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(2);
+            info.expiration = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(2);
         }
         return info;
     }
-    
+
     public void invalidateSession(String sessionId) {
         sessions.remove(sessionId);
     }

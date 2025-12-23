@@ -7,7 +7,6 @@
 package xyz.kyngs.librelogin.common.command;
 
 import co.aikar.commands.CommandManager;
-import co.aikar.commands.MessageKeys;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.HashMap;
@@ -19,58 +18,33 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import xyz.kyngs.librelogin.api.database.User;
 import xyz.kyngs.librelogin.common.AuthenticHandler;
 import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
-import xyz.kyngs.librelogin.common.command.commands.ChangePasswordCommand;
 import xyz.kyngs.librelogin.common.command.commands.agartha.AgarthaLoginCommand;
-import xyz.kyngs.librelogin.common.command.commands.authorization.AuthorizationCommand;
-import xyz.kyngs.librelogin.common.command.commands.authorization.LoginCommand;
-import xyz.kyngs.librelogin.common.command.commands.authorization.RegisterCommand;
-import xyz.kyngs.librelogin.common.command.commands.mail.ConfirmPasswordReset;
-import xyz.kyngs.librelogin.common.command.commands.mail.ResetPasswordViaEMailCommand;
-import xyz.kyngs.librelogin.common.command.commands.mail.SetEMailCommand;
-import xyz.kyngs.librelogin.common.command.commands.mail.VerifyEMailCommand;
-import xyz.kyngs.librelogin.common.command.commands.premium.PremiumConfirmCommand;
-import xyz.kyngs.librelogin.common.command.commands.premium.PremiumDisableCommand;
-import xyz.kyngs.librelogin.common.command.commands.premium.PremiumEnableCommand;
 import xyz.kyngs.librelogin.common.command.commands.staff.LibreLoginCommand;
-import xyz.kyngs.librelogin.common.command.commands.tfa.TwoFactorAuthCommand;
-import xyz.kyngs.librelogin.common.command.commands.tfa.TwoFactorConfirmCommand;
-import xyz.kyngs.librelogin.common.util.RateLimiter;
 
 public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
 
-    public static final LegacyComponentSerializer ACF_SERIALIZER =
-            LegacyComponentSerializer.legacySection();
-
     private final CommandManager<?, ?, ?, ?, ?, ?> manager;
-    private final RateLimiter<UUID> limiter;
-    private final Cache<UUID, Object> confirmCache;
+    private final Cache<UUID, Object> confirmCache =
+            Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
+    private final RateLimiter<UUID> limiter = new RateLimiter<>(1, 1000);
+    private static final LegacyComponentSerializer ACF_SERIALIZER =
+            LegacyComponentSerializer.legacyAmpersand();
 
     public CommandProvider(AuthenticLibreLogin<P, S> plugin) {
-        this.plugin = plugin;
+        super(plugin);
         manager = plugin.provideManager();
 
         manager.registerCommand(new AgarthaLoginCommand<>(plugin));
-        
+
         // Disabled commands in favor of Web Auth
         /*
         manager.registerCommand(new LoginCommand<>(plugin));
-        manager.registerCommand(new RegisterCommand<>(plugin));
-        manager.registerCommand(new ChangePasswordCommand<>(plugin));
-        manager.registerCommand(new TwoFactorAuthCommand<>(plugin));
-        manager.registerCommand(new TwoFactorConfirmCommand<>(plugin));
-        manager.registerCommand(new VerifyEMailCommand<>(plugin));
-        manager.registerCommand(new ResetPasswordViaEMailCommand<>(plugin));
-        manager.registerCommand(new ConfirmPasswordReset<>(plugin));
-        manager.registerCommand(new EMailCommand<>(plugin));
-        manager.registerCommand(new SetEMailCommand<>(plugin));
-        manager.registerCommand(new PremiumCommand<>(plugin));
-        manager.registerCommand(new PremiumConfirmCommand<>(plugin));
-        manager.registerCommand(new PremiumDisableCommand<>(plugin));
+        // ...
         manager.registerCommand(new PremiumEnableCommand<>(plugin));
-        */
-        
+
         manager.registerCommand(new LibreLoginCommand<>(plugin));
         manager.registerCommand(new StaffCommand<>(plugin));
+        */
     }
 
     public void registerConfirm(UUID uuid) {
@@ -130,5 +104,22 @@ public class CommandProvider<P, S> extends AuthenticHandler<P, S> {
                         });
 
         locales.addMessageStrings(locales.getDefaultLocale(), localeMap);
+    }
+
+    public static class RateLimiter<T> {
+        private final Cache<T, Long> cache;
+        private final long window;
+
+        public RateLimiter(int permits, long window) {
+            this.window = window;
+            this.cache =
+                    Caffeine.newBuilder().expireAfterWrite(window, TimeUnit.MILLISECONDS).build();
+        }
+
+        public boolean tryAcquire(T key) {
+            if (cache.getIfPresent(key) != null) return false;
+            cache.put(key, System.currentTimeMillis() + window);
+            return true;
+        }
     }
 }

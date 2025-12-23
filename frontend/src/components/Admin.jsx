@@ -82,25 +82,34 @@ function UserModal({ user, onClose, onAction, sessionId }) {
   const [loading, setLoading] = useState(false)
   const [newPassword, setNewPassword] = useState('')
   const [newUsername, setNewUsername] = useState('')
+  const [modalError, setModalError] = useState('')
 
   if (!user) return null
 
   const doAction = async (action, body = {}) => {
     setLoading(true)
+    setModalError('')
     try {
       const res = await fetch(`${API_BASE}/admin/user/${action}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Session-ID': sessionId },
         body: JSON.stringify({ username: user.username, ...body })
       })
+
+      // Handle non-JSON responses
+      const contentType = res.headers.get('content-type')
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error(`Server error: ${res.status} ${res.statusText}`)
+      }
+
       const data = await res.json()
       if (res.ok && data.success) {
         onAction('success', `Action ${action} completed`)
       } else {
-        onAction('error', data.error || 'Action failed')
+        setModalError(data.error || 'Action failed')
       }
     } catch (e) {
-      onAction('error', e.message)
+      setModalError(e.message || 'Network error')
     }
     setLoading(false)
   }
@@ -114,6 +123,13 @@ function UserModal({ user, onClose, onAction, sessionId }) {
             <X size={16} />
           </button>
         </div>
+
+        {modalError && (
+          <div style={styles.error}>
+            {modalError}
+            <button style={{ float: 'right', background: 'none', border: 'none', color: 'inherit', cursor: 'pointer' }} onClick={() => setModalError('')}>×</button>
+          </div>
+        )}
 
         <div style={{ marginBottom: '1.5rem' }}>
           <p style={{ color: '#909296', marginBottom: '0.5rem' }}>UUID: <span style={{ color: '#c1c2c5' }}>{user.uuid}</span></p>
@@ -592,7 +608,8 @@ function DatabaseTab({ sessionId }) {
 
       <div style={styles.card}>
         <h2 style={{ color: 'white', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Database size={20} /> Database Optimization
+          <Database size={20} />
+          <div>Database Optimization</div>
         </h2>
         <p style={{ color: '#909296', marginBottom: '1rem' }}>
           Check how many users are using legacy password hash algorithms.
@@ -617,7 +634,8 @@ function DatabaseTab({ sessionId }) {
 
       <div style={styles.card}>
         <h2 style={{ color: 'white', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Download size={20} /> Backup & Restore
+          <Download size={20} />
+          <div>Backup & Restore</div>
         </h2>
         <p style={{ color: '#909296', marginBottom: '1rem' }}>
           Download a backup of the authentication database or restore from a previous backup.
@@ -759,19 +777,22 @@ export default function Admin({ token, onSuccess }) {
           style={{ ...styles.tab, ...(activeTab === 'users' ? styles.tabActive : styles.tabInactive) }}
           onClick={() => setActiveTab('users')}
         >
-          <Users size={16} style={{ marginRight: '0.5rem' }} /> Users
+          <Users size={16} style={{ marginRight: '0.5rem' }} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>Users</div>
         </button>
         <button
           style={{ ...styles.tab, ...(activeTab === 'add' ? styles.tabActive : styles.tabInactive) }}
           onClick={() => setActiveTab('add')}
         >
-          <UserPlus size={16} style={{ marginRight: '0.5rem' }} /> Add User
+          <UserPlus size={16} style={{ marginRight: '0.5rem' }} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>Add User</div>
         </button>
         <button
           style={{ ...styles.tab, ...(activeTab === 'database' ? styles.tabActive : styles.tabInactive) }}
           onClick={() => setActiveTab('database')}
         >
-          <Database size={16} style={{ marginRight: '0.5rem' }} /> Database
+          <Database size={16} style={{ marginRight: '0.5rem' }} />
+          <div style={{ display: 'flex', alignItems: 'center' }}>Database</div>
         </button>
       </div>
 

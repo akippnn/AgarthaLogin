@@ -1,7 +1,9 @@
 target/
+test-env/
 
 ### Gradle & IntelliJ ###
 .gradle/
+.gradle_home/
 /.idea/
 build/
 out/
@@ -77,4 +79,6 @@ ehthumbs_vista.db
 $RECYCLE.BIN/
 *.lnk
 
-Testing/
+### Frontend ###
+frontend/node_modules/
+frontend/dist/

@@ -163,3 +163,47 @@ tasks.withType<ProcessResources> {
         expand(mapOf("version" to version))
     }
 }
+
+val frontendDir = file("../frontend")
+
+val installFrontend by tasks.registering(Exec::class) {
+    workingDir = frontendDir
+    val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+    val npmCommand = if (isWindows) "npm.cmd" else "npm"
+    commandLine(npmCommand, "install")
+
+    inputs.file(frontendDir.resolve("package.json"))
+    outputs.dir(frontendDir.resolve("node_modules"))
+}
+
+val buildFrontend by tasks.registering(Exec::class) {
+    dependsOn(installFrontend)
+    workingDir = frontendDir
+    val isWindows = System.getProperty("os.name").lowercase().contains("windows")
+    val npmCommand = if (isWindows) "npm.cmd" else "npm"
+    commandLine(npmCommand, "run", "build")
+
+    inputs.dir(frontendDir.resolve("src"))
+    inputs.file(frontendDir.resolve("index.html"))
+    inputs.file(frontendDir.resolve("vite.config.js"))
+    outputs.dir(frontendDir.resolve("dist"))
+}
+
+val copyFrontend by tasks.registering(Copy::class) {
+    dependsOn(buildFrontend)
+    from(frontendDir.resolve("dist"))
+    into("src/main/resources/web")
+
+    doFirst {
+        file("src/main/resources/web").deleteRecursively()
+        file("src/main/resources/web").mkdirs()
+    }
+}
+
+tasks.processResources {
+    dependsOn(copyFrontend)
+}
+
+tasks.matching { it.name.endsWith("LicenseMain") }.configureEach {
+    dependsOn(copyFrontend)
+}

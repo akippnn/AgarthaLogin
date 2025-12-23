@@ -1,80 +1,78 @@
+# AgarthaLogin 🔐
 
-
-# Maintenance update 🚀 ❗❗❗minecraft 1.21+
-
-update: Thanks to vuxeim and his contribution we can still use LibreLoginProd with the newest minecraft versions.
-
-After couple of weeks I've decided to make a move towards new login plugin which is currently under development.
-I'm not going to maintain this plugin anymore, but still I'm open to PR's.
-Here's the new plugin repo: https://github.com/Navio1430/NavAuth. I'm open to literally any support (even by leaving a star) with code, docs, ideas etc. also anything from todo's list.
-
-<br><br>
-<br><br>
-<div display="flex" justify-content="space-between" align="center">
- <h1>AgarthaLogin 🔐 - autologin plugin</h1>
-  <p>Fork of the <b>LibreLoginProd</b> (previously LibreLogin/LibrePremium) which has caused many problems with newest minecraft versions.
-LibreLogin did not meet our expectations, which is why this fork was created.</p>
-</div>
-<br>
-<br>
-
-# Contributors, thanks to:
-
-- **vuxeim** - for support for the newest minecraft versions
-- **original LibreLogin creators** - for creating the LibreLogin
-
-# Quick information 📌
-
-<img src="https://img.shields.io/badge/Java%20version-%2017+-blue?style=for-the-badge&logo=java&logoColor=white"
-alt="Plugin requires Java 17 or newer"></img>
-<a href="https://discord.gg/WTtEQneRJb">
-<img src="https://img.shields.io/badge/Discord-%20SUPPORT-purple?style=for-the-badge&logo=discord&logoColor=white" 
-alt="Support available on Discord"></img>
-</a>
-<a href="https://github.com/Navio1430/LibreLoginProd/graphs/contributors">
-<img src="https://img.shields.io/badge/Contributors-Credits-blue?style=for-the-badge" 
-alt="Contributors listed"></img>
-</a>
-
-<a href="https://github.com/Navio1430/LibreLoginProd/wiki">
+<img src="https://img.shields.io/badge/Java%20version-%2017+-blue?style=for-the-badge&logo=java&logoColor=white" alt="Plugin requires Java 17 or newer"></img>
+<a href="https://github.com/akippnn/AgarthaLogin/wiki">
 <img src="https://img.shields.io/badge/Documentation-Docs-orange?style=for-the-badge&logo=wikipedia" alt="Documentation on the Wiki"></img>
 </a>
 
-## Basic set of features 🎯
+AgarthaLogin is a modern authentication plugin for Minecraft servers, designed as a seamless and secure login alternative to command-based auth systems. It features a novel **Web-Based Authentication** flow, replacing traditional in-game commands with a sleek web interface.
 
-- AutoLogin for premium players
-- TOTP 2FA (Authy, Google Authenticator...) [details](https://github.com/Navio1430/LibreLoginProd/wiki/2FA)
-- Session system
-- Name validation (including case sensitivity check)
-- Automatic data migration for premium players
-- Migration of a player's data by using one command
-- Geyser (Bedrock) support using [Floodgate](https://github.com/Navio1430/LibreLoginProd/wiki/Floodgate)
+> [!NOTE]
+> This project is a fork of [LibreLogin](https://github.com/kyngs/LibreLogin), heavily modified for production use and enhanced with web capabilities.
 
-## Platforms ⚙️
-- [✔️] Velocity - up to 1.21.11
-- [✔️] Paper - up to 1.21.11
-- [❌] BungeeCord - no longer supported, do not use it for production
+## 🚀 Key Features
 
-## Main changes 
+### 🌐 Web-Based Authentication
+**No more `/login <password>`!**
+- **Secure Flow**: Players receive a one-time link in-game.
+- **Modern UI**: React-based frontend providing a smooth user experience.
+- **Session Management**: Token-based validation with automatic in-game authorization.
 
-- [📚] Support for the newest Minecraft Paper and Velocity versions
+### 🔒 Security
+- **BCrypt-2A**: Industry-standard password hashing.
+- **TOTP 2FA**: Support for Two-Factor Authentication (Google Authenticator, Authy). [Details](https://github.com/Navio1430/LibreLoginProd/wiki/2FA)
+- **AutoLogin**: Premium players are automatically authenticated.
+- **Session Persistence**: Secure session handling with configurable timeouts.
 
-- [❌] No more support for BungeeCord (maybe will be brought back in future)
-- [❌] Removed compatibility with NanoLimboPlugin (should not be used on prod)
+### ⚙️ Multi-Platform Support
+- ✅ **Velocity**: Full support for Velocity 3.x (up to 1.21+)
+- ✅ **Paper**: Native support for Paper 1.21+
+- ✅ **Docker Ready**: Includes a production-ready `docker-compose` setup.
+- ✅ **Geyser/Floodgate**: Bedrock support via [Floodgate](https://github.com/Navio1430/LibreLoginProd/wiki/Floodgate).
+- ❌ **BungeeCord**: No longer supported.
 
-# FAQ
+## 🛠️ Technical Overview
 
-### What does prod mean?
-This means that the project is a heavily modified version intended for production use.
+### Web Server Integration
+- **Jetty**: Embedded web server handling HTTP requests.
+- **React Frontend**: Single Page Application (SPA) served by the plugin.
+- **API Endpoints**:
+  - `/api/check-token`: Validates the login token.
+  - `/api/login`: Authenticates user credentials.
+  - `/api/register`: Handles new account creation.
+  - `/api/session-auth`: Verifies active sessions.
 
-### Why is the plugin almost 5MB?
-We are currently trying to go down to 500KB, but first we need
-to divide whole project into submodules.
+### Authentication Logic
+- **Token Generation**: Secure, short-lived tokens generated upon player join.
+- **Async Handling**: All database and web operations are offloaded from the main server thread.
+- **Event-Driven**: Uses platform events to authorize players once the web session is valid.
 
-### Will the folder name change after installation?
-Yes, we use **AgarthaLogin** as the folder name. Note that this is compatible with previous database files (simply copy or mount them).
+## 📦 Installation
 
-# License
+1. Build the plugin: `./gradlew shadowJar`
+2. Deploy to your Velocity plugins folder.
+3. Configure `config.conf` (ensure web port is open).
+4. Restart the proxy.
+
+The environment can be containerized. See `.compose/docker-compose.yaml` for the complete network topology including Velocity, Backend (Paper), and Database.
+
+## 📌 Quick Info
+
+
+## 👥 Contributors
+
+- **vuxeim** - Support for the newest Minecraft versions
+- **Original LibreLogin creators** - For creating the base plugin
+
+## ❓ FAQ
+
+### Any configuration differences?
+The configuration file itself remains largely the same with new additions. The database schema is compatible with LibreLogin, so you can use the same database. Reconfiguring AgarthaLogin is required.
+
+## 📄 License
 
 Project is licensed under the Mozilla Public License 2.0.
 [Read the license here.](https://github.com/Navio1430/LibreLoginProd/blob/master/LICENSE)
+
+---
+*Maintained by the Agartha Team.*

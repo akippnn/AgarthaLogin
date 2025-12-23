@@ -82,3 +82,7 @@ $RECYCLE.BIN/
 ### Frontend ###
 frontend/node_modules/
 frontend/dist/
+
+### Generated Web Assets ###
+Plugin/src/main/resources/web/assets/
+Plugin/src/main/resources/web/index.html

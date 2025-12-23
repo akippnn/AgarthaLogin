@@ -28,7 +28,8 @@ public class AgarthaLoginCommand<P> extends Command<P> {
     @Subcommand("adminpanel")
     public void onAdminPanel(CommandIssuer issuer) {
         P player = plugin.getPlayerFromIssuer(issuer);
-        if (player == null) return; // Console?
+        if (player == null)
+            return; // Console?
 
         String username = plugin.getPlatformHandle().getUsernameForPlayer(player);
         if (!plugin.getConfiguration().get(ADMIN_LIST).contains(username)) {
@@ -44,9 +45,8 @@ public class AgarthaLoginCommand<P> extends Command<P> {
         String token = plugin.getWebServer().getSessionManager().createAdminToken();
         String url = plugin.getConfiguration().get(WEB_PUBLIC_URL) + "?token=" + token;
 
-        Component message =
-                Component.text("Click here to access the admin panel.", NamedTextColor.GOLD)
-                        .clickEvent(ClickEvent.openUrl(url));
+        Component message = Component.text("Click here to access the admin panel.", NamedTextColor.GOLD)
+                .clickEvent(ClickEvent.openUrl(url));
 
         plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(message);
     }
@@ -54,7 +54,8 @@ public class AgarthaLoginCommand<P> extends Command<P> {
     @Subcommand("apply")
     public void onApply(CommandIssuer issuer, String code) {
         P player = plugin.getPlayerFromIssuer(issuer);
-        if (player == null) return;
+        if (player == null)
+            return;
 
         String username = plugin.getPlatformHandle().getUsernameForPlayer(player);
         if (!plugin.getConfiguration().get(ADMIN_LIST).contains(username)) {
@@ -79,5 +80,63 @@ public class AgarthaLoginCommand<P> extends Command<P> {
                     .getAudienceForPlayer(player)
                     .sendMessage(Component.text("Invalid or expired code.", NamedTextColor.RED));
         }
+    }
+
+    @Subcommand("reload")
+    public void onReload(CommandIssuer issuer) {
+        P player = plugin.getPlayerFromIssuer(issuer);
+
+        // Allow console or admins in list
+        if (player != null) {
+            String username = plugin.getPlatformHandle().getUsernameForPlayer(player);
+            if (!plugin.getConfiguration().get(ADMIN_LIST).contains(username)) {
+                plugin.getPlatformHandle()
+                        .getAudienceForPlayer(player)
+                        .sendMessage(
+                                Component.text(
+                                        "You are not authorized to use this command.",
+                                        NamedTextColor.RED));
+                return;
+            }
+        }
+
+        net.kyori.adventure.audience.Audience audience = player != null
+                ? plugin.getPlatformHandle().getAudienceForPlayer(player)
+                : plugin.getAudienceFromIssuer(issuer);
+
+        audience.sendMessage(Component.text("Reloading configuration...", NamedTextColor.YELLOW));
+
+        try {
+            plugin.getConfiguration().reload(plugin);
+            audience.sendMessage(Component.text("Configuration reloaded.", NamedTextColor.GREEN));
+        } catch (Exception e) {
+            audience.sendMessage(
+                    Component.text("Failed to reload configuration: " + e.getMessage(), NamedTextColor.RED));
+            return;
+        }
+
+        try {
+            plugin.getMessages().reload(plugin);
+            plugin.getCommandProvider().injectMessages();
+            audience.sendMessage(Component.text("Messages reloaded.", NamedTextColor.GREEN));
+        } catch (Exception e) {
+            audience.sendMessage(Component.text("Failed to reload messages: " + e.getMessage(), NamedTextColor.RED));
+            return;
+        }
+
+        // Restart web server with new config
+        if (plugin.getWebServer() != null) {
+            try {
+                plugin.getWebServer().stop();
+                int port = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.WEB_PORT);
+                plugin.getWebServer().start();
+                audience.sendMessage(Component.text("Web server restarted on port " + port, NamedTextColor.GREEN));
+            } catch (Exception e) {
+                audience.sendMessage(
+                        Component.text("Failed to restart web server: " + e.getMessage(), NamedTextColor.RED));
+            }
+        }
+
+        audience.sendMessage(Component.text("Reload complete!", NamedTextColor.GREEN));
     }
 }

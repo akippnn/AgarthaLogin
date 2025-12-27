@@ -5,14 +5,16 @@ import Register from './components/Register'
 import SessionAuth from './components/SessionAuth'
 import Admin from './components/Admin'
 import Authorized from './components/Authorized'
+import type { ViewState, TokenInfo, SessionUser } from './types'
+import { colors } from './components/ui/styles'
 
 function App() {
-  const [view, setView] = useState('loading') // loading, login, register, prompt, admin, authorized, error
-  const [token, setToken] = useState(null)
+  const [view, setView] = useState<ViewState>('loading')
+  const [token, setToken] = useState<string | null>(null)
   const [error, setError] = useState('')
-  const [tokenInfo, setTokenInfo] = useState(null)
-  const [sessionUser, setSessionUser] = useState(null)
-  const [sessionId, setSessionId] = useState(localStorage.getItem('session_id'))
+  const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(null)
+  const [sessionUser, setSessionUser] = useState<SessionUser | null>(null)
+  const [sessionId, setSessionId] = useState<string | null>(localStorage.getItem('session_id'))
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -26,7 +28,7 @@ function App() {
     checkToken(t)
   }, [])
 
-  const checkToken = async (t) => {
+  const checkToken = async (t: string) => {
     try {
       const res = await fetch('/api/check-token', {
         method: 'POST',
@@ -64,12 +66,12 @@ function App() {
       else setView('register')
 
     } catch (e) {
-      setError(e.message)
+      setError(e instanceof Error ? e.message : 'Unknown error')
       setView('error')
     }
   }
 
-  const onAuthorized = (sid) => {
+  const onAuthorized = (sid: string | null) => {
     if (sid) {
       localStorage.setItem('session_id', sid)
       setSessionId(sid)
@@ -82,9 +84,10 @@ function App() {
     return (
       <div style={{
         minHeight: '100vh',
-        backgroundColor: '#1a1b1e', color: '#e0e0e0'
+        backgroundColor: colors.bgDark,
+        color: colors.textPrimary
       }}>
-        <Admin token={token} onSuccess={() => { }} />
+        <Admin token={token!} onSuccess={() => { }} />
       </div>
     )
   }
@@ -92,18 +95,18 @@ function App() {
   return (
     <div style={{
       display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh',
-      backgroundColor: '#1a1b1e', color: '#e0e0e0', padding: '1rem'
+      backgroundColor: colors.bgDark, color: colors.textPrimary, padding: '1rem'
     }}>
       <div style={{
-        backgroundColor: '#25262b', padding: '2rem', borderRadius: '8px',
+        backgroundColor: colors.bgCard, padding: '2rem', borderRadius: '8px',
         boxShadow: '0 4px 6px rgba(0,0,0,0.3)', width: '100%', maxWidth: '400px', textAlign: 'center'
       }}>
         {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
-        {view === 'error' && <div style={{ color: '#ff6b6b', background: 'rgba(255,107,107,0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}
+        {view === 'error' && <div style={{ color: colors.error, background: 'rgba(255,107,107,0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}
 
-        {view === 'login' && <Login token={token} username={tokenInfo?.username} onSuccess={onAuthorized} />}
-        {view === 'register' && <Register token={token} username={tokenInfo?.username} onSuccess={onAuthorized} />}
-        {view === 'prompt' && <SessionAuth token={token} sessionId={sessionId} username={sessionUser?.username} onSuccess={onAuthorized} onLogout={() => { localStorage.removeItem('session_id'); location.reload() }} />}
+        {view === 'login' && <Login token={token!} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
+        {view === 'register' && <Register token={token!} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
+        {view === 'prompt' && <SessionAuth token={token!} sessionId={sessionId!} username={sessionUser?.username ?? ''} onSuccess={onAuthorized} onLogout={() => { localStorage.removeItem('session_id'); location.reload() }} />}
         {view === 'authorized' && <Authorized />}
       </div>
     </div>

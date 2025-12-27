@@ -5,74 +5,77 @@
 <img src="https://img.shields.io/badge/Documentation-Docs-orange?style=for-the-badge&logo=wikipedia" alt="Documentation on the Wiki"></img>
 </a>
 
-AgarthaLogin is a modern authentication plugin for Minecraft servers, designed as a seamless and secure login alternative to command-based auth systems. It features a novel **Web-Based Authentication** flow, replacing traditional in-game commands with a sleek web interface.
+AgarthaLogin is a modern authentication plugin for Minecraft servers that replaces traditional `/login <password>` commands with a **secure web-based authentication flow**. Players receive a one-time link in chat and authenticate through a sleek React interface—no more sending passwords in plain text over chat.
 
 > [!NOTE]
 > This project is a fork of [LibreLogin](https://github.com/kyngs/LibreLogin), heavily modified for production use and enhanced with web capabilities.
 
-## 🚀 Key Features
+## ✨ Features
 
-### 🌐 Web-Based Authentication
-**No more `/login <password>`!**
-- **Secure Flow**: Players receive a one-time link in-game.
-- **Modern UI**: React-based frontend providing a smooth user experience.
-- **Session Management**: Token-based validation with automatic in-game authorization.
+| Feature | Description |
+|---------|-------------|
+| 🌐 **Web Authentication** | One-time links, React UI, session persistence |
+| 🔒 **BCrypt Hashing** | Industry-standard password security |
+| 👑 **Premium AutoLogin** | Automatic authentication for Mojang accounts |
+| 🛡️ **Admin Panel** | Web-based user management interface |
+| 🔄 **Session Management** | Token-based auth with configurable timeouts |
 
-### 🔒 Security
-- **BCrypt-2A**: Industry-standard password hashing.
-- **TOTP 2FA**: Support for Two-Factor Authentication (Google Authenticator, Authy). [Details](https://github.com/Navio1430/LibreLoginProd/wiki/2FA)
-- **AutoLogin**: Premium players are automatically authenticated.
-- **Session Persistence**: Secure session handling with configurable timeouts.
+### Platform Support
+- ✅ **Velocity 3.x** (1.21+)
+- ✅ **Paper** (1.21+)
+- ✅ **Docker** — production-ready compose setup
+- ✅ **Geyser/Floodgate** — [Bedrock support](https://github.com/Navio1430/LibreLoginProd/wiki/Floodgate)
+- ❌ **BungeeCord** — not supported
 
-### ⚙️ Multi-Platform Support
-- ✅ **Velocity**: Full support for Velocity 3.x (up to 1.21+)
-- ✅ **Paper**: Native support for Paper 1.21+
-- ✅ **Docker Ready**: Includes a production-ready `docker-compose` setup.
-- ✅ **Geyser/Floodgate**: Bedrock support via [Floodgate](https://github.com/Navio1430/LibreLoginProd/wiki/Floodgate).
-- ❌ **BungeeCord**: No longer supported.
+## �️ Tech Stack
 
-## 🛠️ Technical Overview
+**Backend**: Java 17+, Jetty (embedded web server)  
+**Frontend**: Vite + React + TypeScript  
+**Database**: MySQL/MariaDB/PostgreSQL/SQLite
 
-### Web Server Integration
-- **Jetty**: Embedded web server handling HTTP requests.
-- **React Frontend**: Single Page Application (SPA) served by the plugin.
-- **API Endpoints**:
-  - `/api/check-token`: Validates the login token.
-  - `/api/login`: Authenticates user credentials.
-  - `/api/register`: Handles new account creation.
-  - `/api/session-auth`: Verifies active sessions.
+### API Endpoints
+| Endpoint | Purpose |
+|----------|---------|
+| `/api/check-token` | Validate login token |
+| `/api/login` | Authenticate credentials |
+| `/api/register` | Create new account |
+| `/api/session-auth` | Verify active session |
+| `/api/admin/*` | Admin panel operations |
 
-### Authentication Logic
-- **Token Generation**: Secure, short-lived tokens generated upon player join.
-- **Async Handling**: All database and web operations are offloaded from the main server thread.
-- **Event-Driven**: Uses platform events to authorize players once the web session is valid.
+## 📦 Quick Start
 
-## 📦 Installation
+```bash
+# Build
+./gradlew shadowJar
 
-1. Build the plugin: `./gradlew shadowJar`
-2. Deploy to your Velocity plugins folder.
-3. Configure `config.conf` (ensure web port is open).
-4. Restart the proxy.
+# Deploy to Velocity plugins folder
+# Configure config.conf (ensure web port is open)
+# Restart proxy
+```
 
-The environment can be containerized. See `.compose/docker-compose.yaml` for the complete network topology including Velocity, Backend (Paper), and Database.
+For containerized deployments, see `.compose/docker-compose.yaml`.
 
-## 📌 Quick Info
+## 📍 Roadmap
 
+- [x] Web-based authentication flow (Jetty + React)
+- [x] Session management and auto-login
+- [x] Admin panel with user management
+- [x] Premium/offline registration flow with Mojang verification
+- [x] Frontend refactor — migrated to TypeScript, extracted common UI components
+- [ ] Support custom CSS
+- [ ] User settings panel (password change, premium/offline toggle)
+- [ ] Two-Factor Authentication (TOTP)
+- [ ] Plugin rewrite (keeping only the important parts, fully independent from LibreLogin)
+- [ ] Decouple Jetty and Vite web stack from plugin
 
-## 👥 Contributors
+## 👥 Credits
 
-- **vuxeim** - Support for the newest Minecraft versions
-- **Original LibreLogin creators** - For creating the base plugin
-
-## ❓ FAQ
-
-### Any configuration differences?
-The configuration file itself remains largely the same with new additions. The database schema is compatible with LibreLogin, so you can use the same database. Reconfiguring AgarthaLogin is required.
+- **vuxeim** — Support for newest Minecraft versions
+- **LibreLogin creators** — Original base plugin
 
 ## 📄 License
 
-Project is licensed under the Mozilla Public License 2.0.
-[Read the license here.](https://github.com/Navio1430/LibreLoginProd/blob/master/LICENSE)
+[Mozilla Public License 2.0](LICENSE)
 
 ---
 *Maintained by the Agartha Team.*

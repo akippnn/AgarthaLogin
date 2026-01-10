@@ -92,8 +92,8 @@ jobs:
           
           echo "Looking for JAR files containing version: $CLEAN_VERSION"
           
-          # Find all JAR files in build/libs directories
-          find . -path "*/build/libs/*.jar" -type f | while read jar; do
+          # Find all JAR files in build/libs directories and the custom target directory
+          find . \( -path "*/build/libs/*.jar" -o -path "./target/*.jar" \) -type f | while read jar; do
             basename=$(basename "$jar")
           
             # Check if the JAR filename contains the version tag

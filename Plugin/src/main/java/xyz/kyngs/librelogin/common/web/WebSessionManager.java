@@ -127,8 +127,7 @@ public class WebSessionManager {
     }
 
     public SessionInfo getSession(String sessionId) {
-        if (sessionId == null)
-            return null;
+        if (sessionId == null) return null;
         SessionInfo info = sessions.get(sessionId);
         if (info != null) {
             // Refresh session
@@ -141,14 +140,14 @@ public class WebSessionManager {
         sessions.remove(sessionId);
     }
 
-    /**
-     * Invalidate all sessions for a specific user (e.g., when unregistered).
-     */
+    /** Invalidate all sessions for a specific user (e.g., when unregistered). */
     public void invalidateSessionsByUser(UUID userUuid) {
-        if (userUuid == null)
-            return;
-        sessions.entrySet().removeIf(entry -> entry.getValue().user != null &&
-                userUuid.equals(entry.getValue().user.getUuid()));
+        if (userUuid == null) return;
+        sessions.entrySet()
+                .removeIf(
+                        entry ->
+                                entry.getValue().user != null
+                                        && userUuid.equals(entry.getValue().user.getUuid()));
         // Also invalidate any pending tokens for this user
         String token = activeTokens.remove(userUuid);
         if (token != null) {

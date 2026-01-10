@@ -1,11 +1,19 @@
 # AgarthaLogin 🔐
 
-<img src="https://img.shields.io/badge/Java%20version-%2017+-blue?style=for-the-badge&logo=java&logoColor=white" alt="Plugin requires Java 17 or newer"></img>
-<a href="https://github.com/akippnn/AgarthaLogin/wiki">
-<img src="https://img.shields.io/badge/Documentation-Docs-orange?style=for-the-badge&logo=wikipedia" alt="Documentation on the Wiki"></img>
-</a>
+![Status](https://img.shields.io/badge/Status-Beta-orange)
+![License](https://img.shields.io/badge/License-MPL%202.0-blue)
+![Core](https://img.shields.io/badge/Core-Java%2021-green)
+![Platforms](https://img.shields.io/badge/Platform-Velocity%20%7C%20Paper-lightgrey)
 
-AgarthaLogin is a modern authentication plugin for Minecraft servers that replaces traditional `/login <password>` commands with a **secure web-based authentication flow**. Players receive a one-time link in chat and authenticate through a sleek React interface—no more sending passwords in plain text over chat.
+AgarthaLogin acts as a modern alternative to traditional auth plugins, moving logins from the chat to the web. This enables advanced user experiences like **standard browser autofill**, **2FA**, and **future web integrations** such as OAuth and passwordless setups that works on all Velocity setups. You do not need
+
+> [!IMPORTANT]
+> AgarthaLogin prevents passwords from being compromised with [a proper HTTPS setup](./docs/EXPOSING_AUTH.md), but it **does not encrypt in-game connection** (TCP).
+>
+> *   **Just want encryption?**  
+>     Use [OfflineEncryptor](https://modrinth.com/plugin/offlineencryptor) with your existing auth plugin.
+> *   **Want better auth UX?**  
+>     Use AgarthaLogin (we recommend using it *alongside* [OfflineEncryptor](https://modrinth.com/plugin/offlineencryptor) for maximum security).
 
 > [!NOTE]
 > This project is a fork of [LibreLogin](https://github.com/kyngs/LibreLogin), heavily modified for production use and enhanced with web capabilities.
@@ -27,9 +35,9 @@ AgarthaLogin is a modern authentication plugin for Minecraft servers that replac
 - ✅ **Geyser/Floodgate** — [Bedrock support](https://github.com/Navio1430/LibreLoginProd/wiki/Floodgate)
 - ❌ **BungeeCord** — not supported
 
-## �️ Tech Stack
+## 📚️ Tech Stack
 
-**Backend**: Java 17+, Jetty (embedded web server)  
+**Backend**: Java 21, Jetty (embedded web server)  
 **Frontend**: Vite + React + TypeScript  
 **Database**: MySQL/MariaDB/PostgreSQL/SQLite
 
@@ -44,6 +52,8 @@ AgarthaLogin is a modern authentication plugin for Minecraft servers that replac
 
 ## 📦 Quick Start
 
+> **New to AgarthaLogin?** Check out the [Getting Started Guide](./docs/GETTING_STARTED.md).
+
 ```bash
 # Build
 ./gradlew shadowJar
@@ -54,20 +64,6 @@ AgarthaLogin is a modern authentication plugin for Minecraft servers that replac
 ```
 
 For containerized deployments, see `.compose/docker-compose.yaml`.
-
-## 📍 Roadmap
-
-- [x] Web-based authentication flow (Jetty + React)
-- [x] Session management and auto-login
-- [x] Admin panel with user management
-- [x] Premium/cracked registration flow with Mojang verification
-- [x] Frontend refactor — migrated to TypeScript, extracted common UI components
-- [ ] Support custom CSS
-- [ ] User settings panel (password change, premium/cracked toggle)
-- [ ] Two-Factor Authentication (TOTP)
-- [ ] Plugin rewrite (keeping only the important parts, fully independent from LibreLogin)
-- [ ] Decouple Jetty and Vite web stack from plugin
-
 ## 👥 Credits
 
 - **vuxeim** — Support for newest Minecraft versions
@@ -76,6 +72,3 @@ For containerized deployments, see `.compose/docker-compose.yaml`.
 ## 📄 License
 
 [Mozilla Public License 2.0](LICENSE)
-
----
-*Maintained by the Agartha Team.*

@@ -37,7 +37,7 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
   }
 
   return (
-    <div>
+    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
       <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>Login</h1>
       <p style={{ marginBottom: '1rem' }}>Welcome back, <b>{username}</b></p>
       {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
@@ -48,15 +48,16 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
           onChange={(e) => setPass(e.target.value)}
           placeholder="Password"
           icon={<KeyRound size={18} />}
+          autoFocus
         />
       </div>
       <Button
-        onClick={handleSubmit}
+        type="submit"
         loading={loading}
         fullWidth
       >
         {loading ? 'Logging in...' : 'Login'}
       </Button>
-    </div>
+    </form>
   )
 }

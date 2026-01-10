@@ -41,8 +41,9 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         unAuthorized = new ConcurrentHashMap<>();
         awaiting2FA = new ConcurrentHashMap<>();
 
-        var millis = plugin.getConfiguration()
-                .get(ConfigurationKeys.MILLISECONDS_TO_REFRESH_NOTIFICATION);
+        var millis =
+                plugin.getConfiguration()
+                        .get(ConfigurationKeys.MILLISECONDS_TO_REFRESH_NOTIFICATION);
 
         if (millis > 0) {
             plugin.repeat(this::notifyUnauthorized, 0, millis);
@@ -121,8 +122,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         plugin.cancelOnExit(
                 plugin.delay(
                         () -> {
-                            if (!unAuthorized.containsKey(player))
-                                return;
+                            if (!unAuthorized.containsKey(player)) return;
                             sendInfoMessage(user.isRegistered(), player);
                         },
                         250),
@@ -134,8 +134,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
             plugin.cancelOnExit(
                     plugin.delay(
                             () -> {
-                                if (!unAuthorized.containsKey(player))
-                                    return;
+                                if (!unAuthorized.containsKey(player)) return;
                                 platformHandle.kick(
                                         player, plugin.getMessages().getMessage("kick-time-limit"));
                             },
@@ -181,31 +180,37 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         // AgarthaLogin Web Auth Flow
         if (plugin.getWebServer() != null) {
             java.util.UUID uuid = platformHandle.getUUIDForPlayer(player);
-            xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type = !registered
-                    ? xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.REGISTER
-                    : xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.LOGIN;
+            xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type =
+                    !registered
+                            ? xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.REGISTER
+                            : xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.LOGIN;
 
             String token = plugin.getWebServer().getSessionManager().createToken(uuid, type);
-            String url = plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL)
-                    + "?token="
-                    + token;
+            String url =
+                    plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL)
+                            + "?token="
+                            + token;
 
-            Component link = Component.text(url)
-                    .color(net.kyori.adventure.text.format.NamedTextColor.BLUE)
-                    .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED)
-                    .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url));
+            Component link =
+                    Component.text(url)
+                            .color(net.kyori.adventure.text.format.NamedTextColor.BLUE)
+                            .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED)
+                            .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url));
 
-            Component message = Component.text("\nWelcome to Agartha!\n\n")
-                    .color(net.kyori.adventure.text.format.NamedTextColor.GOLD)
-                    .append(
-                            Component.text("Please authenticate using the link below:\n")
-                                    .color(
-                                            net.kyori.adventure.text.format.NamedTextColor.GRAY))
-                    .append(link)
-                    .append(
-                            Component.text("\n\nClick the link to open your browser.\n")
-                                    .color(
-                                            net.kyori.adventure.text.format.NamedTextColor.GRAY));
+            Component message =
+                    Component.text("\nWelcome to Agartha!\n\n")
+                            .color(net.kyori.adventure.text.format.NamedTextColor.GOLD)
+                            .append(
+                                    Component.text("Please authenticate using the link below:\n")
+                                            .color(
+                                                    net.kyori.adventure.text.format.NamedTextColor
+                                                            .GRAY))
+                            .append(link)
+                            .append(
+                                    Component.text("\n\nClick the link to open your browser.\n")
+                                            .color(
+                                                    net.kyori.adventure.text.format.NamedTextColor
+                                                            .GRAY));
 
             audience.sendMessage(message);
             return;
@@ -213,10 +218,10 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
 
         audience.sendMessage(
                 plugin.getMessages().getMessage(registered ? "prompt-login" : "prompt-register"));
-        if (!plugin.getConfiguration().get(ConfigurationKeys.USE_TITLES))
-            return;
-        var toRefresh = plugin.getConfiguration()
-                .get(ConfigurationKeys.MILLISECONDS_TO_REFRESH_NOTIFICATION);
+        if (!plugin.getConfiguration().get(ConfigurationKeys.USE_TITLES)) return;
+        var toRefresh =
+                plugin.getConfiguration()
+                        .get(ConfigurationKeys.MILLISECONDS_TO_REFRESH_NOTIFICATION);
         // noinspection UnstableApiUsage
         audience.showTitle(
                 Title.title(
@@ -235,8 +240,8 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
     }
 
     /**
-     * Unauthorize a player and send them back to limbo.
-     * Used when admin unregisters a user who is online.
+     * Unauthorize a player and send them back to limbo. Used when admin unregisters a user who is
+     * online.
      */
     public void unauthorize(P player) {
         if (!isAuthorized(player)) {
@@ -280,8 +285,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         wrong.forEach(unAuthorized::remove);
     }
 
-    public record EmailVerifyData(String email, String token, UUID uuid) {
-    }
+    public record EmailVerifyData(String email, String token, UUID uuid) {}
 
     public void beginTwoFactorAuth(User user, P player, TOTPData data) {
         awaiting2FA.put(player, data.secret());
@@ -297,8 +301,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                 .movePlayer(player, limbo)
                 .whenComplete(
                         (t, e) -> {
-                            if (t != null || e != null)
-                                awaiting2FA.remove(player);
+                            if (t != null || e != null) awaiting2FA.remove(player);
                         });
     }
 }

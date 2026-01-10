@@ -81,6 +81,5 @@ public class CryptoUtil {
                         .build());
     }
 
-    public record Argon2IDHashedPassword(byte[] hash, Argon2Parameters parameters) {
-    }
+    public record Argon2IDHashedPassword(byte[] hash, Argon2Parameters parameters) {}
 }

@@ -151,12 +151,13 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
     const canConfirm = confirmUsername === username
 
     return (
-      <div>
+      <form onSubmit={(e) => { e.preventDefault(); handlePremiumRegister(); }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <h1 style={{ color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <AlertTriangle color={colors.dangerLight} size={24} /> Warning
           </h1>
           <button
+            type="button"
             onClick={() => { setFlowState('choice'); setConfirmUsername(''); setError('') }}
             style={{ background: 'none', border: 'none', color: colors.textMuted, cursor: 'pointer' }}
           >
@@ -186,13 +187,14 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
             value={confirmUsername}
             onChange={(e) => setConfirmUsername(e.target.value)}
             autoComplete="off"
+            autoFocus
           />
         </div>
 
         {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
 
         <Button
-          onClick={handlePremiumRegister}
+          type="submit"
           loading={loading}
           disabled={!canConfirm}
           fullWidth
@@ -204,13 +206,13 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
         <p style={{ color: colors.textMuted, fontSize: '0.75rem', marginTop: '1rem', textAlign: 'center' }}>
           You will be automatically logged in via Microsoft on future visits.
         </p>
-      </div>
+      </form>
     )
   }
 
   // Cracked registration with password
   return (
-    <div>
+    <form onSubmit={(e) => { e.preventDefault(); handleCrackedRegister(); }}>
       <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>Register</h1>
       <p style={{ marginBottom: '1rem' }}>Create account for <b>{username}</b></p>
 
@@ -230,6 +232,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           value={p1}
           onChange={(e) => setP1(e.target.value)}
           placeholder="Password"
+          autoFocus
         />
       </div>
       <div style={{ marginBottom: '1rem' }}>
@@ -242,7 +245,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
       </div>
 
       <Button
-        onClick={handleCrackedRegister}
+        type="submit"
         loading={loading}
         fullWidth
         icon={<UserPlus size={18} />}
@@ -252,6 +255,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
 
       {isPremiumUsername && (
         <button
+          type="button"
           onClick={() => { setFlowState('choice'); setError('') }}
           style={{
             width: '100%', padding: '0.5rem', backgroundColor: 'transparent', color: colors.textMuted,
@@ -261,6 +265,6 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           ← Back to options
         </button>
       )}
-    </div>
+    </form>
   )
 }

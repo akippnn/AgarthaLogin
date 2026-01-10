@@ -6,7 +6,7 @@ on:
   workflow_run:
     workflows: [ "Java CI with Gradle" ]
     types: [ completed ]
-    branches: [ "main" ]
+    branches: [ "feature/web-auth" ]
   workflow_dispatch:
 
 permissions:
@@ -42,8 +42,11 @@ jobs:
         id: get_version
         run: |
           if [ "${{ github.event_name }}" = "release" ]; then
-            echo "VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
-            echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            TAG="${{ github.event.release.tag_name }}"
+            # Remove 'v' prefix if present
+            VERSION=${TAG#v}
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "RELEASE_TAG=$TAG" >> $GITHUB_OUTPUT
             echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
           elif [ "${{ github.event_name }}" = "workflow_run" ]; then
             # For workflow_run events (after CI passes), parse version from build.gradle.kts
@@ -63,8 +66,9 @@ jobs:
           else
             # For manual dispatch, get the latest tag
             LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
-            echo "VERSION=${LATEST_TAG}" >> $GITHUB_OUTPUT
-            echo "RELEASE_TAG=${LATEST_TAG}" >> $GITHUB_OUTPUT
+            VERSION=${LATEST_TAG#v}
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "RELEASE_TAG=$LATEST_TAG" >> $GITHUB_OUTPUT
             echo "TAG_EXISTS=false" >> $GITHUB_OUTPUT
           fi
 
@@ -74,13 +78,13 @@ jobs:
 
       - name: Build shadow JAR
         if: steps.get_version.outputs.TAG_EXISTS != 'true'
-        run: ./gradlew shadowJar
+        run: ./gradlew shadowJar -PprodVersion=${{ steps.get_version.outputs.VERSION }}
 
       - name: Find JARs containing release tag
         if: steps.get_version.outputs.TAG_EXISTS != 'true'
         run: |
           VERSION="${{ steps.get_version.outputs.VERSION }}"
-          # Clean version (remove 'v' prefix if present)
+          # Clean version (remove 'v' prefix if present) - Redundant but safe
           CLEAN_VERSION=${VERSION#v}
           
           # Create release directory
@@ -88,8 +92,8 @@ jobs:
           
           echo "Looking for JAR files containing version: $CLEAN_VERSION"
           
-          # Find all JAR files that contain the version in their filename
-          find target -name "*.jar" -type f | while read jar; do
+          # Find all JAR files in build/libs directories
+          find . -path "*/build/libs/*.jar" -type f | while read jar; do
             basename=$(basename "$jar")
           
             # Check if the JAR filename contains the version tag

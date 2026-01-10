@@ -1,63 +1,221 @@
-
 services:
-  postgres:
-    image: postgres:15
+  config-injector:
+    image: alpine:latest
+    container_name: config-setup
+    restart: "no"
+    volumes:
+      - proxy-data:/proxy
+      - backend-data:/backend
+      - limbo-data:/limbo
+      - ../target:/source:ro
+    command: |
+      /bin/sh -c '
+      echo "--> Starting Config Injection..."
+
+      # --- Forwarding Secret ---
+      echo "my-secure-secret" > /proxy/forwarding.secret
+
+      # --- Velocity Config ---
+      echo "--> Configuring Velocity..."
+      cat > /proxy/velocity.toml << "VELOCITY_EOF"
+      config-version = "2.7"
+      bind = "0.0.0.0:25565"
+      motd = "<#09add3>A Velocity Server"
+      show-max-players = 500
+      online-mode = false
+      force-key-authentication = false
+      prevent-client-proxy-connections = false
+      player-info-forwarding-mode = "MODERN"
+      forwarding-secret-file = "forwarding.secret"
+      announce-forge = false
+      kick-existing-players = false
+      ping-passthrough = "DISABLED"
+      enable-player-address-logging = true
+
+      [servers]
+      limbo = "limbo:25565"
+      main = "backend:25565"
+      try = ["limbo", "main"]
+
+      [forced-hosts]
+
+      [advanced]
+      compression-threshold = 256
+      compression-level = -1
+      login-ratelimit = 3000
+      connection-timeout = 5000
+      read-timeout = 30000
+      haproxy-protocol = false
+      tcp-fast-open = false
+      bungee-plugin-message-channel = true
+      show-ping-requests = false
+      failover-on-unexpected-server-disconnect = true
+      announce-proxy-commands = true
+      log-command-executions = false
+      log-player-connections = true
+      accepts-transfers = false
+
+      [query]
+      enabled = false
+      port = 25577
+      map = "Velocity"
+      show-plugins = false
+      VELOCITY_EOF
+
+      # --- AgarthaLogin Config ---
+      echo "--> Configuring AgarthaLogin..."
+      mkdir -p /proxy/plugins/librelogin
+      cat > /proxy/plugins/librelogin/config.conf << "AGARTHA_EOF"
+      database {
+          type = "MARIADB"
+          host = "db"
+          port = 3306
+          database = "librelogin"
+          username = "admin"
+          password = "password"
+      }
+
+      web-server {
+          enabled = true
+          port = 8080
+          public-url = "http://localhost:8080"
+      }
+
+      redis {
+          enabled = false
+      }
+
+      limbo = [
+          "limbo"
+      ]
+
+      lobby {
+          root = [
+              "main"
+          ]
+      }
+      AGARTHA_EOF
+
+      # --- Backend Patch (Paper velocity forwarding) ---
+      echo "--> Creating backend patch..."
+      mkdir -p /backend/patches
+      cat > /backend/patches/velocity.json << "PATCH_EOF"
+      {
+        "patches": [
+          {
+            "file": "/data/config/paper-global.yml",
+            "ops": [
+              { "$set": { "path": "$.proxies.velocity.enabled", "value": true, "value-type": "bool" } },
+              { "$set": { "path": "$.proxies.velocity.online-mode", "value": false, "value-type": "bool" } },
+              { "$set": { "path": "$.proxies.velocity.secret", "value": "my-secure-secret" } }
+            ]
+          }
+        ]
+      }
+      PATCH_EOF
+
+      # --- Limbo Patch (NanoLimbo forwarding) ---
+      echo "--> Creating limbo patch..."
+      mkdir -p /limbo/patches
+      cat > /limbo/patches/forwarding.json << "PATCH_EOF"
+      {
+        "patches": [
+          {
+            "file": "/data/settings.yml",
+            "ops": [
+              { "$set": { "path": "$.infoForwarding.type", "value": "MODERN" } },
+              { "$set": { "path": "$.infoForwarding.secret", "value": "my-secure-secret" } }
+            ]
+          }
+        ]
+      }
+      PATCH_EOF
+
+      # --- Install AgarthaLogin Plugin ---
+      echo "--> Installing AgarthaLogin..."
+      LATEST_JAR=$(ls -t /source/AgarthaLogin-*.jar 2>/dev/null | head -1)
+      if [ -n "$LATEST_JAR" ]; then
+        cp "$LATEST_JAR" /proxy/plugins/AgarthaLogin.jar
+        chmod 644 /proxy/plugins/AgarthaLogin.jar
+        echo "Installed: $LATEST_JAR"
+      else
+        echo "WARNING: No AgarthaLogin JAR found in /source"
+      fi
+
+      echo "--> Configuration Injection Complete."
+      '
+
+  db:
+    image: mariadb:10.11
+    container_name: agartha-db
     restart: unless-stopped
-    ports:
-      - "5432:5432"
     environment:
-      - POSTGRES_USER=postgresuser
-      - POSTGRES_PASSWORD=postgrespass
-      - POSTGRES_DB=default
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_DATABASE: "librelogin"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "password"
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data
-    dns:
-      - 8.8.8.8
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "healthcheck.sh", "--connect", "--innodb_initialized" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  limbo1:
-    hostname: limbo1
-    image: itzg/minecraft-server
+  proxy:
+    image: itzg/mc-proxy:latest
+    container_name: velocity-proxy
+    restart: always
     ports:
-      - "25550:65535"
-    environment:
-      - EULA=TRUE
-      - TYPE=CUSTOM
-      - CUSTOM_SERVER=https://github.com/BoomEaro/NanoLimbo/releases/download/1.9.6/NanoLimbo-1.9.6-all.jar
-    volumes:
-      - ./data/limbo:/data/
-
-  paper1:
-    hostname: paper1
-    image: itzg/minecraft-server
-    ports:
-      - "25566:25565"
-      - "5066:5005"
-    environment:
-      - EULA=TRUE
-      - TYPE=PAPER
-      - VERSION=1.21.7
-      - ONLINE_MODE=FALSE
-      - MODRINTH_PROJECTS=luckperms:beta,viaversion:beta,viabackwards:beta
-      - JVM_OPTS=-Dlog4j.configurationFile=log4j2.xml
-      - JVM_XX_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
-    volumes:
-      - ./data/paper:/data/
-
-  velocity1:
-    hostname: velocity1
-    image: itzg/mc-proxy
-    ports:
-      - "25568:25565"
-    environment:
-      - TYPE=VELOCITY
-      - VELOCITY_VERSION=latest
-      - MINECRAFT_VERSION=1.21.5
-    volumes:
-      - ./data/proxy:/server
+      - "25565:25565"
+      - "8080:8080"
     depends_on:
-      - limbo1
-      - postgres
+      config-injector:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    environment:
+      TYPE: "VELOCITY"
+      MINECRAFT_VERSION: "1.21.1"
+      MODRINTH_PROJECTS: luckperms
+    volumes:
+      - proxy-data:/server
 
-networks:
-  default:
-    driver: bridge
+  limbo:
+    image: itzg/minecraft-server:java21
+    container_name: limbo-server
+    restart: always
+    environment:
+      TYPE: "NANOLIMBO"
+      MINECRAFT_VERSION: "1.21.1"
+      EULA: "TRUE"
+      PATCHES: "/data/patches"
+    volumes:
+      - limbo-data:/data
+    depends_on:
+      config-injector:
+        condition: service_completed_successfully
+
+  backend:
+    image: itzg/minecraft-server:java21-alpine
+    container_name: backend-server
+    restart: always
+    environment:
+      TYPE: "PURPUR"
+      MINECRAFT_VERSION: "1.21.1"
+      EULA: "TRUE"
+      ONLINE_MODE: "FALSE"
+      OPS: "akippnn"
+      MODRINTH_PROJECTS: luckperms
+      PATCHES: "/data/patches"
+    volumes:
+      - backend-data:/data
+    depends_on:
+      config-injector:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:
+  proxy-data:
+  limbo-data:
+  backend-data:

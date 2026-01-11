@@ -5,7 +5,13 @@
 ![Core](https://img.shields.io/badge/Core-Java%2021-green)
 ![Platforms](https://img.shields.io/badge/Platform-Velocity%20%7C%20Paper-lightgrey)
 
-AgarthaLogin acts as a modern alternative to traditional auth plugins, moving logins from the chat to the web. This enables advanced user experiences like **standard browser autofill**, **2FA**, and **future web integrations** such as OAuth and passwordless setups that works on all Velocity setups. You do not need
+AgarthaLogin is a **high-performance, secure authentication system** designed for modern Minecraft networks. It replaces legacy in-game commands `/login` with a secure, web-based authentication flow. It is the most "production-ready" auth plugin available for Velocity servers.
+
+Built for **scalability** and **production deployments**, it features:
+*   **Zero-Impact Scalability**: Offloads unauthenticated players to a lightweight "Limbo" server, protecting your main backend from bot attacks and login waves.
+*   **Modern Cryptography**: Uses **Argon2ID** hashing and supports **TOTP 2FA** native integration.
+*   **Seamless UX**: Offers **browser autofill**, passwordless flows, and native **Geyser/Floodgate** support for Bedrock players.
+*   **Universal Compatibility**: Runs on **Velocity** proxies with support for multi-proxy synchronization via **Redis**.
 
 > [!IMPORTANT]
 > AgarthaLogin prevents passwords from being compromised with [a proper HTTPS setup](./docs/EXPOSING_AUTH.md), but it **does not encrypt in-game connection** (TCP).
@@ -67,7 +73,7 @@ For containerized deployments, see `.compose/docker-compose.yaml`.
 ## 👥 Credits
 
 - **vuxeim** — Support for newest Minecraft versions
-- **LibreLogin creators** — Original base plugin
+- **LibreLogin creators** — Original base plugin ([LibreLogin](https://github.com/kyngs/LibreLogin)).
 
 ## 📄 License
 

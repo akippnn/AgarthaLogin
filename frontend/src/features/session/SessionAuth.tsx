@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ShieldCheck, LogOut } from 'lucide-react'
-import { Button } from './ui'
-import { colors } from './ui/styles'
+import { Button } from '../../components/ui'
+import { colors } from '../../components/ui/styles'
 
 import { useTranslation } from 'react-i18next';
 

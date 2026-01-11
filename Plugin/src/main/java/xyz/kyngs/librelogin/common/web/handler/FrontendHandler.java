@@ -58,8 +58,13 @@ public class FrontendHandler extends HttpServlet {
         if (path == null) return null;
 
         // Defaulting logic
-        if (path.equals("/") || !path.contains(".")) {
-            return "/index.html";
+        if (path.equals("/") || path.equals("/login")) return "/login.html";
+        if (path.equals("/register")) return "/register.html";
+        if (path.equals("/sessionauth")) return "/sessionauth.html";
+        if (path.equals("/admin")) return "/admin.html";
+
+        if (!path.contains(".")) {
+            return "/login.html";
         }
 
         // Validation: Reject ".." (parent directory), "\" (windows separator), and NUL

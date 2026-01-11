@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { UserPlus, AlertTriangle, Crown, User, X } from 'lucide-react'
-import { Button, Input } from './ui'
-import { colors } from './ui/styles'
-import type { RegisterResponse, CheckPremiumResponse } from '../types'
+import { Button, Input } from '../../components/ui'
+import { colors } from '../../components/ui/styles'
+import type { RegisterResponse, CheckPremiumResponse } from '../../lib/types'
 import { useTranslation } from 'react-i18next';
 
 type FlowState = 'loading' | 'choice' | 'premium-confirm' | 'cracked-register';

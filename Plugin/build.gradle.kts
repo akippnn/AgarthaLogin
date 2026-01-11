@@ -200,7 +200,10 @@ val buildFrontend by tasks.registering(Exec::class) {
 
     inputs.dir(frontendDir.resolve("src"))
     inputs.dir(frontendDir.resolve("public"))
-    inputs.file(frontendDir.resolve("index.html"))
+    inputs.file(frontendDir.resolve("login.html"))
+    inputs.file(frontendDir.resolve("register.html"))
+    inputs.file(frontendDir.resolve("sessionauth.html"))
+    inputs.file(frontendDir.resolve("admin.html"))
     inputs.file(frontendDir.resolve("vite.config.ts"))
     outputs.dir(frontendDir.resolve("dist"))
 }

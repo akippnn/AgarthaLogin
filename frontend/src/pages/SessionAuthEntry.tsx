@@ -1,20 +1,21 @@
+import React from 'react'
+import ReactDOM from 'react-dom/client'
 import { useEffect, useState } from 'react'
 import { Loader2 } from 'lucide-react'
-import Login from './components/Login'
-import Register from './components/Register'
-import SessionAuth from './components/SessionAuth'
-import Admin from './components/Admin'
-import Authorized from './components/Authorized'
-import type { ViewState, TokenInfo, SessionUser } from './types'
-import { colors } from './components/ui/styles'
+import SessionAuth from '../features/session/SessionAuth'
+import Authorized from '../components/Authorized'
+import { colors } from '../components/ui/styles'
+import { TokenInfo, SessionUser } from '../lib/types'
+import '../lib/i18n'
+import '../index.css'
 
-function App() {
-  const [view, setView] = useState<ViewState>('loading')
-  const [token, setToken] = useState<string | null>(null)
-  const [error, setError] = useState('')
+export default function SessionAuthEntry() {
+  const [view, setView] = useState<'loading' | 'prompt' | 'authorized' | 'error'>('loading')
+  const [token, setToken] = useState<string>('')
   const [tokenInfo, setTokenInfo] = useState<TokenInfo | null>(null)
   const [sessionUser, setSessionUser] = useState<SessionUser | null>(null)
   const [sessionId, setSessionId] = useState<string | null>(localStorage.getItem('session_id'))
+  const [error, setError] = useState('')
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -25,10 +26,10 @@ function App() {
       return
     }
     setToken(t)
-    checkToken(t)
+    checkTokenAndSession(t)
   }, [])
 
-  const checkToken = async (t: string) => {
+  const checkTokenAndSession = async (t: string) => {
     try {
       const res = await fetch('/api/check-token', {
         method: 'POST',
@@ -37,15 +38,13 @@ function App() {
       const data = await res.json()
 
       if (!res.ok) throw new Error(data.error || "Invalid Token")
-
       setTokenInfo(data)
 
       if (data.type === 'ADMIN_ACCESS') {
-        setView('admin')
+        window.location.href = `/admin.html?token=${t}`
         return
       }
 
-      // Check Session
       if (sessionId) {
         const userRes = await fetch('/api/user', { headers: { 'X-Session-ID': sessionId } })
         if (userRes.ok) {
@@ -56,14 +55,13 @@ function App() {
             return
           }
         }
-        // Invalid session or mismatch
-        localStorage.removeItem('session_id')
-        setSessionId(null)
       }
 
-      // Default Flow
-      if (data.type === 'LOGIN') setView('login')
-      else setView('register')
+      // Session invalid or mismatch
+      localStorage.removeItem('session_id')
+      if (data.type === 'LOGIN') window.location.href = `/login.html?token=${t}`
+      else if (data.type === 'REGISTER') window.location.href = `/register.html?token=${t}`
+      else setView('error');
 
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
@@ -79,17 +77,11 @@ function App() {
     setView('authorized')
   }
 
-  // Admin panel uses full width
-  if (view === 'admin') {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        backgroundColor: colors.bgDark,
-        color: colors.textPrimary
-      }}>
-        <Admin token={token!} onSuccess={() => { }} />
-      </div>
-    )
+  const onLogout = () => {
+    localStorage.removeItem('session_id')
+    if (tokenInfo?.type === 'LOGIN') window.location.href = `/login.html?token=${token}`
+    else if (tokenInfo?.type === 'REGISTER') window.location.href = `/register.html?token=${token}`
+    else window.location.href = '/'
   }
 
   return (
@@ -103,14 +95,15 @@ function App() {
       }}>
         {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
         {view === 'error' && <div style={{ color: colors.error, background: 'rgba(255,107,107,0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}
-
-        {view === 'login' && <Login token={token!} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
-        {view === 'register' && <Register token={token!} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
-        {view === 'prompt' && <SessionAuth token={token!} sessionId={sessionId!} username={sessionUser?.username ?? ''} onSuccess={onAuthorized} onLogout={() => { localStorage.removeItem('session_id'); location.reload() }} />}
+        {view === 'prompt' && <SessionAuth token={token} sessionId={sessionId!} username={sessionUser?.username ?? ''} onSuccess={onAuthorized} onLogout={onLogout} />}
         {view === 'authorized' && <Authorized />}
       </div>
     </div>
   )
 }
 
-export default App
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <SessionAuthEntry />
+  </React.StrictMode>,
+)

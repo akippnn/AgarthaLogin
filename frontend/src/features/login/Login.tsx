@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { KeyRound } from 'lucide-react'
-import { Button, Input } from './ui'
-import { colors } from './ui/styles'
-import type { LoginResponse } from '../types'
+import { Button, Input } from '../../components/ui'
+import { colors } from '../../components/ui/styles'
+import type { LoginResponse } from '../../lib/types'
 import { useTranslation } from 'react-i18next';
 
 interface LoginProps {

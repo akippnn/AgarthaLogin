@@ -106,7 +106,7 @@ dependencies {
 
     //MySQL
     libby("org.mariadb.jdbc:mariadb-java-client:3.5.4")
-    libby("com.zaxxer:HikariCP:6.3.2")
+    libby("com.zaxxer:HikariCP:7.0.2")
 
     //SQLite
     libby("org.xerial:sqlite-jdbc:3.50.3.0")
@@ -119,7 +119,7 @@ dependencies {
     libby("com.github.kyngs.commands:acf-paper:7d5bf7cac0")
 
     //Utils
-    libby("com.github.ben-manes.caffeine:caffeine:3.2.2")
+    libby("com.github.ben-manes.caffeine:caffeine:3.2.3")
     libby("org.spongepowered:configurate-hocon:4.2.0")
     libby("at.favre.lib:bcrypt:0.10.2")
     libby("dev.samstevens.totp:totp:1.7.1")
@@ -141,7 +141,7 @@ dependencies {
     //Paper
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     implementation("com.github.retrooper:packetevents-spigot:2.11.0")
-    compileOnly("org.apache.logging.log4j:log4j-core:2.25.1")
+    compileOnly("org.apache.logging.log4j:log4j-core:2.25.3")
 
     //Jetty
     implementation("org.eclipse.jetty:jetty-server:11.0.20")
@@ -154,6 +154,14 @@ dependencies {
     implementation("xyz.kyngs.libby:libby-paper:1.6.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+}
+
+
+
+configurations.all {
+    resolutionStrategy {
+        force("org.yaml:snakeyaml:2.2")
+    }
 }
 
 tasks.test {

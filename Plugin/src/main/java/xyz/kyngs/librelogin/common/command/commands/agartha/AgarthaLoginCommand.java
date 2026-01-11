@@ -44,8 +44,10 @@ public class AgarthaLoginCommand<P> extends Command<P> {
         String token = plugin.getWebServer().getSessionManager().createAdminToken();
         String url = plugin.getConfiguration().get(WEB_PUBLIC_URL) + "?token=" + token;
 
+        java.util.Locale locale = plugin.getPlatformHandle().getLocale(player);
         Component message =
-                Component.text("Click here to access the admin panel.", NamedTextColor.GOLD)
+                plugin.getMessages()
+                        .getMessage("Click here to access the admin panel.", locale)
                         .clickEvent(ClickEvent.openUrl(url));
 
         plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(message);
@@ -70,10 +72,16 @@ public class AgarthaLoginCommand<P> extends Command<P> {
         Runnable action = plugin.getWebServer().getSessionManager().getAndRemoveAdminAction(code);
         if (action != null) {
             action.run();
+            // I18n: Use locale
+            java.util.Locale locale = plugin.getPlatformHandle().getLocale(player);
             plugin.getPlatformHandle()
                     .getAudienceForPlayer(player)
                     .sendMessage(
-                            Component.text("Action executed successfully.", NamedTextColor.GREEN));
+                            plugin.getMessages()
+                                    .getMessage(
+                                            "Authenticated successfully, proceed to the Admin"
+                                                    + " panel.",
+                                            locale));
         } else {
             plugin.getPlatformHandle()
                     .getAudienceForPlayer(player)
@@ -104,7 +112,10 @@ public class AgarthaLoginCommand<P> extends Command<P> {
                         ? plugin.getPlatformHandle().getAudienceForPlayer(player)
                         : plugin.getAudienceFromIssuer(issuer);
 
-        audience.sendMessage(Component.text("Reloading configuration...", NamedTextColor.YELLOW));
+        java.util.Locale locale =
+                player != null ? plugin.getPlatformHandle().getLocale(player) : java.util.Locale.US;
+
+        audience.sendMessage(plugin.getMessages().getMessage("Reloading configuration...", locale));
 
         try {
             plugin.getConfiguration().reload(plugin);
@@ -137,8 +148,9 @@ public class AgarthaLoginCommand<P> extends Command<P> {
                                 .get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.WEB_PORT);
                 plugin.getWebServer().start();
                 audience.sendMessage(
-                        Component.text(
-                                "Web server restarted on port " + port, NamedTextColor.GREEN));
+                        plugin.getMessages()
+                                .getMessage("Web server restarted on port ", locale)
+                                .append(Component.text(port)));
             } catch (Exception e) {
                 audience.sendMessage(
                         Component.text(

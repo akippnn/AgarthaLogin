@@ -192,12 +192,14 @@ val installFrontend by tasks.registering(Exec::class) {
 
 val buildFrontend by tasks.registering(Exec::class) {
     dependsOn(installFrontend)
+    dependsOn(rootProject.tasks.named("generateLocales"))
     workingDir = frontendDir
     val isWindows = System.getProperty("os.name").lowercase().contains("windows")
     val npmCommand = if (isWindows) "npm.cmd" else "npm"
     commandLine(npmCommand, "run", "build")
 
     inputs.dir(frontendDir.resolve("src"))
+    inputs.dir(frontendDir.resolve("public"))
     inputs.file(frontendDir.resolve("index.html"))
     inputs.file(frontendDir.resolve("vite.config.ts"))
     outputs.dir(frontendDir.resolve("dist"))
@@ -216,8 +218,10 @@ val copyFrontend by tasks.registering(Copy::class) {
 
 tasks.processResources {
     dependsOn(copyFrontend)
+    dependsOn(rootProject.tasks.named("generateLocales"))
 }
 
 tasks.matching { it.name.endsWith("LicenseMain") }.configureEach {
     dependsOn(copyFrontend)
+    dependsOn(rootProject.tasks.named("generateLocales"))
 }

@@ -186,10 +186,15 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                             : xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.LOGIN;
 
             String token = plugin.getWebServer().getSessionManager().createToken(uuid, type);
+            // I18n: Pass player's locale to the frontend
+            java.util.Locale playerLocale = platformHandle.getLocale(player);
+            String locale = playerLocale.toLanguageTag();
             String url =
                     plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL)
                             + "?token="
-                            + token;
+                            + token
+                            + "&lang="
+                            + locale;
 
             Component link =
                     Component.text(url)
@@ -197,20 +202,47 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                             .decorate(net.kyori.adventure.text.format.TextDecoration.UNDERLINED)
                             .clickEvent(net.kyori.adventure.text.event.ClickEvent.openUrl(url));
 
+            // Credits Link
+            Component credits =
+                    plugin.getMessages()
+                            .getMessage("This server is powered by", playerLocale)
+                            .append(
+                                    Component.text("AgarthaLogin")
+                                            .color(
+                                                    net.kyori.adventure.text.format.NamedTextColor
+                                                            .BLUE)
+                                            .decorate(
+                                                    net.kyori.adventure.text.format.TextDecoration
+                                                            .UNDERLINED)
+                                            .clickEvent(
+                                                    net.kyori.adventure.text.event.ClickEvent
+                                                            .openUrl(
+                                                                    "https://github.com/akippnn/AgarthaLogin/")));
+
+            Component promptMsg =
+                    plugin.getMessages()
+                            .getMessage("Please authenticate using the link below:", playerLocale);
+            if (promptMsg == null) {
+                promptMsg =
+                        Component.text("Please authenticate using the link below:")
+                                .color(net.kyori.adventure.text.format.NamedTextColor.GRAY);
+            }
+
+            // Minecraft chat window height is 20 lines
             Component message =
-                    Component.text("\nWelcome to Agartha!\n\n")
-                            .color(net.kyori.adventure.text.format.NamedTextColor.GOLD)
-                            .append(
-                                    Component.text("Please authenticate using the link below:\n")
-                                            .color(
-                                                    net.kyori.adventure.text.format.NamedTextColor
-                                                            .GRAY))
+                    Component.text("\n".repeat(13))
+                            .append(credits)
+                            .append(Component.newline())
+                            .append(promptMsg)
+                            .append(Component.newline())
                             .append(link)
+                            .append(Component.newline())
                             .append(
-                                    Component.text("\n\nClick the link to open your browser.\n")
-                                            .color(
-                                                    net.kyori.adventure.text.format.NamedTextColor
-                                                            .GRAY));
+                                    plugin.getMessages()
+                                            .getMessage(
+                                                    "Click the link to open your browser.",
+                                                    playerLocale))
+                            .append(Component.newline());
 
             audience.sendMessage(message);
             return;

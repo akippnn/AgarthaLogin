@@ -1,0 +1,163 @@
+msgid ""
+msgstr ""
+"Language: en\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Successfully logged in!"
+msgstr "Successfully logged in!"
+
+
+
+# Backend - AuthenticAuthorizationProvider
+msgid "This server is powered by"
+msgstr "This server is powered by"
+
+msgid "Click the link to open your browser."
+msgstr "Click the link to open your browser."
+
+msgid "Please authenticate using the link below:"
+msgstr "Please authenticate using the link below:"
+
+# Backend - AgarthaLoginCommand
+msgid "Click here to access the admin panel."
+msgstr "Click here to access the admin panel."
+
+msgid "Action executed successfully."
+msgstr "Action executed successfully."
+
+msgid "Authenticated successfully, proceed to the Admin panel."
+msgstr "Authenticated successfully, proceed to the Admin panel."
+
+msgid "Reloading configuration..."
+msgstr "Reloading configuration..."
+
+msgid "Web server restarted on port "
+msgstr "Web server restarted on port "
+
+# Frontend - Authorized
+msgid "Success!"
+msgstr "Success!"
+
+msgid "You have been authorized in-game."
+msgstr "You have been authorized in-game."
+
+msgid "You may now close this window."
+msgstr "You may now close this window."
+
+# Frontend - Login
+msgid "Login"
+msgstr "Login"
+
+msgid "Welcome back,"
+msgstr "Welcome back,"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "Logging in..."
+msgstr "Logging in..."
+
+msgid "Login failed"
+msgstr "Login failed"
+
+# Frontend - Register
+msgid "Register"
+msgstr "Register"
+
+msgid "Checking username..."
+msgstr "Checking username..."
+
+msgid "Create account for"
+msgstr "Create account for"
+
+msgid "This is a Premium Username"
+msgstr "This is a Premium Username"
+
+msgid "The username"
+msgstr "The username"
+
+msgid "is registered with Mojang/Microsoft."
+msgstr "is registered with Mojang/Microsoft."
+
+msgid "Do you own this Minecraft account?"
+msgstr "Do you own this Minecraft account?"
+
+msgid "I own this account"
+msgstr "I own this account"
+
+msgid "I do not own this account"
+msgstr "I do not own this account"
+
+msgid "Warning"
+msgstr "Warning"
+
+msgid "If you do not own this Minecraft account, you will NOT be able to access this server."
+msgstr "If you do not own this Minecraft account, you will NOT be able to access this server."
+
+msgid "Premium accounts authenticate automatically via Microsoft. If this is not your account,"
+msgstr "Premium accounts authenticate automatically via Microsoft. If this is not your account,"
+
+msgid "you will be locked out when the real owner logs in."
+msgstr "you will be locked out when the real owner logs in."
+
+msgid "If you have made a mistake, close this window and select \"I do not own this account\"."
+msgstr "If you have made a mistake, close this window and select \"I do not own this account\"."
+
+msgid "Type your username"
+msgstr "Type your username"
+
+msgid "below to confirm:"
+msgstr "below to confirm:"
+
+msgid "Username doesn't match"
+msgstr "Username doesn't match"
+
+msgid "Registering..."
+msgstr "Registering..."
+
+msgid "Register as Premium"
+msgstr "Register as Premium"
+
+msgid "You will be automatically logged in via Microsoft on future visits."
+msgstr "You will be automatically logged in via Microsoft on future visits."
+
+msgid "Registering with password. You will need to log in manually each time."
+msgstr "Registering with password. You will need to log in manually each time."
+
+msgid "Confirm Password"
+msgstr "Confirm Password"
+
+msgid "Passwords do not match"
+msgstr "Passwords do not match"
+
+msgid "Password is required"
+msgstr "Password is required"
+
+msgid "Registration failed"
+msgstr "Registration failed"
+
+msgid "← Back to options"
+msgstr "← Back to options"
+
+# Frontend - SessionAuth
+msgid "Welcome Back!"
+msgstr "Welcome Back!"
+
+msgid "You are logged in as"
+msgstr "You are logged in as"
+
+msgid "Do you want to authorize this game session?"
+msgstr "Do you want to authorize this game session?"
+
+msgid "Authorizing..."
+msgstr "Authorizing..."
+
+msgid "Yes, Authorize Game"
+msgstr "Yes, Authorize Game"
+
+msgid "No, Logout"
+msgstr "No, Logout"
+
+msgid "Authorization failed"
+msgstr "Authorization failed"

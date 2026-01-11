@@ -13,6 +13,7 @@ import com.google.common.base.MoreObjects;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.audience.Audience;
@@ -28,6 +29,11 @@ public class PaperPlatformHandle implements PlatformHandle<Player, World> {
 
     public PaperPlatformHandle(PaperLibreLogin plugin) {
         this.plugin = plugin;
+    }
+
+    @Override
+    public Locale getLocale(Player player) {
+        return player.locale();
     }
 
     @Override

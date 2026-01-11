@@ -11,6 +11,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +27,11 @@ public class VelocityPlatformHandle implements PlatformHandle<Player, Registered
 
     public VelocityPlatformHandle(VelocityLibreLogin plugin) {
         this.plugin = plugin;
+    }
+
+    @Override
+    public Locale getLocale(Player player) {
+        return player.getEffectiveLocale();
     }
 
     @Override

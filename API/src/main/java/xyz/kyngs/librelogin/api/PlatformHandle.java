@@ -8,6 +8,7 @@ package xyz.kyngs.librelogin.api;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.kyori.adventure.audience.Audience;
@@ -21,6 +22,14 @@ import xyz.kyngs.librelogin.api.server.ServerPing;
  * @param <S> Server Type
  */
 public interface PlatformHandle<P, S> {
+
+    /**
+     * Retrieves the locale of the specified player.
+     *
+     * @param player the player object for which to retrieve the locale
+     * @return the locale of the player
+     */
+    Locale getLocale(P player);
 
     /**
      * Retrieves the player object associated with the given UUID.

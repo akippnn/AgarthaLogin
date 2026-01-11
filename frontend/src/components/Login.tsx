@@ -3,6 +3,7 @@ import { KeyRound } from 'lucide-react'
 import { Button, Input } from './ui'
 import { colors } from './ui/styles'
 import type { LoginResponse } from '../types'
+import { useTranslation } from 'react-i18next';
 
 interface LoginProps {
   token: string;
@@ -11,6 +12,7 @@ interface LoginProps {
 }
 
 export default function Login({ token, username, onSuccess }: LoginProps) {
+  const { t } = useTranslation();
   const [pass, setPass] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -27,7 +29,7 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
       if (res.ok && data.success) {
         onSuccess(data.sessionId ?? null)
       } else {
-        throw new Error(data.error || "Login failed")
+        throw new Error(data.error || t("Login failed"))
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
@@ -38,15 +40,15 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-      <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>Login</h1>
-      <p style={{ marginBottom: '1rem' }}>Welcome back, <b>{username}</b></p>
+      <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>{t("Login")}</h1>
+      <p style={{ marginBottom: '1rem' }}>{t("Welcome back,")} <b>{username}</b></p>
       {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
       <div style={{ marginBottom: '1rem' }}>
         <Input
           type="password"
           value={pass}
           onChange={(e) => setPass(e.target.value)}
-          placeholder="Password"
+          placeholder={t("Password")}
           icon={<KeyRound size={18} />}
           autoFocus
         />
@@ -56,7 +58,7 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
         loading={loading}
         fullWidth
       >
-        {loading ? 'Logging in...' : 'Login'}
+        {loading ? t("Logging in...") : t("Login")}
       </Button>
     </form>
   )

@@ -7,6 +7,7 @@
 package xyz.kyngs.librelogin.api.configuration;
 
 import java.io.IOException;
+import java.util.Locale;
 import net.kyori.adventure.text.TextComponent;
 import xyz.kyngs.librelogin.api.LibreLoginPlugin;
 
@@ -18,13 +19,23 @@ import xyz.kyngs.librelogin.api.LibreLoginPlugin;
 public interface Messages {
 
     /**
-     * Gets the message with the given key.
+     * Gets the message with the given key using the default locale.
      *
      * @param key The message key.
      * @param replacements Allows you to replace the placeholders in the message.
      * @return The message, or null if the message does not exist.
      */
     TextComponent getMessage(String key, String... replacements);
+
+    /**
+     * Gets the message with the given key for a specific locale.
+     *
+     * @param key The message key.
+     * @param locale The target locale.
+     * @param replacements Allows you to replace the placeholders in the message.
+     * @return The message, or null if the message does not exist.
+     */
+    TextComponent getMessage(String key, Locale locale, String... replacements);
 
     /**
      * Tells if a message should be treated as empty.

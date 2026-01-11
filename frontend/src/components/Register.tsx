@@ -3,6 +3,7 @@ import { UserPlus, AlertTriangle, Crown, User, X } from 'lucide-react'
 import { Button, Input } from './ui'
 import { colors } from './ui/styles'
 import type { RegisterResponse, CheckPremiumResponse } from '../types'
+import { useTranslation } from 'react-i18next';
 
 type FlowState = 'loading' | 'choice' | 'premium-confirm' | 'cracked-register';
 
@@ -13,6 +14,7 @@ interface RegisterProps {
 }
 
 export default function Register({ token, username, onSuccess }: RegisterProps) {
+  const { t } = useTranslation();
   const [p1, setP1] = useState('')
   const [p2, setP2] = useState('')
   const [error, setError] = useState('')
@@ -45,7 +47,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
 
   const handlePremiumRegister = async () => {
     if (confirmUsername !== username) {
-      setError("Username doesn't match")
+      setError(t("Username doesn't match"))
       return
     }
 
@@ -61,7 +63,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
       if (res.ok && data.success) {
         onSuccess(data.sessionId ?? null)
       } else {
-        throw new Error(data.error || "Registration failed")
+        throw new Error(data.error || t("Registration failed"))
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
@@ -71,8 +73,8 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
   }
 
   const handleCrackedRegister = async () => {
-    if (p1 !== p2) return setError("Passwords do not match")
-    if (!p1) return setError("Password is required")
+    if (p1 !== p2) return setError(t("Passwords do not match"))
+    if (!p1) return setError(t("Password is required"))
 
     setLoading(true)
     setError('')
@@ -86,7 +88,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
       if (res.ok && data.success) {
         onSuccess(data.sessionId ?? null)
       } else {
-        throw new Error(data.error || "Registration failed")
+        throw new Error(data.error || t("Registration failed"))
       }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Unknown error')
@@ -99,8 +101,8 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
   if (flowState === 'loading') {
     return (
       <div>
-        <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>Register</h1>
-        <p style={{ color: colors.textMuted }}>Checking username...</p>
+        <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>{t("Register")}</h1>
+        <p style={{ color: colors.textMuted }}>{t("Checking username...")}</p>
       </div>
     )
   }
@@ -109,20 +111,20 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
   if (flowState === 'choice') {
     return (
       <div>
-        <h1 style={{ color: 'white', marginBottom: '1rem' }}>Register</h1>
-        <p style={{ marginBottom: '1rem' }}>Create account for <b>{username}</b></p>
+        <h1 style={{ color: 'white', marginBottom: '1rem' }}>{t("Register")}</h1>
+        <p style={{ marginBottom: '1rem' }}>{t("Create account for")} <b>{username}</b></p>
 
         <div style={{ background: 'rgba(250,176,5,0.1)', border: `1px solid ${colors.warning}`, borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem' }}>
           <p style={{ color: colors.warning, fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Crown size={18} /> This is a Premium Username
+            <Crown size={18} /> {t("This is a Premium Username")}
           </p>
           <p style={{ color: colors.textMuted, fontSize: '0.9rem' }}>
-            The username <b style={{ color: 'white' }}>{username}</b> is registered with Mojang/Microsoft.
+            {t("The username")} <b style={{ color: 'white' }}>{username}</b> {t("is registered with Mojang/Microsoft.")}
           </p>
         </div>
 
         <p style={{ color: colors.textSecondary, marginBottom: '1rem', textAlign: 'center' }}>
-          Do you own this Minecraft account?
+          {t("Do you own this Minecraft account?")}
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -131,7 +133,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
             fullWidth
             icon={<Crown size={18} />}
           >
-            I own this account
+            {t("I own this account")}
           </Button>
           <Button
             onClick={() => setFlowState('cracked-register')}
@@ -139,7 +141,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
             fullWidth
             icon={<User size={18} />}
           >
-            I do not own this account
+            {t("I do not own this account")}
           </Button>
         </div>
       </div>
@@ -154,7 +156,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
       <form onSubmit={(e) => { e.preventDefault(); handlePremiumRegister(); }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
           <h1 style={{ color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <AlertTriangle color={colors.dangerLight} size={24} /> Warning
+            <AlertTriangle color={colors.dangerLight} size={24} /> {t("Warning")}
           </h1>
           <button
             type="button"
@@ -167,20 +169,20 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
 
         <div style={{ background: 'rgba(250,82,82,0.1)', border: `1px solid ${colors.dangerLight}`, borderRadius: '8px', padding: '1rem', marginBottom: '1rem', textAlign: 'left' }}>
           <p style={{ color: colors.dangerLight, fontWeight: 'bold', marginBottom: '0.75rem' }}>
-            If you do not own this Minecraft account, you will NOT be able to access this server.
+            {t("If you do not own this Minecraft account, you will NOT be able to access this server.")}
           </p>
           <p style={{ color: colors.textMuted, fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-            Premium accounts authenticate automatically via Microsoft. If this is not your account,
-            you will be locked out when the real owner logs in.
+            {t("Premium accounts authenticate automatically via Microsoft. If this is not your account,")}
+            {t("you will be locked out when the real owner logs in.")}
           </p>
           <p style={{ color: colors.textMuted, fontSize: '0.9rem' }}>
-            If you have made a mistake, close this window and select "I do not own this account".
+            {t("If you have made a mistake, close this window and select \"I do not own this account\".")}
           </p>
         </div>
 
         <div style={{ marginBottom: '1rem' }}>
           <label style={{ color: colors.textSecondary, display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
-            Type your username <b style={{ color: 'white' }}>{username}</b> below to confirm:
+            {t("Type your username")} <b style={{ color: 'white' }}>{username}</b> {t("below to confirm:")}
           </label>
           <Input
             type="text"
@@ -200,11 +202,11 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           fullWidth
           icon={<Crown size={18} />}
         >
-          {loading ? 'Registering...' : 'Register as Premium'}
+          {loading ? t("Registering...") : t("Register as Premium")}
         </Button>
 
         <p style={{ color: colors.textMuted, fontSize: '0.75rem', marginTop: '1rem', textAlign: 'center' }}>
-          You will be automatically logged in via Microsoft on future visits.
+          {t("You will be automatically logged in via Microsoft on future visits.")}
         </p>
       </form>
     )
@@ -213,13 +215,13 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
   // Cracked registration with password
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleCrackedRegister(); }}>
-      <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>Register</h1>
-      <p style={{ marginBottom: '1rem' }}>Create account for <b>{username}</b></p>
+      <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>{t("Register")}</h1>
+      <p style={{ marginBottom: '1rem' }}>{t("Create account for")} <b>{username}</b></p>
 
       {isPremiumUsername && (
         <div style={{ background: 'rgba(73,80,87,0.3)', border: '1px solid #495057', borderRadius: '4px', padding: '0.75rem', marginBottom: '1rem' }}>
           <p style={{ color: colors.textMuted, fontSize: '0.875rem', margin: 0 }}>
-            Registering with password. You will need to log in manually each time.
+            {t("Registering with password. You will need to log in manually each time.")}
           </p>
         </div>
       )}
@@ -231,7 +233,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           type="password"
           value={p1}
           onChange={(e) => setP1(e.target.value)}
-          placeholder="Password"
+          placeholder={t("Password")}
           autoFocus
         />
       </div>
@@ -240,7 +242,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           type="password"
           value={p2}
           onChange={(e) => setP2(e.target.value)}
-          placeholder="Confirm Password"
+          placeholder={t("Confirm Password")}
         />
       </div>
 
@@ -250,7 +252,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
         fullWidth
         icon={<UserPlus size={18} />}
       >
-        {loading ? 'Registering...' : 'Register'}
+        {loading ? t("Registering...") : t("Register")}
       </Button>
 
       {isPremiumUsername && (
@@ -262,7 +264,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
             border: 'none', cursor: 'pointer', marginTop: '0.75rem', fontSize: '0.875rem'
           }}
         >
-          ← Back to options
+          {t("← Back to options")}
         </button>
       )}
     </form>

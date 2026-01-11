@@ -26,9 +26,11 @@ public class FrontendHandler extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
-        String path = req.getRequestURI();
-        if (path.equals("/") || !path.contains(".")) {
-            path = "/index.html";
+        String path = sanitizePath(req.getRequestURI());
+
+        if (path == null) {
+            resp.setStatus(400);
+            return;
         }
 
         try (InputStream is = plugin.getClass().getResourceAsStream("/web" + path)) {
@@ -37,11 +39,16 @@ public class FrontendHandler extends HttpServlet {
                 return;
             }
 
-            if (path.endsWith(".html")) resp.setContentType("text/html");
-            else if (path.endsWith(".js")) resp.setContentType("application/javascript");
-            else if (path.endsWith(".css")) resp.setContentType("text/css");
-            else if (path.endsWith(".png")) resp.setContentType("image/png");
-            else if (path.endsWith(".svg")) resp.setContentType("image/svg+xml");
+            if (path.endsWith(".html"))
+                resp.setContentType("text/html");
+            else if (path.endsWith(".js"))
+                resp.setContentType("application/javascript");
+            else if (path.endsWith(".css"))
+                resp.setContentType("text/css");
+            else if (path.endsWith(".png"))
+                resp.setContentType("image/png");
+            else if (path.endsWith(".svg"))
+                resp.setContentType("image/svg+xml");
 
             OutputStream os = resp.getOutputStream();
             byte[] buffer = new byte[1024];
@@ -50,5 +57,28 @@ public class FrontendHandler extends HttpServlet {
                 os.write(buffer, 0, bytesRead);
             }
         }
+    }
+
+    private String sanitizePath(String path) {
+        if (path == null)
+            return null;
+
+        // Defaulting logic
+        if (path.equals("/") || !path.contains(".")) {
+            return "/index.html";
+        }
+
+        // Validation: Reject ".." (parent directory), "\" (windows separator), and NUL
+        // characters
+        if (path.contains("..") || path.contains("\\") || path.indexOf(0) != -1) {
+            return null;
+        }
+
+        // Ensure path starts with /
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+
+        return path;
     }
 }

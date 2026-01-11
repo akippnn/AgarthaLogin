@@ -39,16 +39,11 @@ public class FrontendHandler extends HttpServlet {
                 return;
             }
 
-            if (path.endsWith(".html"))
-                resp.setContentType("text/html");
-            else if (path.endsWith(".js"))
-                resp.setContentType("application/javascript");
-            else if (path.endsWith(".css"))
-                resp.setContentType("text/css");
-            else if (path.endsWith(".png"))
-                resp.setContentType("image/png");
-            else if (path.endsWith(".svg"))
-                resp.setContentType("image/svg+xml");
+            if (path.endsWith(".html")) resp.setContentType("text/html");
+            else if (path.endsWith(".js")) resp.setContentType("application/javascript");
+            else if (path.endsWith(".css")) resp.setContentType("text/css");
+            else if (path.endsWith(".png")) resp.setContentType("image/png");
+            else if (path.endsWith(".svg")) resp.setContentType("image/svg+xml");
 
             OutputStream os = resp.getOutputStream();
             byte[] buffer = new byte[1024];
@@ -60,8 +55,7 @@ public class FrontendHandler extends HttpServlet {
     }
 
     private String sanitizePath(String path) {
-        if (path == null)
-            return null;
+        if (path == null) return null;
 
         // Defaulting logic
         if (path.equals("/") || !path.contains(".")) {

@@ -17,9 +17,13 @@ Grab the latest JAR from [GitHub Releases](https://github.com/akippnn/AgarthaLog
 
 ### 2. Deploy
 
-Copy the built JAR to your server's `plugins/` folder:
-- **Velocity**: `plugins/`
-- **Paper**: `plugins/`
+Copy the built JAR to your server's `plugins/` folder based on your setup:
+
+*   **Velocity Network** (Recommended): Place it in the **Velocity** `plugins/` folder.  
+    > [!WARNING]
+    > **Do not** install AgarthaLogin on your backend Paper servers if you are using Velocity. It will conflict or disable itself.
+
+*   **Single Server** (No Proxy): Place it in the **Paper** `plugins/` folder.
 
 ### 3. Configure database
 

@@ -4,12 +4,20 @@ services:
     container_name: config-setup
     restart: "no"
     volumes:
+      - ./config:/data/config
       - proxy-data:/proxy
-      - backend-data:/backend
       - limbo-data:/limbo
-      - ../target:/source:ro
+      - /source:/source:ro
+      - ./mc-image-helper-custom:/usr/share/mc-image-helper
+      - ./mc-image-helper-0.0.0-feat-hocon-support-SNAPSHOT.tgz:/mc-image-helper.tgz
     command: |
       /bin/sh -c '
+      # --- Extract Custom MC Image Helper ---
+      if [ ! -f /usr/share/mc-image-helper/bin/mc-image-helper ]; then
+        echo "--> Extracting custom mc-image-helper..."
+        tar -xzf /mc-image-helper.tgz -C /usr/share/mc-image-helper --strip-components=1
+      fi
+
       echo "--> Starting Config Injection..."
 
       # --- Forwarding Secret ---

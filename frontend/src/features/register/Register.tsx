@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { UserPlus, AlertTriangle, Crown, User, X } from 'lucide-react'
-import { Button, Input } from '../../components/ui'
+import { Button, Input, TextButton, Stack } from '../../components/ui'
 import { colors } from '../../components/ui/styles'
 import type { RegisterResponse, CheckPremiumResponse } from '../../lib/types'
 import { useTranslation } from 'react-i18next';
@@ -101,7 +101,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
   if (flowState === 'loading') {
     return (
       <div>
-        <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>{t("Register")}</h1>
+        <h1 className="typography-heading">{t("Register")}</h1>
         <p style={{ color: colors.textMuted }}>{t("Checking username...")}</p>
       </div>
     )
@@ -111,14 +111,14 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
   if (flowState === 'choice') {
     return (
       <div>
-        <h1 style={{ color: 'white', marginBottom: '1rem' }}>{t("Register")}</h1>
+        <h1 className="typography-heading" style={{ marginBottom: '1rem' }}>{t("Register")}</h1>
         <p style={{ marginBottom: '1rem' }}>{t("Create account for")} <b>{username}</b></p>
 
-        <div style={{ background: 'rgba(250,176,5,0.1)', border: `1px solid ${colors.warning}`, borderRadius: '8px', padding: '1rem', marginBottom: '1.5rem' }}>
+        <div className="container-warning">
           <p style={{ color: colors.warning, fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Crown size={18} /> {t("This is a Premium Username")}
           </p>
-          <p style={{ color: colors.textMuted, fontSize: '0.9rem' }}>
+          <p className="typography-subheading">
             {t("The username")} <b style={{ color: 'white' }}>{username}</b> {t("is registered with Mojang/Microsoft.")}
           </p>
         </div>
@@ -127,7 +127,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           {t("Do you own this Minecraft account?")}
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <Stack gap="0.75rem">
           <Button
             onClick={() => setFlowState('premium-confirm')}
             fullWidth
@@ -143,7 +143,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           >
             {t("I do not own this account")}
           </Button>
-        </div>
+        </Stack>
       </div>
     )
   }
@@ -154,8 +154,8 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
 
     return (
       <form onSubmit={(e) => { e.preventDefault(); handlePremiumRegister(); }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-          <h1 style={{ color: 'white', margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div className="flex-between">
+          <h1 className="typography-heading" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: 0 }}>
             <AlertTriangle color={colors.dangerLight} size={24} /> {t("Warning")}
           </h1>
           <button
@@ -167,21 +167,21 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           </button>
         </div>
 
-        <div style={{ background: 'rgba(250,82,82,0.1)', border: `1px solid ${colors.dangerLight}`, borderRadius: '8px', padding: '1rem', marginBottom: '1rem', textAlign: 'left' }}>
+        <div className="container-danger">
           <p style={{ color: colors.dangerLight, fontWeight: 'bold', marginBottom: '0.75rem' }}>
             {t("If you do not own this Minecraft account, you will NOT be able to access this server.")}
           </p>
-          <p style={{ color: colors.textMuted, fontSize: '0.9rem', marginBottom: '0.5rem' }}>
-            {t("Premium accounts authenticate automatically via Microsoft. If this is not your account,")}
+          <p className="typography-subheading" style={{ marginBottom: '0.5rem' }}>
+            {t("Premium accounts authenticate automatically via Microsoft. If this is not your account,")}&nbsp;
             {t("you will be locked out when the real owner logs in.")}
           </p>
-          <p style={{ color: colors.textMuted, fontSize: '0.9rem' }}>
+          <p className="typography-subheading">
             {t("If you have made a mistake, close this window and select \"I do not own this account\".")}
           </p>
         </div>
 
         <div style={{ marginBottom: '1rem' }}>
-          <label style={{ color: colors.textSecondary, display: 'block', marginBottom: '0.5rem', fontSize: '0.875rem' }}>
+          <label className="typography-label">
             {t("Type your username")} <b style={{ color: 'white' }}>{username}</b> {t("below to confirm:")}
           </label>
           <Input
@@ -206,8 +206,12 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
         </Button>
 
         <p style={{ color: colors.textMuted, fontSize: '0.75rem', marginTop: '1rem', textAlign: 'center' }}>
-          {t("You will be automatically logged in via Microsoft on future visits.")}
+          {t("You will be automatically logged in on future visits.")}
         </p>
+
+        <TextButton onClick={() => { setFlowState('choice'); setError('') }}>
+          {t("← Back to options")}
+        </TextButton>
       </form>
     )
   }
@@ -215,11 +219,11 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
   // Cracked registration with password
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleCrackedRegister(); }}>
-      <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>{t("Register")}</h1>
+      <h1 className="typography-heading">{t("Register")}</h1>
       <p style={{ marginBottom: '1rem' }}>{t("Create account for")} <b>{username}</b></p>
 
       {isPremiumUsername && (
-        <div style={{ background: 'rgba(73,80,87,0.3)', border: '1px solid #495057', borderRadius: '4px', padding: '0.75rem', marginBottom: '1rem' }}>
+        <div className="container-info">
           <p style={{ color: colors.textMuted, fontSize: '0.875rem', margin: 0 }}>
             {t("Registering with password. You will need to log in manually each time.")}
           </p>
@@ -228,7 +232,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
 
       {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
 
-      <div style={{ marginBottom: '1rem' }}>
+      <Stack gap="1rem">
         <Input
           type="password"
           value={p1}
@@ -236,36 +240,27 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           placeholder={t("Password")}
           autoFocus
         />
-      </div>
-      <div style={{ marginBottom: '1rem' }}>
         <Input
           type="password"
           value={p2}
           onChange={(e) => setP2(e.target.value)}
           placeholder={t("Confirm Password")}
         />
-      </div>
 
-      <Button
-        type="submit"
-        loading={loading}
-        fullWidth
-        icon={<UserPlus size={18} />}
-      >
-        {loading ? t("Registering...") : t("Register")}
-      </Button>
+        <Button
+          type="submit"
+          loading={loading}
+          fullWidth
+          icon={<UserPlus size={18} />}
+        >
+          {loading ? t("Registering...") : t("Register")}
+        </Button>
+      </Stack>
 
       {isPremiumUsername && (
-        <button
-          type="button"
-          onClick={() => { setFlowState('choice'); setError('') }}
-          style={{
-            width: '100%', padding: '0.5rem', backgroundColor: 'transparent', color: colors.textMuted,
-            border: 'none', cursor: 'pointer', marginTop: '0.75rem', fontSize: '0.875rem'
-          }}
-        >
+        <TextButton onClick={() => { setFlowState('choice'); setError('') }}>
           {t("← Back to options")}
-        </button>
+        </TextButton>
       )}
     </form>
   )

@@ -1,7 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 /* CSS Reset and Global Styles */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -21,7 +23,10 @@ body {
 }
 
 /* Ensure form elements inherit font */
-input, button, textarea, select {
+input,
+button,
+textarea,
+select {
   font-family: inherit;
 }
 
@@ -42,4 +47,131 @@ input, button, textarea, select {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #495057;
+}
+
+:root {
+  --color-bg-dark: #1a1b1e;
+  --color-bg-card: #25262b;
+  --color-bg-input: #2c2e33;
+  --color-bg-hover: #373a40;
+
+  --color-text-primary: #e0e0e0;
+  --color-text-secondary: #c1c2c5;
+  --color-text-muted: #909296;
+  --color-text-white: white;
+
+  --color-primary: #228be6;
+  --color-success: #40c057;
+  --color-danger: #e03131;
+  --color-danger-light: #fa5252;
+  --color-warning: #fab005;
+  --color-error: #ff6b6b;
+}
+
+/* Typography Utility Classes */
+.typography-heading {
+  color: var(--color-text-white);
+  margin: 0;
+  margin-bottom: 1rem;
+}
+
+.typography-subheading {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.typography-label {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+/* Container Utility Classes */
+.container-warning {
+  background: rgba(250, 176, 5, 0.1);
+  border: 1px solid var(--color-warning);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.container-danger {
+  background: rgba(250, 82, 82, 0.1);
+  border: 1px solid var(--color-danger-light);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.container-info {
+  background: rgba(73, 80, 87, 0.3);
+  border: 1px solid #495057;
+  border-radius: 4px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+/* Admin / Generic Styles */
+.admin-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.admin-title {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.admin-tab {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  background-color: var(--color-bg-input);
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-tab.active {
+  background-color: var(--color-primary);
+  color: white;
 }

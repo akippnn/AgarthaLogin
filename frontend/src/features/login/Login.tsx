@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { KeyRound } from 'lucide-react'
-import { Button, Input } from '../../components/ui'
+import { Button, Input, Stack } from '../../components/ui'
 import { colors } from '../../components/ui/styles'
 import type { LoginResponse } from '../../lib/types'
 import { useTranslation } from 'react-i18next';
@@ -40,10 +40,12 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
-      <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>{t("Login")}</h1>
+      <h1 className="typography-heading">{t("Login")}</h1>
       <p style={{ marginBottom: '1rem' }}>{t("Welcome back,")} <b>{username}</b></p>
+
       {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
-      <div style={{ marginBottom: '1rem' }}>
+
+      <Stack gap="1rem">
         <Input
           type="password"
           value={pass}
@@ -52,14 +54,14 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
           icon={<KeyRound size={18} />}
           autoFocus
         />
-      </div>
-      <Button
-        type="submit"
-        loading={loading}
-        fullWidth
-      >
-        {loading ? t("Logging in...") : t("Login")}
-      </Button>
+        <Button
+          type="submit"
+          loading={loading}
+          fullWidth
+        >
+          {loading ? t("Logging in...") : t("Login")}
+        </Button>
+      </Stack>
     </form>
   )
 }

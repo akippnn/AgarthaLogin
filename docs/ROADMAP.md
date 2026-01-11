@@ -2,6 +2,8 @@
 
 ## ✅ Implemented
 
+Check commit history for all of the implemented features.
+
 - [x] Web-based authentication flow (Jetty + React)
 - [x] Session management and auto-login
 - [x] Admin panel with user management
@@ -9,6 +11,7 @@
 - [x] Frontend refactor — migrated to TypeScript, extracted common UI components
 - [x] Complete HTTPS setup documentation
 - [x] I18n
+- [x] Move from SPA to MPA
 
 ## 🔶 TODO
 

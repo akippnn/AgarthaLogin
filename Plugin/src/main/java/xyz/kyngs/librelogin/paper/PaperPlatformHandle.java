@@ -57,12 +57,11 @@ public class PaperPlatformHandle implements PlatformHandle<Player, World> {
     }
 
     @Override
-    @SuppressWarnings({ "deprecation", "removal" })
+    @SuppressWarnings({"deprecation", "removal"})
     public World getServer(String name, boolean limbo) {
         var world = Bukkit.getWorld(name);
 
-        if (world != null)
-            return world;
+        if (world != null) return world;
 
         var file = new File(name);
         var exists = file.exists();
@@ -160,15 +159,16 @@ public class PaperPlatformHandle implements PlatformHandle<Player, World> {
                 getServers().stream().map(this::fromWorld).toList(),
                 Arrays.stream(Bukkit.getPluginManager().getPlugins())
                         .map(
-                                plugin -> MoreObjects.toStringHelper(plugin)
-                                        .add("name", plugin.getName())
-                                        .add(
-                                                "version",
-                                                plugin.getDescription().getVersion())
-                                        .add(
-                                                "authors",
-                                                plugin.getDescription().getAuthors())
-                                        .toString())
+                                plugin ->
+                                        MoreObjects.toStringHelper(plugin)
+                                                .add("name", plugin.getName())
+                                                .add(
+                                                        "version",
+                                                        plugin.getDescription().getVersion())
+                                                .add(
+                                                        "authors",
+                                                        plugin.getDescription().getAuthors())
+                                                .toString())
                         .toList(),
                 plugin.getServerHandler().getLimboServers().stream().map(this::fromWorld).toList(),
                 plugin.getServerHandler().getLobbyServers().values().stream()

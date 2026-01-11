@@ -9,6 +9,11 @@ import { TokenInfo } from '../lib/types'
 import '../lib/i18n'
 import '../index.css'
 
+if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+  import('../mock/mockApi').then(({ setupMockApi }) => setupMockApi())
+}
+
+
 export default function LoginEntry() {
   const [view, setView] = useState<'loading' | 'login' | 'authorized' | 'error'>('loading')
   const [token, setToken] = useState<string>('')
@@ -16,6 +21,17 @@ export default function LoginEntry() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // Dev mode bypass
+    if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+      setToken('dev-token')
+      setTokenInfo({
+        username: 'DevUser',
+        type: 'LOGIN'
+      })
+      setView('login')
+      return
+    }
+
     const params = new URLSearchParams(window.location.search)
     const t = params.get('token')
     if (!t) {

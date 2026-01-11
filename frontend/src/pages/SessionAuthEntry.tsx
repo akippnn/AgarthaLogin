@@ -18,6 +18,23 @@ export default function SessionAuthEntry() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // Dev mode bypass
+    if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+      const username = 'OfflineUser';
+
+      setToken('dev-token');
+      // Mock session user (Always offline for Session Auth flow)
+      setSessionUser({
+        username,
+        uuid: 'mock-uuid',
+        ip: '127.0.0.1',
+        lastLogin: new Date().toISOString(),
+        premium: false
+      });
+      setSessionId('mock-session-id');
+      setView('prompt');
+      return;
+    }
     const params = new URLSearchParams(window.location.search)
     const t = params.get('token')
     if (!t) {

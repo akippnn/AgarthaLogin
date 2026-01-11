@@ -7,12 +7,24 @@ import { colors } from '../components/ui/styles'
 import '../lib/i18n'
 import '../index.css'
 
+if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+  import('../mock/mockApi').then(({ setupMockApi }) => setupMockApi())
+}
+
+
 export default function AdminEntry() {
   const [view, setView] = useState<'loading' | 'admin' | 'error'>('loading')
   const [token, setToken] = useState<string>('')
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // Dev mode bypass
+    if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+      setToken('dev-token')
+      setView('admin')
+      return
+    }
+
     const params = new URLSearchParams(window.location.search)
     const t = params.get('token')
     if (!t) {

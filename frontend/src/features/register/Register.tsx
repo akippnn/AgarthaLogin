@@ -38,7 +38,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           setFlowState('cracked-register')
         }
       } catch {
-        // Default to cracked registration if check fails
+        // Default to offline registration if check fails
         setFlowState('cracked-register')
       }
     }

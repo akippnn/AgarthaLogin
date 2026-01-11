@@ -9,6 +9,11 @@ import { TokenInfo } from '../lib/types'
 import '../lib/i18n'
 import '../index.css'
 
+if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+  import('../mock/mockApi').then(({ setupMockApi }) => setupMockApi())
+}
+
+
 export default function RegisterEntry() {
   const [view, setView] = useState<'loading' | 'register' | 'authorized' | 'error'>('loading')
   const [token, setToken] = useState<string>('')
@@ -16,6 +21,23 @@ export default function RegisterEntry() {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // Dev mode bypass
+    if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+      const isOffline = window.location.search.includes('offline=true');
+      const isPremium = window.location.search.includes('premium=true');
+
+      // Default to DevUser (Premium) unless offline is specified
+      const username = isOffline ? 'OfflineUser' : 'DevUser';
+
+      setToken('dev-token')
+      setTokenInfo({
+        username,
+        type: 'REGISTER'
+      })
+      setView('register')
+      return
+    }
+
     const params = new URLSearchParams(window.location.search)
     const t = params.get('token')
     if (!t) {

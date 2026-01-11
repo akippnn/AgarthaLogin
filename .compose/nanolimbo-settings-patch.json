@@ -1,0 +1,28 @@
+{
+  "patches": [
+    {
+      "file": "/data/settings.yml",
+      "ops": [
+        {
+          "$set": {
+            "path": "$.bind.port",
+            "value": "${SERVER_PORT}",
+            "value-type": "int"
+          }
+        },
+        {
+          "$set": {
+            "path": "$.infoForwarding.type",
+            "value": "MODERN"
+          }
+        },
+        {
+          "$set": {
+            "path": "$.infoForwarding.secret",
+            "value": "my-secure-secret"
+          }
+        }
+      ]
+    }
+  ]
+}

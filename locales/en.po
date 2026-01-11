@@ -7,19 +7,18 @@ msgstr ""
 msgid "Successfully logged in!"
 msgstr "Successfully logged in!"
 
-
-
-# Backend - AuthenticAuthorizationProvider
 msgid "This server is powered by"
 msgstr "This server is powered by"
 
 msgid "Click the link to open your browser."
 msgstr "Click the link to open your browser."
 
+msgid "Press \"t\" and click the link to open your browser."
+msgstr "Press \\"t\\" and click the link to open your browser."
+
 msgid "Please authenticate using the link below:"
 msgstr "Please authenticate using the link below:"
 
-# Backend - AgarthaLoginCommand
 msgid "Click here to access the admin panel."
 msgstr "Click here to access the admin panel."
 
@@ -35,7 +34,6 @@ msgstr "Reloading configuration..."
 msgid "Web server restarted on port "
 msgstr "Web server restarted on port "
 
-# Frontend - Authorized
 msgid "Success!"
 msgstr "Success!"
 
@@ -45,7 +43,6 @@ msgstr "You have been authorized in-game."
 msgid "You may now close this window."
 msgstr "You may now close this window."
 
-# Frontend - Login
 msgid "Login"
 msgstr "Login"
 
@@ -61,7 +58,6 @@ msgstr "Logging in..."
 msgid "Login failed"
 msgstr "Login failed"
 
-# Frontend - Register
 msgid "Register"
 msgstr "Register"
 
@@ -102,7 +98,7 @@ msgid "you will be locked out when the real owner logs in."
 msgstr "you will be locked out when the real owner logs in."
 
 msgid "If you have made a mistake, close this window and select \"I do not own this account\"."
-msgstr "If you have made a mistake, close this window and select \"I do not own this account\"."
+msgstr "If you have made a mistake, close this window and select \\"I do not own this account\\"."
 
 msgid "Type your username"
 msgstr "Type your username"
@@ -140,7 +136,6 @@ msgstr "Registration failed"
 msgid "← Back to options"
 msgstr "← Back to options"
 
-# Frontend - SessionAuth
 msgid "Welcome Back!"
 msgstr "Welcome Back!"
 
@@ -161,3 +156,584 @@ msgstr "No, Logout"
 
 msgid "Authorization failed"
 msgstr "Authorization failed"
+
+#, fuzzy
+msgid "kick-no-lobby"
+msgstr "There's no available lobby to connect you to. Please try again later."
+
+#, fuzzy
+msgid "kick-no-"
+msgstr "kick-no-"
+
+#, fuzzy
+msgid "info-kick"
+msgstr "You have been kicked from the server for the following reason: %reason%"
+
+#, fuzzy
+msgid "info-premium-logged-in"
+msgstr "You have been logged in automatically!"
+
+#, fuzzy
+msgid "info-session-logged-in"
+msgstr "You have been logged in automatically!"
+
+#, fuzzy
+msgid "kick-illegal-username"
+msgstr "You have illegal characters in your username or/and your username is longer"
+
+#, fuzzy
+msgid "kick-premium-error-throttled"
+msgstr "The Mojang API is rate limiting our server, please try joining again in a"
+
+#, fuzzy
+msgid "kick-premium-error-undefined"
+msgstr "There was some issue while communicating with Mojang, if the problem persists,"
+
+#, fuzzy
+msgid "kick-premium-info-enabled"
+msgstr "Autologin enabled!"
+
+#, fuzzy
+msgid "kick-premium-info-disabled"
+msgstr "Autologin disabled!"
+
+#, fuzzy
+msgid "info-password-changed"
+msgstr "info-password-changed"
+
+#, fuzzy
+msgid "error-no-confirm"
+msgstr "Please use /premium <password> first!"
+
+#, fuzzy
+msgid "info-enabling"
+msgstr "Enabling..."
+
+#, fuzzy
+msgid "error-not-paid"
+msgstr "This account does not exist in the Mojang database!"
+
+#, fuzzy
+msgid "kick-time-limit"
+msgstr "You took too long to authorize!"
+
+#, fuzzy
+msgid "kick-no-limbo"
+msgstr "There's no available limbo to connect you to. Please try again later. If"
+
+#, fuzzy
+msgid "kick-invalid-case-username"
+msgstr "Please, change your username to &c%username%"
+
+#, fuzzy
+msgid "kick-occupied-username"
+msgstr "Please, change your username to &c%username%"
+
+#, fuzzy
+msgid "kick-name-mismatch"
+msgstr "Oh no! It looks like an premium user with activated auto login changed their"
+
+#, fuzzy
+msgid "kick-short-username"
+msgstr "Your username is too short! The minimum length is %length% letters."
+
+#, fuzzy
+msgid "kick-ip-limit"
+msgstr "You have reached the maximum amount of accounts per IP!"
+
+#, fuzzy
+msgid "kick-error-password-wrong"
+msgstr "Wrong password!"
+
+#, fuzzy
+msgid "kick-2fa-enabled"
+msgstr "Two-factor has been enabled! Please reconnect."
+
+#, fuzzy
+msgid "kick-already-connected"
+msgstr "You are already connected!"
+
+#, fuzzy
+msgid "error-from-floodgate"
+msgstr "You can't use this command from Floodgate!"
+
+#, fuzzy
+msgid "error-no-email"
+msgstr "You don't have a recovery email set!"
+
+#, fuzzy
+msgid "error-already-authorized"
+msgstr "You are already authorized!"
+
+#, fuzzy
+msgid "error-already-registered"
+msgstr "You are already registered!"
+
+#, fuzzy
+msgid "error-not-authorized"
+msgstr "Please authorize first!"
+
+#, fuzzy
+msgid "error-not-registered"
+msgstr "Please register first!"
+
+#, fuzzy
+msgid "error-not-premium"
+msgstr "You do not have autologin enabled, enable it using /premium <password>!"
+
+#, fuzzy
+msgid "error-not-cracked"
+msgstr "You have autologin enabled, disable it using /cracked!"
+
+#, fuzzy
+msgid "error-password-wrong"
+msgstr "Wrong password!"
+
+#, fuzzy
+msgid "error-no-password"
+msgstr "You don't have a password. You can try using /cracked to disable autologin,"
+
+#, fuzzy
+msgid "totp-not-provided"
+msgstr "You must provide a 2FA code! Use /login <password> <2FA code>, if you lost"
+
+#, fuzzy
+msgid "totp-wrong"
+msgstr "Wrong 2FA code!"
+
+#, fuzzy
+msgid "totp-not-awaiting"
+msgstr "You are currently not in the process of enabling 2FA! Please type /2fa to"
+
+#, fuzzy
+msgid "error-password-not-match"
+msgstr "Passwords do not match!"
+
+#, fuzzy
+msgid "error-forbidden-password"
+msgstr "The password is too short and/or is not allowed!"
+
+#, fuzzy
+msgid "error-password-too-long"
+msgstr "The password is too long!"
+
+#, fuzzy
+msgid "error-password-corrupted"
+msgstr "Your password is corrupted, please contact an administrator!"
+
+#, fuzzy
+msgid "error-premium-throttled"
+msgstr "The Mojang API is rate limiting our server, please try the command again in a"
+
+#, fuzzy
+msgid "error-premium-unknown"
+msgstr "There was an unknown error while communicating with the mojang API, please"
+
+#, fuzzy
+msgid "error-throttle"
+msgstr "You are sending commands too fast! Please wait a bit."
+
+#, fuzzy
+msgid "error-no-mail-confirm"
+msgstr "Please use /setemail <email> <password> first!"
+
+#, fuzzy
+msgid "error-no-password-reset"
+msgstr "Please use /resetpassword first!"
+
+#, fuzzy
+msgid "error-mail-throttle"
+msgstr "You are sending emails too fast! Please wait a bit."
+
+#, fuzzy
+msgid "error-wrong-mail-verify"
+msgstr "Wrong verification code!"
+
+#, fuzzy
+msgid "error-wrong-password-reset"
+msgstr "Wrong password reset code!"
+
+#, fuzzy
+msgid "error-corrupted-messages"
+msgstr "Messages are corrupted, old ones are going to be kept. Cause: %cause%"
+
+#, fuzzy
+msgid "error-corrupted-configuration"
+msgstr "Configuration is corrupted, old one is going to be kept. Cause: %cause%"
+
+#, fuzzy
+msgid "error-unknown"
+msgstr "An unknown error occurred! Check console for further information."
+
+#, fuzzy
+msgid "error-unknown-user"
+msgstr "This user does not exist!"
+
+#, fuzzy
+msgid "error-occupied-user"
+msgstr "This username is already occupied!"
+
+#, fuzzy
+msgid "error-player-online"
+msgstr "This player is online!"
+
+#, fuzzy
+msgid "error-player-offline"
+msgstr "This player is offline!"
+
+#, fuzzy
+msgid "error-player-authorized"
+msgstr "This player is already authenticated!"
+
+#, fuzzy
+msgid "error-player-not-registered"
+msgstr "This player is not registered!"
+
+#, fuzzy
+msgid "error-not-available-on-multi-proxy"
+msgstr "This feature is not available on MultiProxy!"
+
+#, fuzzy
+msgid "error-password-resetting-disabled"
+msgstr "Password resetting is disabled!"
+
+#, fuzzy
+msgid "error-no-permission"
+msgstr "You do not have permission to use this command!"
+
+#, fuzzy
+msgid "error-invalid-syntax"
+msgstr "Usage: <c2>{command}</c2> <c3>{syntax}</c3>"
+
+#, fuzzy
+msgid "error-unknown-command"
+msgstr "Unknown command!"
+
+#, fuzzy
+msgid "error-mail-not-sent"
+msgstr "Failed to send email, perhaps you typed your address wrong? If you are sure"
+
+#, fuzzy
+msgid "info-logging-in"
+msgstr "Logging in..."
+
+#, fuzzy
+msgid "info-logged-in"
+msgstr "Logged in!"
+
+#, fuzzy
+msgid "info-registering"
+msgstr "Registering..."
+
+#, fuzzy
+msgid "info-registered"
+msgstr "Registered!"
+
+#, fuzzy
+msgid "info-disabling"
+msgstr "Disabling..."
+
+#, fuzzy
+msgid "info-editing"
+msgstr "Editing..."
+
+#, fuzzy
+msgid "info-edited"
+msgstr "Edited!"
+
+#, fuzzy
+msgid "info-resetting-password"
+msgstr "Resetting password..."
+
+#, fuzzy
+msgid "info-password-reset"
+msgstr "Password reset! You can now log in with your new password."
+
+#, fuzzy
+msgid "info-dumping"
+msgstr "Creating dump..."
+
+#, fuzzy
+msgid "info-dumped"
+msgstr "Dump saved to %file%!"
+
+#, fuzzy
+msgid "info-deleting"
+msgstr "Deleting..."
+
+#, fuzzy
+msgid "info-deleted"
+msgstr "Deleted!"
+
+#, fuzzy
+msgid "info-reloading"
+msgstr "Reloading..."
+
+#, fuzzy
+msgid "info-reloaded"
+msgstr "Reloaded!"
+
+#, fuzzy
+msgid "info-sending-email"
+msgstr "Sending email..."
+
+#, fuzzy
+msgid "info-sent-email"
+msgstr "Email sent!"
+
+#, fuzzy
+msgid "info-no-alts"
+msgstr "There are no other players with the same IP address."
+
+#, fuzzy
+msgid "info-alts"
+msgstr "There are %count% players with the same IP address:"
+
+#, fuzzy
+msgid "info-alts-entry"
+msgstr "- %name% (last seen: %last_seen%)"
+
+#, fuzzy
+msgid "info-mail-sending"
+msgstr "Sending email..."
+
+#, fuzzy
+msgid "info-mail-verified"
+msgstr "Email verified! You can now reset your password if you forget it."
+
+#, fuzzy
+msgid "info-verification-mail-sent"
+msgstr "Verification email sent! If you don't see anything in your inbox, check your"
+
+#, fuzzy
+msgid "info-reset-password-mail-sent"
+msgstr "Password reset email sent! If you don't see anything in your inbox, check your"
+
+#, fuzzy
+msgid "prompt-register"
+msgstr "Please register using: &e/register &b<password> <password>"
+
+#, fuzzy
+msgid "prompt-login"
+msgstr "Please login using: &e/login &b<password> [2fa_code]"
+
+#, fuzzy
+msgid "prompt-confirm"
+msgstr "You are about to enable premium autologin, please take note, that you &4WILL"
+
+#, fuzzy
+msgid "title-register"
+msgstr "&6&lRegister"
+
+#, fuzzy
+msgid "title-login"
+msgstr "&6&lLogin"
+
+#, fuzzy
+msgid "sub-title-register"
+msgstr "&e/register &b<password> <password>"
+
+#, fuzzy
+msgid "sub-title-login"
+msgstr "&e/login &b<password>"
+
+#, fuzzy
+msgid "action-bar-register"
+msgstr "&e/register &b<password> <password>"
+
+#, fuzzy
+msgid "action-bar-login"
+msgstr "&e/login &b<password>"
+
+#, fuzzy
+msgid "totp-generating"
+msgstr "Generating 2FA code..."
+
+#, fuzzy
+msgid "totp-wrong-version"
+msgstr "You must connect with client version %low% - %high%, in order to enable 2FA."
+
+#, fuzzy
+msgid "email-verification-subject"
+msgstr "Verify your email on %server%"
+
+#, fuzzy
+msgid "email-password-reset-subject"
+msgstr "Reset your password on %server%"
+
+#, fuzzy
+msgid "syntax.login"
+msgstr "<password> [2fa_code]"
+
+#, fuzzy
+msgid "syntax.register"
+msgstr "<password> <passwordRepeat>"
+
+#, fuzzy
+msgid "syntax.premium"
+msgstr "<password>"
+
+#, fuzzy
+msgid "syntax.user-info"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-migrate"
+msgstr "<name> <newName>"
+
+#, fuzzy
+msgid "syntax.user-unregister"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-delete"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-premium"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-cracked"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-register"
+msgstr "<name> <password>"
+
+#, fuzzy
+msgid "syntax.user-login"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-2fa-off"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-email-off"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-set-email"
+msgstr "<name> <email>"
+
+#, fuzzy
+msgid "syntax.user-alts"
+msgstr "<name>"
+
+#, fuzzy
+msgid "syntax.user-pass-change"
+msgstr "<name> <newPassword>"
+
+#, fuzzy
+msgid "syntax.2fa-confirm"
+msgstr "<code>"
+
+#, fuzzy
+msgid "syntax.change-password"
+msgstr "<oldPassword> <newPassword>"
+
+#, fuzzy
+msgid "syntax.email-test"
+msgstr "<address>"
+
+#, fuzzy
+msgid "syntax.set-email"
+msgstr "<address> <password>"
+
+#, fuzzy
+msgid "syntax.verify-email"
+msgstr "<code>"
+
+#, fuzzy
+msgid "syntax.confirm-password-reset"
+msgstr "<code> <password> <passwordRepeat>"
+
+#, fuzzy
+msgid "autocomplete.login"
+msgstr "password"
+
+#, fuzzy
+msgid "autocomplete.register"
+msgstr "password password"
+
+#, fuzzy
+msgid "autocomplete.premium"
+msgstr "password"
+
+#, fuzzy
+msgid "autocomplete.user-info"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-migrate"
+msgstr "@players newName"
+
+#, fuzzy
+msgid "autocomplete.user-unregister"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-delete"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-premium"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-cracked"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-register"
+msgstr "@players password"
+
+#, fuzzy
+msgid "autocomplete.user-login"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-2fa-off"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-email-off"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-set-email"
+msgstr "@players email"
+
+#, fuzzy
+msgid "autocomplete.user-alts"
+msgstr "@players"
+
+#, fuzzy
+msgid "autocomplete.user-pass-change"
+msgstr "@players newPassword"
+
+#, fuzzy
+msgid "autocomplete.2fa-confirm"
+msgstr "code"
+
+#, fuzzy
+msgid "autocomplete.change-password"
+msgstr "oldPassword newPassword"
+
+#, fuzzy
+msgid "autocomplete.email-test"
+msgstr "address"
+
+#, fuzzy
+msgid "autocomplete.set-email"
+msgstr "address password"
+
+#, fuzzy
+msgid "autocomplete.verify-email"
+msgstr "code"
+
+#, fuzzy
+msgid "autocomplete.confirm-password-reset"
+msgstr "code newPassword newPassword"
+

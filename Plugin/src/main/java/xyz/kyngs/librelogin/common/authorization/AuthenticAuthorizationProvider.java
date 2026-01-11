@@ -204,13 +204,19 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
 
             // Credits Link
             Component credits =
-                    plugin.getMessages()
-                            .getMessage("This server is powered by", playerLocale)
+                    Component.empty()
+                            .append(
+                                    plugin.getMessages()
+                                            .getMessage("This server is powered by", playerLocale)
+                                            .color(
+                                                    net.kyori.adventure.text.format.NamedTextColor
+                                                            .YELLOW))
+                            .append(Component.text(" "))
                             .append(
                                     Component.text("AgarthaLogin")
                                             .color(
                                                     net.kyori.adventure.text.format.NamedTextColor
-                                                            .BLUE)
+                                                            .GOLD)
                                             .decorate(
                                                     net.kyori.adventure.text.format.TextDecoration
                                                             .UNDERLINED)
@@ -221,7 +227,8 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
 
             Component promptMsg =
                     plugin.getMessages()
-                            .getMessage("Please authenticate using the link below:", playerLocale);
+                            .getMessage("Please authenticate using the link below:", playerLocale)
+                            .color(net.kyori.adventure.text.format.NamedTextColor.GRAY);
             if (promptMsg == null) {
                 promptMsg =
                         Component.text("Please authenticate using the link below:")
@@ -233,15 +240,21 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                     Component.text("\n".repeat(13))
                             .append(credits)
                             .append(Component.newline())
+                            .append(Component.newline())
                             .append(promptMsg)
                             .append(Component.newline())
                             .append(link)
                             .append(Component.newline())
+                            .append(Component.newline())
                             .append(
                                     plugin.getMessages()
                                             .getMessage(
-                                                    "Click the link to open your browser.",
-                                                    playerLocale))
+                                                    "Press \"t\" and click the link to open your"
+                                                            + " browser.",
+                                                    playerLocale)
+                                            .color(
+                                                    net.kyori.adventure.text.format.NamedTextColor
+                                                            .DARK_GRAY))
                             .append(Component.newline());
 
             audience.sendMessage(message);
@@ -263,7 +276,7 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                                 .getMessage(registered ? "sub-title-login" : "sub-title-register"),
                         Title.Times.of(
                                 Duration.ofMillis(0),
-                                Duration.ofMillis(toRefresh > 0 ? (long) (toRefresh * 1.1) : 10000),
+                                Duration.ofMillis(toRefresh > 0 ? (long) (toRefresh * 1.1) : 9000),
                                 Duration.ofMillis(0))));
     }
 

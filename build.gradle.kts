@@ -133,3 +133,5 @@ tasks.register("generateLocales") {
         indexFile.writeText(available.joinToString("\n"))
     }
 }
+
+// Task moved to subprojects block

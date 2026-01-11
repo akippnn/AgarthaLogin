@@ -225,3 +225,63 @@ tasks.matching { it.name.endsWith("LicenseMain") }.configureEach {
     dependsOn(copyFrontend)
     dependsOn(rootProject.tasks.named("generateLocales"))
 }
+
+tasks.register("verifyLocales") {
+    group = "verification"
+    description = "Verifies that all keys used in Java source files exist in the en.po locale file"
+
+    val localesDir = rootProject.file("locales")
+    val sourceDir = file("src/main/java")
+    val poFile = File(localesDir, "en.po")
+
+    inputs.file(poFile)
+    inputs.dir(sourceDir)
+
+    doLast {
+        if (!poFile.exists()) throw GradleException("en.po file not found!")
+
+        val validKeys = mutableSetOf<String>()
+        var currentMsgId = ""
+        var inMsgId = false
+
+        poFile.readLines().forEach { line ->
+            val trimmed = line.trim()
+            if (trimmed.startsWith("msgid ")) {
+                if (currentMsgId.isNotEmpty()) validKeys.add(currentMsgId)
+                currentMsgId = trimmed.removePrefix("msgid ").trim('"')
+                inMsgId = true
+            } else if (trimmed.startsWith("msgstr ")) {
+                inMsgId = false
+            } else if (trimmed.startsWith("\"") && trimmed.endsWith("\"") && inMsgId) {
+                currentMsgId += trimmed.trim('"')
+            }
+        }
+        if (currentMsgId.isNotEmpty()) validKeys.add(currentMsgId)
+        validKeys.remove("")
+
+        val missingKeys = mutableSetOf<String>()
+        val regex = Regex("""\.getMessage\(\s*"([^"]+)"""")
+
+        sourceDir.walk().filter { it.extension == "java" }.forEach { javaFile ->
+            javaFile.readLines().forEachIndexed { index, line ->
+                regex.findAll(line).forEach { match ->
+                    val key = match.groupValues[1]
+                    if (!validKeys.contains(key)) {
+                        println("Missing key: '$key' in ${javaFile.name}:${index + 1}")
+                        missingKeys.add(key)
+                    }
+                }
+            }
+        }
+
+        if (missingKeys.isNotEmpty()) {
+            throw GradleException("Found ${missingKeys.size} missing message keys: $missingKeys. Add to verified locales/en.po.")
+        } else {
+            println("Locale verification passed: All used keys exist in en.po")
+        }
+    }
+}
+
+tasks.named("compileJava") {
+    dependsOn("verifyLocales")
+}

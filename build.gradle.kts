@@ -7,7 +7,7 @@ plugins {
 
 defaultTasks("updateLicenses", "shadowJar")
 
-version = "0.28.1-SNAPSHOT"
+version = "0.28.2-SNAPSHOT"
 if (project.hasProperty("prodVersion")) {
     version = project.property("prodVersion")
 }
@@ -24,7 +24,7 @@ subprojects {
     tasks.configureEach {
         if (name.contains("jar", true)) {
             dependsOn("updateLicenses")
-//            dependsOn("spotlessJavaApply")
+            dependsOn("spotlessJavaApply")
         }
     }
 

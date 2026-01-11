@@ -27,7 +27,8 @@ import javax.crypto.spec.SecretKeySpec;
 import xyz.kyngs.librelogin.paper.PaperBootstrap;
 
 /**
- * Encryption and decryption minecraft util for connection between servers and paid Minecraft
+ * Encryption and decryption minecraft util for connection between servers and
+ * paid Minecraft
  * account clients.
  *
  * @author Games647 and FastLogin contributors
@@ -37,12 +38,12 @@ public final class EncryptionUtil {
     public static final int VERIFY_TOKEN_LENGTH = 4;
     public static final String KEY_PAIR_ALGORITHM = "RSA";
 
-    private static final int RSA_LENGTH = 1_024;
+    private static final int RSA_LENGTH = 2_048;
 
     private static final PublicKey MOJANG_SESSION_KEY;
     private static final int LINE_LENGTH = 76;
-    private static final Base64.Encoder KEY_ENCODER =
-            Base64.getMimeEncoder(LINE_LENGTH, "\n".getBytes(StandardCharsets.UTF_8));
+    private static final Base64.Encoder KEY_ENCODER = Base64.getMimeEncoder(LINE_LENGTH,
+            "\n".getBytes(StandardCharsets.UTF_8));
     private static final int MILLISECOND_SIZE = 8;
     private static final int UUID_SIZE = 2 * MILLISECOND_SIZE;
 
@@ -76,7 +77,8 @@ public final class EncryptionUtil {
     }
 
     /**
-     * Generate a random token. This is used to verify that we are communicating with the same
+     * Generate a random token. This is used to verify that we are communicating
+     * with the same
      * player in a login session.
      *
      * @param random random generator
@@ -91,9 +93,9 @@ public final class EncryptionUtil {
     /**
      * Generate the server id based on client and server data.
      *
-     * @param serverId session for the current login attempt
+     * @param serverId     session for the current login attempt
      * @param sharedSecret shared secret between the client and the server
-     * @param publicKey public key of the server
+     * @param publicKey    public key of the server
      * @return the server id formatted as a hexadecimal string.
      */
     public static String getServerIdHashString(
@@ -106,15 +108,15 @@ public final class EncryptionUtil {
      * Decrypts the content and extracts the key spec.
      *
      * @param privateKey private server key
-     * @param sharedKey the encrypted shared key
+     * @param sharedKey  the encrypted shared key
      * @return shared secret key
      */
     public static SecretKey decryptSharedKey(PrivateKey privateKey, byte[] sharedKey)
             throws NoSuchPaddingException,
-                    IllegalBlockSizeException,
-                    NoSuchAlgorithmException,
-                    BadPaddingException,
-                    InvalidKeyException {
+            IllegalBlockSizeException,
+            NoSuchAlgorithmException,
+            BadPaddingException,
+            InvalidKeyException {
         return new SecretKeySpec(decrypt(privateKey, sharedKey), "AES");
     }
 
@@ -137,9 +139,9 @@ public final class EncryptionUtil {
             long expiry = clientPublicKey.expire().toEpochMilli();
             String encoded = KEY_ENCODER.encodeToString(clientPublicKey.key().getEncoded());
             return (expiry
-                            + "-----BEGIN RSA PUBLIC KEY-----\n"
-                            + encoded
-                            + "\n-----END RSA PUBLIC KEY-----\n")
+                    + "-----BEGIN RSA PUBLIC KEY-----\n"
+                    + encoded
+                    + "\n-----END RSA PUBLIC KEY-----\n")
                     .getBytes(StandardCharsets.US_ASCII);
         }
 
@@ -155,10 +157,10 @@ public final class EncryptionUtil {
     public static boolean verifyNonce(
             byte[] expected, PrivateKey decryptionKey, byte[] encryptedNonce)
             throws NoSuchPaddingException,
-                    IllegalBlockSizeException,
-                    NoSuchAlgorithmException,
-                    BadPaddingException,
-                    InvalidKeyException {
+            IllegalBlockSizeException,
+            NoSuchAlgorithmException,
+            BadPaddingException,
+            InvalidKeyException {
         byte[] decryptedNonce = decrypt(decryptionKey, encryptedNonce);
         return Arrays.equals(expected, decryptedNonce);
     }
@@ -177,8 +179,7 @@ public final class EncryptionUtil {
 
     private static PublicKey loadMojangSessionKey()
             throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-        var keyUrl =
-                PaperBootstrap.class.getClassLoader().getResource("yggdrasil_session_pubkey.der");
+        var keyUrl = PaperBootstrap.class.getClassLoader().getResource("yggdrasil_session_pubkey.der");
         var keyData = Resources.toByteArray(keyUrl);
         var keySpec = new X509EncodedKeySpec(keyData);
 
@@ -187,10 +188,10 @@ public final class EncryptionUtil {
 
     private static byte[] decrypt(PrivateKey key, byte[] data)
             throws NoSuchPaddingException,
-                    NoSuchAlgorithmException,
-                    InvalidKeyException,
-                    IllegalBlockSizeException,
-                    BadPaddingException {
+            NoSuchAlgorithmException,
+            InvalidKeyException,
+            IllegalBlockSizeException,
+            BadPaddingException {
         Cipher cipher = Cipher.getInstance(key.getAlgorithm());
         cipher.init(Cipher.DECRYPT_MODE, key);
         return cipher.doFinal(data);

@@ -7,7 +7,7 @@ services:
       - ./config:/data/config
       - proxy-data:/proxy
       - limbo-data:/limbo
-      - /source:/source:ro
+      - ../target:/source:ro
       - ./mc-image-helper-custom:/usr/share/mc-image-helper
       - ./mc-image-helper-0.0.0-feat-hocon-support-SNAPSHOT.tgz:/mc-image-helper.tgz
     command: |

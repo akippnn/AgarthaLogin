@@ -38,6 +38,9 @@ jobs:
       - name: Grant execute permission
         run: chmod +x ./gradlew
 
+      - name: Generate Locales
+        run: ./gradlew generateLocales
+
       - name: Get release tag
         id: get_version
         run: |

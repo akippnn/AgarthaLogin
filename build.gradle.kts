@@ -7,7 +7,7 @@ plugins {
 
 defaultTasks("updateLicenses", "shadowJar")
 
-version = "0.28.0-SNAPSHOT"
+version = "0.28.1-SNAPSHOT"
 if (project.hasProperty("prodVersion")) {
     version = project.property("prodVersion")
 }

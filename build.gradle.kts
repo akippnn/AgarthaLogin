@@ -85,20 +85,27 @@ tasks.register("generateLocales") {
 
             poFile.readLines().forEach { line ->
                 val trimmed = line.trim()
+                // Unescape logic: simple replacement for common PO escapes
+                fun unescapePo(s: String): String {
+                    return s.replace("\\\"", "\"")
+                            .replace("\\n", "\n")
+                            .replace("\\\\", "\\")
+                }
+
                 if (trimmed.startsWith("msgid ")) {
                     if (currentMsgId.isNotEmpty() && currentMsgStr.isNotEmpty()) {
                         entries[currentMsgId] = currentMsgStr
                     }
-                    currentMsgId = trimmed.removePrefix("msgid ").trim('"')
+                    currentMsgId = unescapePo(trimmed.removePrefix("msgid ").trim('"'))
                     currentMsgStr = ""
                     inMsgId = true
                     inMsgStr = false
                 } else if (trimmed.startsWith("msgstr ")) {
                     inMsgStr = true
                     inMsgId = false
-                    currentMsgStr = trimmed.removePrefix("msgstr ").trim('"')
+                    currentMsgStr = unescapePo(trimmed.removePrefix("msgstr ").trim('"'))
                 } else if (trimmed.startsWith("\"") && trimmed.endsWith("\"")) {
-                    val content = trimmed.trim('"')
+                    val content = unescapePo(trimmed.trim('"'))
                     if (inMsgId) currentMsgId += content
                     if (inMsgStr) currentMsgStr += content
                 }
@@ -111,16 +118,21 @@ tasks.register("generateLocales") {
             // removing header entry if present (usually msgid "")
             entries.remove("")
 
+            // Helper to escape string for HOCON/JSON
+            fun escape(s: String): String {
+                return s.replace("\\", "\\\\").replace("\"", "\\\"")
+            }
+
             // Generate HOCON
             val hoconFile = File(pluginResourcesDir, "messages_${lang}.conf")
             hoconFile.writeText(entries.entries.joinToString("\n") { (k, v) -> 
-                 "\"$k\": \"$v\"" 
+                 "\"${escape(k)}\": \"${escape(v)}\"" 
             })
 
             // Generate JSON
             val jsonFile = File(frontendPublicDir, "${lang}.json")
             val jsonContent = entries.entries.joinToString(",\n  ", "{\n  ", "\n}") { (k, v) ->
-                "\"$k\": \"$v\""
+                "\"${escape(k)}\": \"${escape(v)}\""
             }
             jsonFile.writeText(jsonContent)
             

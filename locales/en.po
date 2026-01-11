@@ -14,7 +14,7 @@ msgid "Click the link to open your browser."
 msgstr "Click the link to open your browser."
 
 msgid "Press \"t\" and click the link to open your browser."
-msgstr "Press \\"t\\" and click the link to open your browser."
+msgstr "Press \"t\" and click the link to open your browser."
 
 msgid "Please authenticate using the link below:"
 msgstr "Please authenticate using the link below:"
@@ -98,7 +98,7 @@ msgid "you will be locked out when the real owner logs in."
 msgstr "you will be locked out when the real owner logs in."
 
 msgid "If you have made a mistake, close this window and select \"I do not own this account\"."
-msgstr "If you have made a mistake, close this window and select \\"I do not own this account\\"."
+msgstr "If you have made a mistake, close this window and select \"I do not own this account\"."
 
 msgid "Type your username"
 msgstr "Type your username"
@@ -737,3 +737,6 @@ msgstr "code"
 msgid "autocomplete.confirm-password-reset"
 msgstr "code newPassword newPassword"
 
+
+msgid "Press \"t\" and click the link to open your browser."
+msgstr "Press \"t\" and click the link to open your browser."

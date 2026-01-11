@@ -14,13 +14,6 @@
 
 AgarthaLogin is a **high-performance, secure authentication system** designed for modern Minecraft networks. It replaces legacy in-game commands `/login` with a secure, web-based authentication flow. It is the most "production-ready" auth plugin available for Velocity servers.
 
-Built for **scalability** and **production deployments**, it features:
-*   **Zero-Impact Scalability**: Offloads unauthenticated players to a lightweight "Limbo" server, protecting your main backend from bot attacks and login waves.
-*   **Modern Cryptography**: Uses **Argon2ID** hashing and supports **TOTP 2FA** native integration.
-*   **Seamless UX**: A **frictionless** web flow that supports **browser autofill** and keeps passwords hidden, ensuring users feel safer. Includes native **Geyser/Floodgate** support.
-*   **Premium Auto-Login**: Automatically detects and validates **Premium Minecraft** accounts (no password required), while securing cracked/offline players.
-*   **Universal Compatibility**: Runs on **Velocity** proxies with support for multi-proxy synchronization via **Redis**.
-
 > [!IMPORTANT]
 > AgarthaLogin prevents passwords from being compromised with [a proper HTTPS setup](./docs/EXPOSING_AUTH.md), but it **does not encrypt in-game connection** (TCP).
 >
@@ -34,13 +27,17 @@ Built for **scalability** and **production deployments**, it features:
 
 ## ✨ Features
 
-| Feature | Description |
-|---------|-------------|
-| 🌐 **Web Authentication** | One-time links, React UI, session persistence |
-| 🔒 **BCrypt Hashing** | Industry-standard password security |
-| 👑 **Premium AutoLogin** | Automatic authentication for Mojang accounts |
-| 🛡️ **Admin Panel** | Web-based user management interface |
-| 🔄 **Session Management** | Token-based auth with configurable timeouts |
+Built for **scalability**, **security**, and **user experience**, AgarthaLogin replaces legacy chat-based auth with a modern web flow.
+
+| Feature | Description | Benefits |
+| :--- | :--- | :--- |
+| 🚀 **Zero-Impact Scalability** | Offloads unauthenticated players to a lightweight "Limbo" server. | Protects backend from bot attacks; zero impact on logged-in players. |
+| 🌐 **Web Authentication** | **React + TypeScript** frontend with one-time login links. | Frictionless UX, browser autofill, no sensitive commands in chat. |
+| 👑 **Premium Auto-Login** | Automatically authenticates Mojang accounts. | No passwords needed for legitimate players; offline players protected. |
+| 🔒 **Modern Cryptography** | **Argon2ID** hashing and **TOTP** (2FA) support. | Industry-standard security against brute force and leaks. |
+| � **i18n Support** | Auto-detects client locale for backend and frontend. | Seamless localization for global player bases. |
+| � **Cross-Platform** | Native support for **Geyser/Floodgate** (Bedrock). | Works on PC, Mobile, and Console without configuration. |
+| 🛡️ **Admin Panel** | Web-based interface for user management. | Easy account recovery and moderation. |
 
 ### Platform Support
 - ✅ **Velocity 3.x** (1.21+)
@@ -71,10 +68,6 @@ Built for **scalability** and **production deployments**, it features:
 ```bash
 # Build
 ./gradlew shadowJar
-
-# Deploy to Velocity plugins folder
-# Configure config.conf (ensure web port is open)
-# Restart proxy
 ```
 
 For containerized deployments, see `.compose/docker-compose.yaml`.

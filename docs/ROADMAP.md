@@ -8,9 +8,11 @@
 - [x] Premium/offline registration flow with Mojang verification
 - [x] Frontend refactor — migrated to TypeScript, extracted common UI components
 - [x] Complete HTTPS setup documentation
+- [x] I18n
 
 ## 🔶 TODO
 
+- [ ] Translations
 - [ ] Reject insecure HTTP connections on the frontend
 - [ ] Implement backup/restore functionality in admin panel
 

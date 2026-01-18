@@ -91,3 +91,13 @@ Plugin/src/main/resources/web/index.html
 Plugin/src/main/resources/locales/
 frontend/public/locales/
 Plugin/src/main/resources/web/locales/
+frontend/public/locales/
+
+### Logs ###
+*.log
+!git.log
+
+### Generated Error Page ###
+Plugin/src/main/resources/web/error.html
+Plugin/src/main/resources/web/error-*.js
+frontend/error.html

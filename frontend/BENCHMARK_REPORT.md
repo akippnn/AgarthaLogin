@@ -54,7 +54,7 @@ We analyzed the full payload (HTML + JS Assets) served to an unauthorized user a
 
 *   **Mechanism**: The Secure implementation actively rejects unauthorized requests with `401 Unauthorized` and serves a lightweight, static error page.
 *   **Unprotected (Baseline)**: Served the full Legacy React App (~1,000 KB).
-*   **Secure (Initial)**: Served the Preact Login Island (~220 KB).
+*   **Secure (Initial)**: Served the Preact Login Island (~30 KB, ~12 KB gzipped).
 *   **Secure (Hyper-Optimized)**: Serves static `error.html` + `ErrorEntry.ts` (**< 1.5 KB**).
 
 **Impact**: **99.8% Reduction in Bandwidth** per unauthorized request.

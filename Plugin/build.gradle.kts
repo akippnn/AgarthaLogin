@@ -154,6 +154,11 @@ dependencies {
     implementation("xyz.kyngs.libby:libby-paper:1.6.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("com.github.kyngs.commands:acf-velocity:7d5bf7cac0")
+    testImplementation("org.bstats:bstats-velocity:3.1.0")
+    testImplementation("com.google.guava:guava:33.3.1-jre")
+    testImplementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
+    testImplementation("org.spongepowered:configurate-hocon:4.2.0")
 }
 
 
@@ -166,6 +171,7 @@ configurations.all {
 
 tasks.test {
     useJUnitPlatform()
+    maxHeapSize = "2048m"
 }
 
 tasks.withType<ProcessResources> {

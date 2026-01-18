@@ -27,19 +27,67 @@ import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
 import xyz.kyngs.librelogin.common.database.AuthenticUser;
 import xyz.kyngs.librelogin.common.event.events.AuthenticPasswordChangeEvent;
 import xyz.kyngs.librelogin.common.event.events.AuthenticPremiumLoginSwitchEvent;
+import xyz.kyngs.librelogin.common.web.RateLimitManager;
 import xyz.kyngs.librelogin.common.web.WebSessionManager;
 
+/**
+ * Handles all HTTP requests for the API and Admin Panel.
+ * <p>
+ * Implements the {@link HttpServlet} to process GET, POST, DELETE requests.
+ * Routes traffic to specific handlers based on path (e.g. /login, /admin).
+ * Enforces Rate Limiting via {@link RateLimitManager}.
+ * </p>
+ */
 public class ApiHandler extends HttpServlet {
 
     private final AuthenticLibreLogin<?, ?> plugin;
     private final WebSessionManager sessionManager;
+    private final RateLimitManager rateLimitManager;
     private final Gson gson;
 
     public ApiHandler(
-            AuthenticLibreLogin<?, ?> plugin, WebSessionManager sessionManager, Gson gson) {
+            AuthenticLibreLogin<?, ?> plugin,
+            WebSessionManager sessionManager,
+            RateLimitManager rateLimitManager,
+            Gson gson) {
         this.plugin = plugin;
         this.sessionManager = sessionManager;
+        this.rateLimitManager = rateLimitManager;
         this.gson = gson;
+    }
+
+    /**
+     * Checks if the request is allowed by the RateLimitManager.
+     * <p>
+     * Extracts the client IP (respecting X-Forwarded-For) and queries the rate
+     * limiter.
+     * If the limit is exceeded, writes a 429 response and returns false.
+     * </p>
+     *
+     * @param req  The HTTP request.
+     * @param resp The HTTP response.
+     * @param cost The cost of the request.
+     * @return true if allowed, false if blocked.
+     * @throws IOException If writing to response fails.
+     */
+    private boolean checkRateLimit(HttpServletRequest req, HttpServletResponse resp, int cost)
+            throws IOException {
+        String ip = req.getRemoteAddr();
+        // Forwarded header support if behind proxy (CAUTION: Spoofable if not
+        // configured correctly)
+        // AgarthaLogin recommends standard proxy setup where X-Forwarded-For is
+        // trustworthy
+        String forwarded = req.getHeader("X-Forwarded-For");
+        if (forwarded != null) {
+            ip = forwarded.split(",")[0].trim();
+        }
+
+        if (!rateLimitManager.tryAcquire(ip, cost)) {
+            resp.setStatus(429);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("Too Many Requests")));
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -49,6 +97,14 @@ public class ApiHandler extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
+            int cost = 1;
+            if ("/login".equals(path) || "/register".equals(path)) {
+                cost = 5;
+            }
+
+            if (!checkRateLimit(req, resp, cost))
+                return;
+
             if ("/check-token".equals(path)) {
                 handleCheckToken(req, resp);
             } else if ("/login".equals(path)) {
@@ -78,6 +134,9 @@ public class ApiHandler extends HttpServlet {
         resp.setContentType("application/json");
 
         try {
+            if (!checkRateLimit(req, resp, 1))
+                return;
+
             if ("/user".equals(path)) {
                 handleGetUser(req, resp);
             } else if ("/check-premium".equals(path)) {
@@ -137,7 +196,8 @@ public class ApiHandler extends HttpServlet {
 
     private void handleAdminGet(HttpServletRequest req, HttpServletResponse resp, String path)
             throws IOException {
-        if (!validateAdminSession(req, resp)) return;
+        if (!validateAdminSession(req, resp))
+            return;
 
         if ("/admin/users".equals(path)) {
             handleAdminGetUsers(req, resp);
@@ -165,9 +225,8 @@ public class ApiHandler extends HttpServlet {
         var filteredUsers = allUsers.stream();
         if (search != null && !search.isEmpty()) {
             String lowerSearch = search.toLowerCase();
-            filteredUsers =
-                    filteredUsers.filter(
-                            u -> u.getLastNickname().toLowerCase().contains(lowerSearch));
+            filteredUsers = filteredUsers.filter(
+                    u -> u.getLastNickname().toLowerCase().contains(lowerSearch));
         }
 
         var userList = filteredUsers.toList();
@@ -225,10 +284,9 @@ public class ApiHandler extends HttpServlet {
         Object player = plugin.getPlatformHandle().getPlayer(user.getUuid());
         userJson.addProperty("online", player != null);
         if (player != null) {
-            boolean authorized =
-                    ((AuthenticLibreLogin<Object, Object>) plugin)
-                            .getAuthorizationProvider()
-                            .isAuthorized(player);
+            boolean authorized = ((AuthenticLibreLogin<Object, Object>) plugin)
+                    .getAuthorizationProvider()
+                    .isAuthorized(player);
             userJson.addProperty("authorized", authorized);
         }
 
@@ -277,7 +335,8 @@ public class ApiHandler extends HttpServlet {
 
     private void handleAdminPost(HttpServletRequest req, HttpServletResponse resp, String path)
             throws IOException {
-        if (!validateAdminSession(req, resp)) return;
+        if (!validateAdminSession(req, resp))
+            return;
 
         JsonObject body = gson.fromJson(req.getReader(), JsonObject.class);
 
@@ -319,8 +378,7 @@ public class ApiHandler extends HttpServlet {
             return;
         }
 
-        AuthenticLibreLogin<Object, Object> rawPlugin =
-                (AuthenticLibreLogin<Object, Object>) plugin;
+        AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
         if (rawPlugin.getAuthorizationProvider().isAuthorized(player)) {
             resp.setStatus(400);
             resp.getWriter().write(gson.toJson(new ErrorResponse("User already authorized")));
@@ -373,8 +431,7 @@ public class ApiHandler extends HttpServlet {
                             new AuthenticPremiumLoginSwitchEvent<>(user, null, plugin));
 
             // Notify player if online
-            AuthenticLibreLogin<Object, Object> rawPlugin =
-                    (AuthenticLibreLogin<Object, Object>) plugin;
+            AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
             Object player = rawPlugin.getPlatformHandle().getPlayer(user.getUuid());
             if (player != null) {
                 rawPlugin
@@ -417,8 +474,8 @@ public class ApiHandler extends HttpServlet {
                             gson.toJson(
                                     new ErrorResponse(
                                             "User must have a password set before switching to"
-                                                + " cracked mode. Use the password change feature"
-                                                + " first.")));
+                                                    + " cracked mode. Use the password change feature"
+                                                    + " first.")));
             return;
         }
 
@@ -426,8 +483,7 @@ public class ApiHandler extends HttpServlet {
         plugin.getDatabaseProvider().updateUser(user);
 
         // Notify player if online
-        AuthenticLibreLogin<Object, Object> rawPlugin =
-                (AuthenticLibreLogin<Object, Object>) plugin;
+        AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
         Object player = rawPlugin.getPlatformHandle().getPlayer(user.getUuid());
         if (player != null) {
             rawPlugin
@@ -469,8 +525,7 @@ public class ApiHandler extends HttpServlet {
                         new AuthenticPasswordChangeEvent<>(user, null, plugin, old));
 
         // Notify player if online
-        AuthenticLibreLogin<Object, Object> rawPlugin =
-                (AuthenticLibreLogin<Object, Object>) plugin;
+        AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
         Object player = rawPlugin.getPlatformHandle().getPlayer(user.getUuid());
         if (player != null) {
             var message = rawPlugin.getMessages().getMessage("info-password-changed");
@@ -554,19 +609,18 @@ public class ApiHandler extends HttpServlet {
         } catch (Exception ignored) {
         }
 
-        User user =
-                new AuthenticUser(
-                        plugin.generateNewUUID(username, premiumUuid),
-                        null,
-                        hashed,
-                        username,
-                        Timestamp.valueOf(LocalDateTime.now()),
-                        Timestamp.valueOf(LocalDateTime.now()),
-                        null,
-                        null,
-                        Timestamp.valueOf(LocalDateTime.now()),
-                        null,
-                        null);
+        User user = new AuthenticUser(
+                plugin.generateNewUUID(username, premiumUuid),
+                null,
+                hashed,
+                username,
+                Timestamp.valueOf(LocalDateTime.now()),
+                Timestamp.valueOf(LocalDateTime.now()),
+                null,
+                null,
+                Timestamp.valueOf(LocalDateTime.now()),
+                null,
+                null);
 
         plugin.getDatabaseProvider().insertUser(user);
 
@@ -588,8 +642,7 @@ public class ApiHandler extends HttpServlet {
         }
 
         // Require user to be online so they can re-register via web-auth
-        AuthenticLibreLogin<Object, Object> rawPlugin =
-                (AuthenticLibreLogin<Object, Object>) plugin;
+        AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
         Object player = rawPlugin.getPlatformHandle().getPlayer(user.getUuid());
         if (player == null) {
             resp.setStatus(400);
@@ -657,8 +710,7 @@ public class ApiHandler extends HttpServlet {
                     case "unregister" -> {
                         Object player = plugin.getPlatformHandle().getPlayer(user.getUuid());
                         if (player != null) {
-                            AuthenticLibreLogin<Object, Object> rawPlugin =
-                                    (AuthenticLibreLogin<Object, Object>) plugin;
+                            AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
                             rawPlugin.getAuthorizationProvider().unauthorize(player);
                         }
                         user.setHashedPassword(null);
@@ -694,14 +746,16 @@ public class ApiHandler extends HttpServlet {
 
     private void handleAdminDatabaseOptimize(HttpServletResponse resp) throws IOException {
         String preferredAlgo = plugin.getDefaultCryptoProvider().getIdentifier();
-        int converted = 0;
+        // int converted = 0; // Unused, actual conversion happens on login
         int failed = 0;
 
         Collection<User> allUsers = plugin.getDatabaseProvider().getAllUsers();
         for (User user : allUsers) {
             HashedPassword current = user.getHashedPassword();
-            if (current == null) continue;
-            if (preferredAlgo.equals(current.algo())) continue;
+            if (current == null)
+                continue;
+            if (preferredAlgo.equals(current.algo()))
+                continue;
 
             // We cannot re-hash without the original password
             // This endpoint is for informational purposes - actual conversion
@@ -725,7 +779,8 @@ public class ApiHandler extends HttpServlet {
 
     private void handleAdminDelete(HttpServletRequest req, HttpServletResponse resp, String path)
             throws IOException {
-        if (!validateAdminSession(req, resp)) return;
+        if (!validateAdminSession(req, resp))
+            return;
 
         if (path.startsWith("/admin/user/")) {
             String username = path.substring("/admin/user/".length());
@@ -833,8 +888,7 @@ public class ApiHandler extends HttpServlet {
                         .authorize(
                                 user,
                                 player,
-                                xyz.kyngs.librelogin.api.event.events.AuthenticatedEvent
-                                        .AuthenticationReason.LOGIN);
+                                xyz.kyngs.librelogin.api.event.events.AuthenticatedEvent.AuthenticationReason.LOGIN);
             }
 
             JsonObject response = new JsonObject();
@@ -875,8 +929,7 @@ public class ApiHandler extends HttpServlet {
         if (asPremium) {
             // Register as premium - verify with Mojang first
             try {
-                var premiumUser =
-                        plugin.getPremiumProvider().getUserForName(user.getLastNickname());
+                var premiumUser = plugin.getPremiumProvider().getUserForName(user.getLastNickname());
                 if (premiumUser == null || !premiumUser.name().equals(user.getLastNickname())) {
                     resp.setStatus(400);
                     resp.getWriter()
@@ -901,8 +954,8 @@ public class ApiHandler extends HttpServlet {
             }
         } else {
             // Normal cracked registration with password
-            xyz.kyngs.librelogin.api.crypto.HashedPassword hashed =
-                    plugin.getDefaultCryptoProvider().createHash(password);
+            xyz.kyngs.librelogin.api.crypto.HashedPassword hashed = plugin.getDefaultCryptoProvider()
+                    .createHash(password);
             if (hashed == null) {
                 resp.setStatus(400);
                 resp.getWriter().write(gson.toJson(new ErrorResponse("Password too long")));
@@ -923,8 +976,7 @@ public class ApiHandler extends HttpServlet {
                     .authorize(
                             user,
                             player,
-                            xyz.kyngs.librelogin.api.event.events.AuthenticatedEvent
-                                    .AuthenticationReason.REGISTER);
+                            xyz.kyngs.librelogin.api.event.events.AuthenticatedEvent.AuthenticationReason.REGISTER);
         }
 
         JsonObject response = new JsonObject();
@@ -969,8 +1021,7 @@ public class ApiHandler extends HttpServlet {
 
         // Use a local variable with a raw type cast for the plugin to satisfy generic
         // method call
-        AuthenticLibreLogin<Object, Object> rawPlugin =
-                (AuthenticLibreLogin<Object, Object>) plugin;
+        AuthenticLibreLogin<Object, Object> rawPlugin = (AuthenticLibreLogin<Object, Object>) plugin;
 
         Object player = rawPlugin.getPlatformHandle().getPlayer(info.playerUuid);
         if (player != null) {
@@ -980,8 +1031,7 @@ public class ApiHandler extends HttpServlet {
                         .authorize(
                                 session.user,
                                 player,
-                                xyz.kyngs.librelogin.api.event.events.AuthenticatedEvent
-                                        .AuthenticationReason.LOGIN);
+                                xyz.kyngs.librelogin.api.event.events.AuthenticatedEvent.AuthenticationReason.LOGIN);
             }
             // Invalidate the token as it has been used to authorize
             sessionManager.invalidateToken(tokenStr);
@@ -1014,11 +1064,10 @@ public class ApiHandler extends HttpServlet {
 
         // Register action (Mock action: Give OP/Log message)
         // In a real app, the body would contain the "Action Type" and "Parameters"
-        String gameCode =
-                sessionManager.registerAdminAction(
-                        () -> {
-                            plugin.getLogger().info("Admin action executed via Web Panel!");
-                        });
+        String gameCode = sessionManager.registerAdminAction(
+                () -> {
+                    plugin.getLogger().info("Admin action executed via Web Panel!");
+                });
 
         JsonObject response = new JsonObject();
         response.addProperty("success", true);
@@ -1070,5 +1119,6 @@ public class ApiHandler extends HttpServlet {
         resp.getWriter().write(gson.toJson(response));
     }
 
-    record ErrorResponse(String error) {}
+    record ErrorResponse(String error) {
+    }
 }

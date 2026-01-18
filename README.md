@@ -27,7 +27,9 @@ AgarthaLogin is a **high-performance, secure authentication system** designed fo
 
 ## ✨ Features
 
-Built for **scalability**, **security**, and **user experience**, AgarthaLogin replaces legacy chat-based auth with a modern web flow.
+Built for ~~**scalability**~~, **security**, and **user experience**, AgarthaLogin replaces legacy chat-based auth with a modern web flow.
+
+Note on [scalability](./docs/ROADMAP.md): 
 
 | Feature | Description | Benefits |
 | :--- | :--- | :--- |
@@ -35,8 +37,8 @@ Built for **scalability**, **security**, and **user experience**, AgarthaLogin r
 | 🌐 **Web Authentication** | **React + TypeScript** frontend with one-time login links. | Frictionless UX, browser autofill, no sensitive commands in chat. |
 | 👑 **Premium Auto-Login** | Automatically authenticates Mojang accounts. | No passwords needed for legitimate players; offline players protected. |
 | 🔒 **Modern Cryptography** | **Argon2ID** hashing and **TOTP** (2FA) support. | Industry-standard security against brute force and leaks. |
-| � **i18n Support** | Auto-detects client locale for backend and frontend. | Seamless localization for global player bases. |
-| � **Cross-Platform** | Native support for **Geyser/Floodgate** (Bedrock). | Works on PC, Mobile, and Console without configuration. |
+| 🌐 **i18n Support** | Auto-detects client locale for backend and frontend. | Seamless localization for global player bases. |
+| 🎮 **Cross-Platform** | Native support for **Geyser/Floodgate** (Bedrock). | Works on PC, Mobile, and Console without configuration. |
 | 🛡️ **Admin Panel** | Web-based interface for user management. | Easy account recovery and moderation. |
 
 ### Platform Support
@@ -60,6 +62,11 @@ Built for **scalability**, **security**, and **user experience**, AgarthaLogin r
 | `/api/register` | Create new account |
 | `/api/session-auth` | Verify active session |
 | `/api/admin/*` | Admin panel operations |
+
+
+> [!NOTE]
+> **Frontend optimizations are still in progress.**
+> While the main entry points are heavily optimized (<10KB gzipped), in development mode `lucide-preact` may transfer over 800kB even on simple pages (like login). This is due to Vite serving unbundled ES modules and does not reflect production performance.
 
 ## 📦 Quick Start
 

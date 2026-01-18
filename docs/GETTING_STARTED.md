@@ -66,5 +66,12 @@ For containerized setups, see the `.compose/` directory in the repository root.
 
 ## Next Steps
 
-- Set up the admin panel for user management
+- How to use the admin panel (coming soon)
 - Customize the frontend appearance (coming soon)
+
+## Testing
+
+> [!NOTE]
+> **Production Preview**: Accessing the frontend via `http://localhost` now behaves differently depending on the mode:
+> - `npm run dev` (Development): Bypasses authentication with specific mock tokens for easier debugging.
+> - `npm run preview` (Production Build): Simulates a real production environment. Authentication is **NOT bypassed**, allowing you to test edge cases and real error states (like missing tokens) even on localhost.

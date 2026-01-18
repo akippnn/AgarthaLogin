@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Check, Copy } from 'lucide-react'
+import { Check, Copy } from 'lucide-preact'
 import { Button, Card } from '../ui'
-import { colors } from '../ui/styles'
+
 
 interface GameCodeDisplayProps {
   gameCode: string;
@@ -9,7 +9,7 @@ interface GameCodeDisplayProps {
 
 export default function GameCodeDisplay({ gameCode }: GameCodeDisplayProps) {
   const [copied, setCopied] = useState(false)
-  const command = `/agarthalogin apply ${gameCode}`
+  const command = `/agarthalogin verify ${gameCode}`
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(command)
@@ -20,19 +20,19 @@ export default function GameCodeDisplay({ gameCode }: GameCodeDisplayProps) {
   return (
     <Card>
       <h2 style={{ color: 'white', marginBottom: '1rem' }}>Action Required</h2>
-      <p style={{ color: colors.textMuted, marginBottom: '1rem' }}>
+      <p className="text-muted" style={{ marginBottom: '1rem' }}>
         Run this command in-game to complete authentication:
       </p>
       <div style={{
         display: 'flex',
         gap: '0.5rem',
-        backgroundColor: colors.bgDark,
+        backgroundColor: 'var(--color-bg-dark)',
         padding: '1rem',
         borderRadius: '4px',
         fontFamily: 'monospace',
         alignItems: 'center'
       }}>
-        <span style={{ color: colors.success, flex: 1 }}>{command}</span>
+        <span style={{ color: 'var(--color-success)', flex: 1 }}>{command}</span>
         <Button variant="secondary" onClick={copyToClipboard}>
           {copied ? <Check size={16} /> : <Copy size={16} />}
         </Button>

@@ -57,8 +57,8 @@ public class ApiHandler extends HttpServlet {
                 handleRegister(req, resp);
             } else if ("/session-auth".equals(path)) {
                 handleSessionAuth(req, resp);
-            } else if ("/admin/apply".equals(path)) {
-                handleAdminApply(req, resp);
+            } else if ("/admin/verify".equals(path)) {
+                handleAdminVerify(req, resp);
             } else if (path != null && path.startsWith("/admin/")) {
                 handleAdminPost(req, resp, path);
             } else {
@@ -995,7 +995,7 @@ public class ApiHandler extends HttpServlet {
         }
     }
 
-    private void handleAdminApply(HttpServletRequest req, HttpServletResponse resp)
+    private void handleAdminVerify(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         JsonObject body = gson.fromJson(req.getReader(), JsonObject.class);
         String tokenStr = body.get("token").getAsString();

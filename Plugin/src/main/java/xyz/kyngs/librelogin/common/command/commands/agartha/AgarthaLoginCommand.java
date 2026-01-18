@@ -53,8 +53,13 @@ public class AgarthaLoginCommand<P> extends Command<P> {
         plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(message);
     }
 
-    @Subcommand("apply")
-    public void onApply(CommandIssuer issuer, String code) {
+    private final com.github.benmanes.caffeine.cache.Cache<java.util.UUID, String> confirmCache =
+            com.github.benmanes.caffeine.cache.Caffeine.newBuilder()
+                    .expireAfterWrite(15, java.util.concurrent.TimeUnit.SECONDS)
+                    .build();
+
+    @Subcommand("verify")
+    public void onVerify(CommandIssuer issuer, String code) {
         P player = plugin.getPlayerFromIssuer(issuer);
         if (player == null) return;
 
@@ -69,8 +74,30 @@ public class AgarthaLoginCommand<P> extends Command<P> {
             return;
         }
 
+        java.util.UUID uuid = plugin.getPlatformHandle().getUUIDForPlayer(player);
+        String pendingCode = confirmCache.getIfPresent(uuid);
+
+        if (pendingCode == null || !pendingCode.equals(code)) {
+            confirmCache.put(uuid, code);
+            plugin.getPlatformHandle()
+                    .getAudienceForPlayer(player)
+                    .sendMessage(
+                            Component.text(
+                                            "WARNING: You are about to authorize an Admin Session"
+                                                    + " via the Web Panel.",
+                                            NamedTextColor.RED)
+                                    .append(Component.newline())
+                                    .append(
+                                            Component.text(
+                                                    "Please run the command again to confirm.",
+                                                    NamedTextColor.YELLOW)));
+            return;
+        }
+
+        // Confirmed
         Runnable action = plugin.getWebServer().getSessionManager().getAndRemoveAdminAction(code);
         if (action != null) {
+            confirmCache.invalidate(uuid);
             action.run();
             // I18n: Use locale
             java.util.Locale locale = plugin.getPlatformHandle().getLocale(player);

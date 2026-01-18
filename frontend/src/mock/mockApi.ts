@@ -1,5 +1,5 @@
 
-import { TokenInfo, LoginResponse, RegisterResponse, CheckPremiumResponse, AdminApplyResponse } from '../lib/types';
+import { TokenInfo, LoginResponse, RegisterResponse, CheckPremiumResponse, AdminVerifyResponse } from '../lib/types';
 
 export function setupMockApi() {
   if (!import.meta.env.DEV) return;
@@ -119,9 +119,9 @@ export function setupMockApi() {
         return mockResponse({ isPremium } as CheckPremiumResponse);
     }
 
-    // /api/admin/apply
-    if (url.includes('/api/admin/apply')) {
-        return mockResponse({ success: true, sessionId: 'mock-session-id', gameCode: '123456' } as AdminApplyResponse);
+    // /api/admin/verify
+    if (url.includes('/api/admin/verify')) {
+        return mockResponse({ success: true, sessionId: 'mock-session-id', gameCode: '123456' } as AdminVerifyResponse);
     }
 
     // Pass through unrelated requests

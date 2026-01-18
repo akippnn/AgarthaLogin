@@ -28,6 +28,10 @@ export interface TokenInfo {
 
 export interface SessionUser {
   username: string;
+  uuid?: string;
+  ip?: string;
+  lastLogin?: string;
+  premium?: boolean;
 }
 
 export type ViewState = 'loading' | 'login' | 'register' | 'prompt' | 'admin' | 'authorized' | 'error';
@@ -54,7 +58,7 @@ export interface CheckPremiumResponse {
   isPremium: boolean;
 }
 
-export interface AdminApplyResponse {
+export interface AdminVerifyResponse {
   success: boolean;
   gameCode?: string;
   sessionId?: string;

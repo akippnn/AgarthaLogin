@@ -84,20 +84,8 @@ frontend/node_modules/
 frontend/dist/
 
 ### Generated Web Assets ###
-Plugin/src/main/resources/web/assets/
-Plugin/src/main/resources/web/index.html
-
-### Generated Locales ###
-Plugin/src/main/resources/locales/
-frontend/public/locales/
-Plugin/src/main/resources/web/locales/
-frontend/public/locales/
+Plugin/src/main/resources/web/
 
 ### Logs ###
 *.log
 !git.log
-
-### Generated Error Page ###
-Plugin/src/main/resources/web/error.html
-Plugin/src/main/resources/web/error-*.js
-frontend/error.html

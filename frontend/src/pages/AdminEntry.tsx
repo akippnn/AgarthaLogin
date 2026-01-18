@@ -1,13 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { render } from 'preact'
+import { useEffect, useState } from 'preact/hooks'
+import { Loader2 } from 'lucide-preact'
 import Admin from '../features/admin/Admin'
-import { colors } from '../components/ui/styles'
 import '../lib/i18n'
+import { I18nProvider } from '../lib/i18n'
 import '../index.css'
 
-if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+if (import.meta.env.DEV) {
   import('../mock/mockApi').then(({ setupMockApi }) => setupMockApi())
 }
 
@@ -19,7 +18,8 @@ export default function AdminEntry() {
 
   useEffect(() => {
     // Dev mode bypass
-    if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+    // Dev mode bypass
+    if (import.meta.env.DEV) {
       setToken('dev-token')
       setView('admin')
       return
@@ -40,6 +40,7 @@ export default function AdminEntry() {
     try {
       const res = await fetch('/api/check-token', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: t })
       })
       const data = await res.json()
@@ -62,28 +63,20 @@ export default function AdminEntry() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      backgroundColor: colors.bgDark,
-      color: colors.textPrimary
-    }}>
+    <I18nProvider>
       {view === 'loading' && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-          <Loader2 className="animate-spin" /> <span style={{ marginLeft: '0.5rem' }}>Loading...</span>
+        <div className="flex-center min-h-screen">
+          <Loader2 className="animate-spin" /> <span className="ml-2">Loading...</span>
         </div>
       )}
       {view === 'error' && (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
-          <div style={{ color: colors.error, background: 'rgba(255,107,107,0.1)', padding: '1rem', borderRadius: '4px' }}>{error}</div>
+        <div className="flex-center min-h-screen">
+          <div className="alert-error">{error}</div>
         </div>
       )}
       {view === 'admin' && <Admin token={token} onSuccess={() => { }} />}
-    </div>
+    </I18nProvider>
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <AdminEntry />
-  </React.StrictMode>,
-)
+render(<AdminEntry />, document.getElementById('root')!)

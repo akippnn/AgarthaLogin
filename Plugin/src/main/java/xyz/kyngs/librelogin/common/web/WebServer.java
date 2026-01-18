@@ -41,18 +41,19 @@ public class WebServer {
                 new ServletHolder(new ApiHandler(plugin, sessionManager, gson)), "/api/*");
 
         // Frontend Handler (Static files)
-        context.addServlet(new ServletHolder(new FrontendHandler(plugin, sessionManager)), "/*");
+        context.addServlet(
+                new ServletHolder(new FrontendHandler(plugin.getClass(), sessionManager)), "/*");
 
         new Thread(
-                () -> {
-                    try {
-                        server.start();
-                        server.join();
-                        plugin.getLogger().info("Web server started on port " + port);
-                    } catch (Exception e) {
-                        plugin.getLogger().error("Failed to start web server", e);
-                    }
-                })
+                        () -> {
+                            try {
+                                server.start();
+                                server.join();
+                                plugin.getLogger().info("Web server started on port " + port);
+                            } catch (Exception e) {
+                                plugin.getLogger().error("Failed to start web server", e);
+                            }
+                        })
                 .start();
     }
 

@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   Users, RefreshCw, Search, ChevronLeft, ChevronRight,
   Crown, User as UserIcon, UserMinus, Trash2, Check, X, AlertTriangle
-} from 'lucide-react'
+} from 'lucide-preact'
 import { Button, Input, Card, Badge, Alert, ConfirmDialog } from '../ui'
-import { styles, colors } from '../ui/styles'
+
 import type { User, UsersResponse } from '../../lib/types'
 import UserModal from './UserModal'
 
@@ -141,7 +141,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
   return (
     <div>
       {message && (
-        <Alert type={message.type} onDismiss={() => setMessage(null)}>
+        <Alert variant={message.type}>
           {message.text}
         </Alert>
       )}
@@ -160,7 +160,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
 
       {selectedUsers.size > 0 && (
         <Card style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <span style={{ color: colors.textMuted }}>{selectedUsers.size} selected</span>
+          <span className="text-muted">{selectedUsers.size} selected</span>
           <Button variant="secondary" onClick={() => handleBulkAction('premium')} icon={<Crown size={16} />}>
             Set Premium
           </Button>
@@ -177,36 +177,36 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
       )}
 
       <Card>
-        <table style={styles.table}>
+        <table className="table">
           <thead>
             <tr>
-              <th style={styles.th}>
+              <th>
                 <input type="checkbox" checked={selectedUsers.size === users.length && users.length > 0} onChange={toggleSelectAll} />
               </th>
-              <th style={styles.th}>Username</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>2FA</th>
-              <th style={styles.th}>Actions</th>
+              <th>Username</th>
+              <th>Status</th>
+              <th>2FA</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} style={{ ...styles.td, textAlign: 'center' }}>Loading...</td></tr>
+              <tr><td colSpan={5} style={{ textAlign: 'center' }}>Loading...</td></tr>
             ) : users.length === 0 ? (
-              <tr><td colSpan={5} style={{ ...styles.td, textAlign: 'center' }}>No users found</td></tr>
+              <tr><td colSpan={5} style={{ textAlign: 'center' }}>No users found</td></tr>
             ) : users.map(user => (
               <tr key={user.uuid}>
-                <td style={styles.td}>
+                <td>
                   <input type="checkbox" checked={selectedUsers.has(user.username)} onChange={() => toggleSelect(user.username)} />
                 </td>
-                <td style={styles.td}>{user.username}</td>
-                <td style={styles.td}>
+                <td>{user.username}</td>
+                <td>
                   {user.premium
                     ? <Badge variant="premium">Premium</Badge>
                     : <Badge variant="cracked">Cracked</Badge>}
                 </td>
-                <td style={styles.td}>{user.has2fa ? <Check size={16} color={colors.success} /> : <X size={16} color="#868e96" />}</td>
-                <td style={styles.td}>
+                <td>{user.has2fa ? <Check size={16} color="var(--color-success)" /> : <X size={16} color="#868e96" />}</td>
+                <td>
                   <div style={{ display: 'flex', gap: '0.25rem' }}>
                     <Button variant="secondary" onClick={() => fetchUserDetails(user.username)} style={{ padding: '0.25rem 0.5rem' }}>
                       <Users size={14} />
@@ -225,7 +225,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
         </table>
 
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem' }}>
-          <span style={{ color: colors.textMuted }}>Total: {total} users</span>
+          <span className="text-muted">Total: {total} users</span>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             <Button
               variant="secondary"
@@ -233,7 +233,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
               disabled={page === 0}
               icon={<ChevronLeft size={16} />}
             />
-            <span style={{ color: colors.textSecondary, padding: '0.5rem' }}>Page {page + 1}</span>
+            <span style={{ color: 'var(--color-text-secondary)', padding: '0.5rem' }}>Page {page + 1}</span>
             <Button
               variant="secondary"
               onClick={() => setPage(p => p + 1)}
@@ -267,7 +267,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
           requireType={confirmAction.username}
           onConfirm={() => handleDelete(confirmAction.username!)}
           onCancel={() => setConfirmAction(null)}
-          icon={<AlertTriangle color={colors.dangerLight} />}
+          icon={<AlertTriangle color="var(--color-danger-light)" />}
         />
       )}
 
@@ -279,7 +279,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
           requireType={confirmAction.username}
           onConfirm={() => handleUnregister(confirmAction.username!)}
           onCancel={() => setConfirmAction(null)}
-          icon={<AlertTriangle color={colors.dangerLight} />}
+          icon={<AlertTriangle color="var(--color-danger-light)" />}
         />
       )}
 
@@ -291,7 +291,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
           requireType="DELETE"
           onConfirm={() => handleBulkAction('delete')}
           onCancel={() => setConfirmAction(null)}
-          icon={<AlertTriangle color={colors.dangerLight} />}
+          icon={<AlertTriangle color="var(--color-danger-light)" />}
         />
       )}
 
@@ -303,7 +303,7 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
           requireType="UNREGISTER"
           onConfirm={() => handleBulkAction('unregister')}
           onCancel={() => setConfirmAction(null)}
-          icon={<AlertTriangle color={colors.dangerLight} />}
+          icon={<AlertTriangle color="var(--color-danger-light)" />}
         />
       )}
     </div>

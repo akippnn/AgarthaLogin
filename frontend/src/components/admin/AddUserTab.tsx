@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { UserPlus } from 'lucide-react'
+import { useState } from 'preact/hooks'
+import { JSX } from 'preact'
+import { UserPlus } from 'lucide-preact'
 import { Button, Input, Card, Alert } from '../ui'
-import { colors } from '../ui/styles'
+
 
 interface AddUserTabProps {
   sessionId: string;
@@ -20,7 +21,7 @@ export default function AddUserTab({ sessionId }: AddUserTabProps) {
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState<Message | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
     try {
@@ -50,27 +51,30 @@ export default function AddUserTab({ sessionId }: AddUserTabProps) {
       </h2>
 
       {message && (
-        <Alert type={message.type} onDismiss={() => setMessage(null)}>
+        <Alert variant={message.type}>
           {message.text}
         </Alert>
       )}
 
       <form onSubmit={handleSubmit}>
         <div style={{ marginBottom: '1rem' }}>
-          <label style={{ color: colors.textMuted, display: 'block', marginBottom: '0.5rem' }}>Username</label>
+          <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Username</label>
           <Input
             value={username}
-            onChange={e => setUsername(e.target.value)}
+            onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setUsername(e.currentTarget.value)}
             required
+            placeholder="Username"
           />
         </div>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ color: colors.textMuted, display: 'block', marginBottom: '0.5rem' }}>Password</label>
+
+        <div style={{ marginBottom: '1.5rem' }}>
+          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Password</label>
           <Input
             type="password"
             value={password}
-            onChange={e => setPassword(e.target.value)}
+            onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}
             required
+            placeholder="Password"
           />
         </div>
         <Button

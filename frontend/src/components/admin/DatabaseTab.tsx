@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { Database, RefreshCw, Download, Upload } from 'lucide-react'
+import { Database, RefreshCw, Download, Upload } from 'lucide-preact'
 import { Button, Card, Alert } from '../ui'
-import { colors } from '../ui/styles'
+
 import type { OptimizeResponse } from '../../lib/types'
 
 interface DatabaseTabProps {
@@ -38,7 +38,7 @@ export default function DatabaseTab({ sessionId }: DatabaseTabProps) {
   return (
     <div>
       {message && (
-        <Alert type={message.type} onDismiss={() => setMessage(null)}>
+        <Alert variant={message.type}>
           {message.text}
         </Alert>
       )}
@@ -48,7 +48,7 @@ export default function DatabaseTab({ sessionId }: DatabaseTabProps) {
           <Database size={20} />
           <div>Database Optimization</div>
         </h2>
-        <p style={{ color: colors.textMuted, marginBottom: '1rem' }}>
+        <p className="text-muted" style={{ marginBottom: '1rem' }}>
           Check how many users are using legacy password hash algorithms.
           Hashes are automatically upgraded to the preferred algorithm on next login.
         </p>
@@ -61,10 +61,10 @@ export default function DatabaseTab({ sessionId }: DatabaseTabProps) {
         </Button>
 
         {optimizeResult && (
-          <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: colors.bgDark, borderRadius: '4px' }}>
-            <p style={{ color: colors.textSecondary }}>Preferred Algorithm: <strong>{optimizeResult.preferredAlgo}</strong></p>
-            <p style={{ color: colors.textSecondary }}>Users with legacy hashes: <strong>{optimizeResult.usersNeedingConversion}</strong></p>
-            <p style={{ color: colors.textMuted, marginTop: '0.5rem', fontSize: '0.875rem' }}>{optimizeResult.message}</p>
+          <div style={{ marginTop: '1rem', padding: '1rem', backgroundColor: 'var(--color-bg-dark)', borderRadius: '4px' }}>
+            <p className="text-secondary">Preferred Algorithm: <strong>{optimizeResult.preferredAlgo}</strong></p>
+            <p className="text-secondary">Users with legacy hashes: <strong>{optimizeResult.usersNeedingConversion}</strong></p>
+            <p className="text-muted" style={{ marginTop: '0.5rem', fontSize: '0.875rem' }}>{optimizeResult.message}</p>
           </div>
         )}
       </Card>
@@ -74,7 +74,7 @@ export default function DatabaseTab({ sessionId }: DatabaseTabProps) {
           <Download size={20} />
           <div>Backup & Restore</div>
         </h2>
-        <p style={{ color: colors.textMuted, marginBottom: '1rem' }}>
+        <p className="text-muted" style={{ marginBottom: '1rem' }}>
           Download a backup of the authentication database or restore from a previous backup.
         </p>
         <div style={{ display: 'flex', gap: '1rem' }}>
@@ -85,7 +85,7 @@ export default function DatabaseTab({ sessionId }: DatabaseTabProps) {
             Restore Backup
           </Button>
         </div>
-        <p style={{ color: colors.dangerLight, marginTop: '1rem', fontSize: '0.875rem' }}>
+        <p style={{ color: 'var(--color-danger-light)', marginTop: '1rem', fontSize: '0.875rem' }}>
           ⚠️ Backup/Restore functionality coming soon
         </p>
       </Card>

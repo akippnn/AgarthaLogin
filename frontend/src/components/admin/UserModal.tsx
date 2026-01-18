@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useState } from 'preact/hooks'
+import { JSX } from 'preact'
 import {
   LogIn, Crown, User as UserIcon, Key, ArrowRight, X
-} from 'lucide-react'
+} from 'lucide-preact'
 import { Button, Input, Badge, Modal, Alert } from '../ui'
-import { colors } from '../ui/styles'
+
 import type { User } from '../../lib/types'
 
 interface UserModalProps {
@@ -18,6 +19,7 @@ const API_BASE = '/api'
 export default function UserModal({ user, onClose, onAction, sessionId }: UserModalProps) {
   const [loading, setLoading] = useState(false)
   const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('') // Added
   const [newUsername, setNewUsername] = useState('')
   const [modalError, setModalError] = useState('')
 
@@ -51,7 +53,7 @@ export default function UserModal({ user, onClose, onAction, sessionId }: UserMo
   }
 
   return (
-    <Modal>
+    <Modal isOpen={!!user} onClose={onClose}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h2 style={{ color: 'white' }}>{user.username}</h2>
         <Button variant="secondary" onClick={onClose}>
@@ -60,14 +62,14 @@ export default function UserModal({ user, onClose, onAction, sessionId }: UserMo
       </div>
 
       {modalError && (
-        <Alert type="error" onDismiss={() => setModalError('')}>
+        <Alert variant="error">
           {modalError}
         </Alert>
       )}
 
       <div style={{ marginBottom: '1.5rem' }}>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>UUID: <span style={{ color: colors.textSecondary }}>{user.uuid}</span></p>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>UUID: <span className="text-secondary">{user.uuid}</span></p>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>
           Status: {user.premium
             ? <Badge variant="premium">Premium</Badge>
             : <Badge variant="cracked">Cracked</Badge>}
@@ -76,19 +78,19 @@ export default function UserModal({ user, onClose, onAction, sessionId }: UserMo
             ? <Badge variant="online">Online</Badge>
             : <Badge variant="offline">Offline</Badge>}
         </p>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>2FA: {user.has2fa ? 'Enabled' : 'Disabled'}</p>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>Hash Algorithm: {user.hashAlgo || 'N/A'}</p>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>IP: {user.ip || 'N/A'}</p>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>Email: {user.email || 'N/A'}</p>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>Last Seen: {user.lastSeen || 'N/A'}</p>
-        <p style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>Join Date: {user.joinDate || 'N/A'}</p>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>2FA: {user.has2fa ? 'Enabled' : 'Disabled'}</p>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>Hash Algorithm: {user.hashAlgo || 'N/A'}</p>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>IP: {user.ip || 'N/A'}</p>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>Email: {user.email || 'N/A'}</p>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>Last Seen: {user.lastSeen || 'N/A'}</p>
+        <p className="text-muted" style={{ marginBottom: '0.5rem' }}>Join Date: {user.joinDate || 'N/A'}</p>
       </div>
 
       {user.alts && user.alts.length > 0 && (
         <div style={{ marginBottom: '1.5rem' }}>
-          <h3 style={{ color: colors.textMuted, marginBottom: '0.5rem' }}>Potential Alts (by IP)</h3>
+          <h3 className="text-muted" style={{ marginBottom: '0.5rem' }}>Potential Alts (by IP)</h3>
           {user.alts.map(alt => (
-            <p key={alt.uuid} style={{ color: colors.textSecondary, paddingLeft: '1rem' }}>
+            <p key={alt.uuid} className="text-secondary" style={{ paddingLeft: '1rem' }}>
               • {alt.username} (last seen: {alt.lastSeen || 'N/A'})
             </p>
           ))}
@@ -108,31 +110,35 @@ export default function UserModal({ user, onClose, onAction, sessionId }: UserMo
       </div>
 
       <div style={{ marginBottom: '1rem' }}>
-        <label style={{ color: colors.textMuted, display: 'block', marginBottom: '0.5rem' }}>Change Password</label>
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <div style={{ flex: 1 }}>
-            <Input
-              type="password"
-              value={newPassword}
-              onChange={e => setNewPassword(e.target.value)}
-              placeholder="New password"
-            />
-          </div>
+        <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Change Password</label>
+        <div style={{ display: 'flex', gap: '0.5rem', flexDirection: 'column' }}> {/* Changed to column for stacking inputs */}
+          <Input
+            type="password"
+            value={newPassword}
+            onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setNewPassword(e.currentTarget.value)}
+            placeholder="New password"
+          />
+          <Input
+            type="password"
+            value={confirmPassword}
+            onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setConfirmPassword(e.currentTarget.value)}
+            placeholder="Confirm password"
+          />
           <Button
             onClick={() => doAction('password', { password: newPassword })}
-            disabled={loading || !newPassword}
+            disabled={loading || !newPassword || !confirmPassword || newPassword !== confirmPassword}
             icon={<Key size={16} />}
           />
         </div>
       </div>
 
       <div style={{ marginBottom: '1rem' }}>
-        <label style={{ color: colors.textMuted, display: 'block', marginBottom: '0.5rem' }}>Migrate Username</label>
+        <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Migrate Username</label>
         <div style={{ display: 'flex', gap: '0.5rem' }}>
           <div style={{ flex: 1 }}>
             <Input
               value={newUsername}
-              onChange={e => setNewUsername(e.target.value)}
+              onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setNewUsername(e.currentTarget.value)}
               placeholder="New username"
             />
           </div>

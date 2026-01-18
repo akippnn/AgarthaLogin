@@ -13,17 +13,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
-
 import xyz.kyngs.librelogin.common.web.WebSessionManager;
 
 public class FrontendHandler extends HttpServlet {
 
-    private final AuthenticLibreLogin<?, ?> plugin;
+    private final Class<?> resourceClass;
     private final WebSessionManager sessionManager;
 
-    public FrontendHandler(AuthenticLibreLogin<?, ?> plugin, WebSessionManager sessionManager) {
-        this.plugin = plugin;
+    public FrontendHandler(Class<?> resourceClass, WebSessionManager sessionManager) {
+        this.resourceClass = resourceClass;
         this.sessionManager = sessionManager;
     }
 
@@ -61,32 +59,30 @@ public class FrontendHandler extends HttpServlet {
                     } else if (path.equals("/sessionauth.html")
                             && tokenData.type == WebSessionManager.TokenType.LOGIN) {
                         authorized = true;
+                    } else if (path.equals("/login.html")
+                            && tokenData.type == WebSessionManager.TokenType.LOGIN) {
+                        authorized = true;
                     }
                 }
             }
 
             if (!authorized) {
-                // Serve login.html instead
-                path = "/login.html";
+                resp.setStatus(401);
+                path = "/error.html";
             }
         }
 
-        try (InputStream is = plugin.getClass().getResourceAsStream("/web" + path)) {
+        try (InputStream is = resourceClass.getResourceAsStream("/web" + path)) {
             if (is == null) {
                 resp.setStatus(404);
                 return;
             }
 
-            if (path.endsWith(".html"))
-                resp.setContentType("text/html");
-            else if (path.endsWith(".js"))
-                resp.setContentType("application/javascript");
-            else if (path.endsWith(".css"))
-                resp.setContentType("text/css");
-            else if (path.endsWith(".png"))
-                resp.setContentType("image/png");
-            else if (path.endsWith(".svg"))
-                resp.setContentType("image/svg+xml");
+            if (path.endsWith(".html")) resp.setContentType("text/html");
+            else if (path.endsWith(".js")) resp.setContentType("application/javascript");
+            else if (path.endsWith(".css")) resp.setContentType("text/css");
+            else if (path.endsWith(".png")) resp.setContentType("image/png");
+            else if (path.endsWith(".svg")) resp.setContentType("image/svg+xml");
 
             OutputStream os = resp.getOutputStream();
             byte[] buffer = new byte[1024];
@@ -98,18 +94,13 @@ public class FrontendHandler extends HttpServlet {
     }
 
     private String sanitizePath(String path) {
-        if (path == null)
-            return null;
+        if (path == null) return null;
 
         // Defaulting logic
-        if (path.equals("/") || path.equals("/login"))
-            return "/login.html";
-        if (path.equals("/register"))
-            return "/register.html";
-        if (path.equals("/sessionauth"))
-            return "/sessionauth.html";
-        if (path.equals("/admin"))
-            return "/admin.html";
+        if (path.equals("/") || path.equals("/login")) return "/login.html";
+        if (path.equals("/register")) return "/register.html";
+        if (path.equals("/sessionauth")) return "/sessionauth.html";
+        if (path.equals("/admin")) return "/admin.html";
 
         if (!path.contains(".")) {
             return "/login.html";
@@ -132,6 +123,7 @@ public class FrontendHandler extends HttpServlet {
     private boolean isProtected(String path) {
         return path.equals("/admin.html")
                 || path.equals("/register.html")
-                || path.equals("/sessionauth.html");
+                || path.equals("/sessionauth.html")
+                || path.equals("/login.html");
     }
 }

@@ -7,3 +7,4 @@ export * from './Alert';
 export * from './ConfirmDialog';
 export * from './TextButton';
 export * from './Stack';
+export * from './Tabs';

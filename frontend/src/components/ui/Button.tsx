@@ -1,14 +1,13 @@
-import React from 'react';
-import {
-  buttonStyle, buttonPrimaryStyle, buttonSecondaryStyle,
-  buttonDangerStyle, buttonSuccessStyle
-} from './styles';
+import { ComponentChildren, JSX } from 'preact';
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends JSX.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'danger' | 'success';
   loading?: boolean;
-  icon?: React.ReactNode;
+  icon?: ComponentChildren;
   fullWidth?: boolean;
+  disabled?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  onClick?: JSX.MouseEventHandler<HTMLButtonElement>;
 }
 
 export function Button({
@@ -18,31 +17,27 @@ export function Button({
   fullWidth,
   children,
   disabled,
-  style,
+  className = '',
   ...props
 }: ButtonProps) {
-  const variantStyles = {
-    primary: buttonPrimaryStyle,
-    secondary: buttonSecondaryStyle,
-    danger: buttonDangerStyle,
-    success: buttonSuccessStyle,
-  };
+  const baseClass = 'btn';
+  const variantClass = `btn-${variant}`;
+  const widthClass = fullWidth ? 'btn-full' : '';
 
   return (
     <button
       {...props}
       disabled={disabled || loading}
-      style={{
-        ...buttonStyle,
-        ...variantStyles[variant],
-        width: fullWidth ? '100%' : undefined,
-        justifyContent: fullWidth ? 'center' : undefined,
-        opacity: (disabled || loading) ? 0.7 : 1,
-        ...style,
-      }}
+      className={`${baseClass} ${variantClass} ${widthClass} ${className}`}
     >
-      {icon}
-      {loading ? 'Loading...' : children}
+      {loading ? (
+        <>Loading...</>
+      ) : (
+        <>
+          {icon}
+          {children}
+        </>
+      )}
     </button>
   );
 }

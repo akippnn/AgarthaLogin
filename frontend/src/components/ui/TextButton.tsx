@@ -1,34 +1,26 @@
+import { ComponentChildren, JSX } from 'preact';
 
-import React from 'react';
-import { colors } from './styles';
-
-interface TextButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  icon?: React.ReactNode;
-  children: React.ReactNode;
+export interface TextButtonProps extends JSX.HTMLAttributes<HTMLButtonElement> {
+  children: ComponentChildren;
 }
 
-export function TextButton({ icon, children, style, ...props }: TextButtonProps) {
+export function TextButton({ style, className = '', children, ...props }: TextButtonProps) {
   return (
     <button
       type="button"
+      className={`text-button ${className}`}
       style={{
-        width: '100%',
-        padding: '0.5rem',
-        backgroundColor: 'transparent',
-        color: colors.textMuted,
+        background: 'none',
         border: 'none',
+        padding: 0,
+        color: 'var(--color-primary)',
         cursor: 'pointer',
-        marginTop: '0.75rem',
+        textDecoration: 'underline',
         fontSize: '0.875rem',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '0.5rem',
-        ...style
+        ...(typeof style === 'object' ? style : {})
       }}
       {...props}
     >
-      {icon}
       {children}
     </button>
   );

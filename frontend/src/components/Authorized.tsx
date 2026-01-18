@@ -1,6 +1,6 @@
-import { CheckCircle2 } from 'lucide-react'
-
-import { useTranslation } from 'react-i18next';
+import { CheckCircle2 } from 'lucide-preact'
+import { Button } from './ui/Button'
+import { useTranslation } from '../lib/i18n';
 
 export default function Authorized() {
   const { t } = useTranslation();

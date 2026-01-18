@@ -1,26 +1,13 @@
-import React from 'react';
-import {
-  badgeStyle, badgePremiumStyle, badgeCrackedStyle,
-  badgeOnlineStyle, badgeOfflineStyle
-} from './styles';
-
-export type BadgeVariant = 'premium' | 'cracked' | 'online' | 'offline';
+import { ComponentChildren } from 'preact';
 
 export interface BadgeProps {
-  variant: BadgeVariant;
-  children: React.ReactNode;
+  variant?: 'premium' | 'cracked' | 'online' | 'offline';
+  children: ComponentChildren;
 }
 
-export function Badge({ variant, children }: BadgeProps) {
-  const variantStyles: Record<BadgeVariant, React.CSSProperties> = {
-    premium: badgePremiumStyle,
-    cracked: badgeCrackedStyle,
-    online: badgeOnlineStyle,
-    offline: badgeOfflineStyle,
-  };
-
+export function Badge({ variant = 'online', children }: BadgeProps) {
   return (
-    <span style={{ ...badgeStyle, ...variantStyles[variant] }}>
+    <span className={`badge badge-${variant}`}>
       {children}
     </span>
   );

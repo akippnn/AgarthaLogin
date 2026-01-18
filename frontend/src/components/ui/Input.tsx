@@ -1,37 +1,32 @@
-import React from 'react';
-import { colors } from './colors';
-import { inputStyle } from './styles';
+import { ComponentChildren, JSX } from 'preact';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  icon?: React.ReactNode;
+export interface InputProps extends JSX.HTMLAttributes<HTMLInputElement> {
+  icon?: ComponentChildren;
+  value?: string | number;
+  type?: string;
+  placeholder?: string;
+  required?: boolean;
+  autoComplete?: string;
 }
 
-export function Input({ icon, style, ...props }: InputProps) {
+export function Input({ icon, className = '', ...props }: InputProps) {
   if (icon) {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        background: colors.bgInput,
-        borderRadius: '4px',
-        padding: '0.5rem',
-        border: `1px solid ${colors.bgHover}`
-      }}>
-        <span style={{ marginRight: '0.5rem', color: colors.textMuted }}>{icon}</span>
+      <div className={`input-wrapper ${className}`}>
+        <span className="input-icon">{icon}</span>
         <input
           {...props}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'white',
-            width: '100%',
-            outline: 'none',
-            ...style,
-          }}
+          className="input-field"
         />
       </div>
     );
   }
 
-  return <input {...props} style={{ ...inputStyle, ...style }} />;
+  return (
+    <input
+      {...props}
+      className={`input-wrapper input-field ${className}`}
+      style={{ display: 'block' }} // override flex display from input-wrapper if applied directly
+    />
+  );
 }

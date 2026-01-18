@@ -1,14 +1,14 @@
-import React from 'react';
-import { cardStyle } from './styles';
+import { ComponentChildren, JSX } from 'preact';
 
 export interface CardProps {
-  children: React.ReactNode;
-  style?: React.CSSProperties;
+  children: ComponentChildren;
+  className?: string;
+  style?: string | JSX.CSSProperties;
 }
 
-export function Card({ children, style }: CardProps) {
+export function Card({ children, className = '', style }: CardProps) {
   return (
-    <div style={{ ...cardStyle, ...style }}>
+    <div className={`card ${className}`} style={style}>
       {children}
     </div>
   );

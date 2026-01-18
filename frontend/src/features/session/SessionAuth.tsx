@@ -1,9 +1,9 @@
-import { useState } from 'react'
-import { ShieldCheck, LogOut } from 'lucide-react'
-import { Button } from '../../components/ui'
-import { colors } from '../../components/ui/styles'
+import { useState } from 'preact/hooks'
+import { ShieldCheck, LogOut } from 'lucide-preact'
+import { Button } from '../../components/ui/Button'
 
-import { useTranslation } from 'react-i18next';
+
+import { useTranslation } from '../../lib/i18n';
 
 interface SessionAuthProps {
   token: string;
@@ -42,14 +42,14 @@ export default function SessionAuth({ token, sessionId, username, onSuccess, onL
 
   return (
     <div>
-      <h1 style={{ color: 'white', marginBottom: '1.5rem' }}>{t("Welcome Back!")}</h1>
-      <div style={{ marginBottom: '2rem' }}>
-        <ShieldCheck size={48} color={colors.success} style={{ marginBottom: '1rem' }} />
-        <p>{t("You are logged in as")} <b>{username}</b>.</p>
-        <p style={{ color: '#aaa', fontSize: '0.9rem' }}>{t("Do you want to authorize this game session?")}</p>
+      <h1 className="typography-heading" style={{ marginBottom: '1.5rem' }}>{t("Welcome Back!")}</h1>
+      <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <ShieldCheck size={48} color="var(--color-success)" style={{ marginBottom: '1rem' }} />
+        <p style={{ marginBottom: '0.5rem' }}>{t("You are logged in as")} <b>{username}</b>.</p>
+        <p className="text-secondary" style={{ fontSize: '0.9rem' }}>{t("Do you want to authorize this game session?")}</p>
       </div>
 
-      {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
+      {error && <div className="alert-error" style={{ marginBottom: '1rem' }}>{error}</div>}
 
       <Button
         onClick={handleConfirm}

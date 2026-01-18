@@ -1,15 +1,15 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { useEffect, useState } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-preact'
 import Register from '../features/register/Register'
 import Authorized from '../components/Authorized'
-import { colors } from '../components/ui/styles'
 import { TokenInfo } from '../lib/types'
 import '../lib/i18n'
+import { I18nProvider } from '../lib/i18n'
 import '../index.css'
 
-if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+if (import.meta.env.DEV) {
   import('../mock/mockApi').then(({ setupMockApi }) => setupMockApi())
 }
 
@@ -22,9 +22,8 @@ export default function RegisterEntry() {
 
   useEffect(() => {
     // Dev mode bypass
-    if (import.meta.env.DEV || window.location.hostname === 'localhost') {
+    if (import.meta.env.DEV) {
       const isOffline = window.location.search.includes('offline=true');
-      const isPremium = window.location.search.includes('premium=true');
 
       // Default to DevUser (Premium) unless offline is specified
       const username = isOffline ? 'OfflineUser' : 'DevUser';
@@ -89,21 +88,14 @@ export default function RegisterEntry() {
     setView('authorized')
   }
 
+  // Island Architecture: Render only the content, layout is in HTML
   return (
-    <div style={{
-      display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh',
-      backgroundColor: colors.bgDark, color: colors.textPrimary, padding: '1rem'
-    }}>
-      <div style={{
-        backgroundColor: colors.bgCard, padding: '2rem', borderRadius: '8px',
-        boxShadow: '0 4px 6px rgba(0,0,0,0.3)', width: '100%', maxWidth: '400px', textAlign: 'center'
-      }}>
-        {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
-        {view === 'error' && <div style={{ color: colors.error, background: 'rgba(255,107,107,0.1)', padding: '0.5rem', borderRadius: '4px' }}>{error}</div>}
-        {view === 'register' && <Register token={token} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
-        {view === 'authorized' && <Authorized />}
-      </div>
-    </div>
+    <I18nProvider>
+      {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
+      {view === 'error' && <div className="alert-error">{error}</div>}
+      {view === 'register' && <Register token={token} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
+      {view === 'authorized' && <Authorized />}
+    </I18nProvider>
   )
 }
 

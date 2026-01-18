@@ -1,13 +1,13 @@
+import { ComponentChildren, JSX } from 'preact';
 
-import React from 'react';
-
-interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface StackProps {
+  children: ComponentChildren;
   direction?: 'row' | 'column';
-  gap?: string | number;
-  align?: 'start' | 'center' | 'end' | 'stretch' | 'baseline';
-  justify?: 'start' | 'center' | 'end' | 'between' | 'around';
-  width?: string;
-  padding?: string | number;
+  gap?: number | string;
+  align?: 'start' | 'center' | 'end' | 'stretch';
+  justify?: 'start' | 'center' | 'end' | 'between';
+  className?: string;
+  style?: string | JSX.CSSProperties;
 }
 
 export function Stack({
@@ -16,41 +16,34 @@ export function Stack({
   gap = '1rem',
   align = 'stretch',
   justify = 'start',
-  width = '100%',
-  padding = 0,
-  style,
-  ...props
+  className = '',
+  style
 }: StackProps) {
-
-  const justifyContentMap: Record<string, string> = {
+  const alignItems = {
     start: 'flex-start',
-    end: 'flex-end',
     center: 'center',
-    between: 'space-between',
-    around: 'space-around'
-  };
+    end: 'flex-end',
+    stretch: 'stretch'
+  }[align];
 
-  const alignItemsMap: Record<string, string> = {
+  const justifyContent = {
     start: 'flex-start',
-    end: 'flex-end',
     center: 'center',
-    stretch: 'stretch',
-    baseline: 'baseline'
-  };
+    end: 'flex-end',
+    between: 'space-between'
+  }[justify];
 
   return (
     <div
+      className={`stack ${className}`}
       style={{
         display: 'flex',
         flexDirection: direction,
         gap,
-        alignItems: alignItemsMap[align],
-        justifyContent: justifyContentMap[justify],
-        width,
-        padding,
-        ...style
+        alignItems,
+        justifyContent,
+        ...(typeof style === 'object' ? style : {})
       }}
-      {...props}
     >
       {children}
     </div>

@@ -1,9 +1,13 @@
-import { useState } from 'react'
-import { KeyRound } from 'lucide-react'
-import { Button, Input, Stack } from '../../components/ui'
-import { colors } from '../../components/ui/styles'
+
+import { useState } from 'preact/hooks'
+import { JSX } from 'preact'
+import { KeyRound } from 'lucide-preact'
+import { Button } from '../../components/ui/Button'
+import { Input } from '../../components/ui/Input'
+import { Stack } from '../../components/ui'
+
 import type { LoginResponse } from '../../lib/types'
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../../lib/i18n';
 
 interface LoginProps {
   token: string;
@@ -43,13 +47,13 @@ export default function Login({ token, username, onSuccess }: LoginProps) {
       <h1 className="typography-heading">{t("Login")}</h1>
       <p style={{ marginBottom: '1rem' }}>{t("Welcome back,")} <b>{username}</b></p>
 
-      {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
+      {error && <div className="alert-error" style={{ marginBottom: '1rem' }}>{error}</div>}
 
       <Stack gap="1rem">
         <Input
           type="password"
           value={pass}
-          onChange={(e) => setPass(e.target.value)}
+          onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setPass(e.currentTarget.value)}
           placeholder={t("Password")}
           icon={<KeyRound size={18} />}
           autoFocus

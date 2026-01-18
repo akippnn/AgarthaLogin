@@ -1,58 +1,66 @@
-import React from 'react';
-import { colors } from './colors';
+import { useState } from 'preact/hooks';
+import { ComponentChildren, JSX } from 'preact';
+import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
-import { Modal } from './Modal';
 
 export interface ConfirmDialogProps {
+  isOpen: boolean;
   title: string;
   message: string;
-  confirmText?: string;
+  confirmLabel?: string;
+  isDangerous?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   requireType?: string;
-  icon?: React.ReactNode;
+  icon?: ComponentChildren;
 }
 
 export function ConfirmDialog({
+  isOpen,
   title,
   message,
-  confirmText = 'Confirm',
+  confirmLabel = 'Confirm',
+  isDangerous = false,
   onConfirm,
   onCancel,
   requireType,
   icon
 }: ConfirmDialogProps) {
-  const [typed, setTyped] = React.useState('');
+  const [typed, setTyped] = useState('');
   const canConfirm = !requireType || typed === requireType;
 
+  if (!isOpen) return null;
+
   return (
-    <Modal>
-      <h2 style={{ color: 'white', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+    <Modal isOpen={isOpen} onClose={onCancel}>
+      <h3 className="typography-heading text-xl mb-4 flex items-center gap-2">
         {icon}
         {title}
-      </h2>
-      <p style={{ color: colors.textMuted, marginBottom: '1rem' }}>{message}</p>
+      </h3>
+      <p className="typography-subheading mb-4 text-muted">{message}</p>
+
       {requireType && (
-        <div style={{ marginBottom: '1rem' }}>
-          <p style={{ color: colors.error, marginBottom: '0.5rem' }}>
+        <div className="mb-4">
+          <p className="text-danger mb-2">
             Type <strong>{requireType}</strong> to confirm:
           </p>
           <Input
             value={typed}
-            onChange={e => setTyped(e.target.value)}
+            onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setTyped(e.currentTarget.value)}
             placeholder={requireType}
           />
         </div>
       )}
-      <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end' }}>
+
+      <div className="flex justify-end gap-4 mt-6">
         <Button variant="secondary" onClick={onCancel}>Cancel</Button>
         <Button
-          variant="danger"
+          variant={isDangerous ? 'danger' : 'primary'}
           onClick={onConfirm}
           disabled={!canConfirm}
         >
-          {confirmText}
+          {confirmLabel}
         </Button>
       </div>
     </Modal>

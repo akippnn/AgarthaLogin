@@ -1,34 +1,14 @@
-import React from 'react';
-import { errorStyle, successStyle } from './styles';
-
-export type AlertType = 'error' | 'success';
+import { ComponentChildren } from 'preact';
 
 export interface AlertProps {
-  type: AlertType;
-  children: React.ReactNode;
-  onDismiss?: () => void;
+  variant?: 'error' | 'success';
+  children: ComponentChildren;
 }
 
-export function Alert({ type, children, onDismiss }: AlertProps) {
-  const alertStyle = type === 'error' ? errorStyle : successStyle;
-
+export function Alert({ variant = 'error', children }: AlertProps) {
   return (
-    <div style={alertStyle}>
+    <div className={`alert-${variant}`}>
       {children}
-      {onDismiss && (
-        <button
-          style={{
-            float: 'right',
-            background: 'none',
-            border: 'none',
-            color: 'inherit',
-            cursor: 'pointer'
-          }}
-          onClick={onDismiss}
-        >
-          ×
-        </button>
-      )}
     </div>
   );
 }

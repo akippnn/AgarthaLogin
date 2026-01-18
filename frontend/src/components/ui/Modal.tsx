@@ -1,15 +1,17 @@
-import React from 'react';
-import { modalStyle, modalContentStyle } from './styles';
+import { ComponentChildren, JSX } from 'preact';
 
 export interface ModalProps {
-  children: React.ReactNode;
-  onClose?: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+  children: ComponentChildren;
 }
 
-export function Modal({ children }: ModalProps) {
+export function Modal({ isOpen, onClose, children }: ModalProps) {
+  if (!isOpen) return null;
+
   return (
-    <div style={modalStyle}>
-      <div style={modalContentStyle}>
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e: JSX.TargetedMouseEvent<HTMLDivElement>) => e.stopPropagation()}>
         {children}
       </div>
     </div>

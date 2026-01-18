@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react'
-import { UserPlus, AlertTriangle, Crown, User, X } from 'lucide-react'
-import { Button, Input, TextButton, Stack } from '../../components/ui'
-import { colors } from '../../components/ui/styles'
+import { useState, useEffect } from 'preact/hooks'
+import { UserPlus, AlertTriangle, Crown, User, X } from 'lucide-preact'
+import { Button, Input, TextButton, Stack, Alert } from '../../components/ui'
+
 import type { RegisterResponse, CheckPremiumResponse } from '../../lib/types'
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from '../../lib/i18n';
 
 type FlowState = 'loading' | 'choice' | 'premium-confirm' | 'cracked-register';
 
@@ -102,7 +102,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
     return (
       <div>
         <h1 className="typography-heading">{t("Register")}</h1>
-        <p style={{ color: colors.textMuted }}>{t("Checking username...")}</p>
+        <p className="text-muted">{t("Checking username...")}</p>
       </div>
     )
   }
@@ -115,7 +115,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
         <p style={{ marginBottom: '1rem' }}>{t("Create account for")} <b>{username}</b></p>
 
         <div className="container-warning">
-          <p style={{ color: colors.warning, fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <p style={{ color: 'var(--color-warning)', fontWeight: 'bold', marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <Crown size={18} /> {t("This is a Premium Username")}
           </p>
           <p className="typography-subheading">
@@ -123,7 +123,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           </p>
         </div>
 
-        <p style={{ color: colors.textSecondary, marginBottom: '1rem', textAlign: 'center' }}>
+        <p className="text-secondary" style={{ marginBottom: '1rem', textAlign: 'center' }}>
           {t("Do you own this Minecraft account?")}
         </p>
 
@@ -156,19 +156,19 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
       <form onSubmit={(e) => { e.preventDefault(); handlePremiumRegister(); }}>
         <div className="flex-between">
           <h1 className="typography-heading" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: 0 }}>
-            <AlertTriangle color={colors.dangerLight} size={24} /> {t("Warning")}
+            <AlertTriangle color="var(--color-danger-light)" size={24} /> {t("Warning")}
           </h1>
           <button
             type="button"
             onClick={() => { setFlowState('choice'); setConfirmUsername(''); setError('') }}
-            style={{ background: 'none', border: 'none', color: colors.textMuted, cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--color-text-muted)', cursor: 'pointer' }}
           >
             <X size={20} />
           </button>
         </div>
 
         <div className="container-danger">
-          <p style={{ color: colors.dangerLight, fontWeight: 'bold', marginBottom: '0.75rem' }}>
+          <p style={{ color: 'var(--color-danger-light)', fontWeight: 'bold', marginBottom: '0.75rem' }}>
             {t("If you do not own this Minecraft account, you will NOT be able to access this server.")}
           </p>
           <p className="typography-subheading" style={{ marginBottom: '0.5rem' }}>
@@ -185,15 +185,14 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
             {t("Type your username")} <b style={{ color: 'white' }}>{username}</b> {t("below to confirm:")}
           </label>
           <Input
-            type="text"
             value={confirmUsername}
-            onChange={(e) => setConfirmUsername(e.target.value)}
+            onChange={(e) => setConfirmUsername(e.currentTarget.value)}
             autoComplete="off"
-            autoFocus
+            placeholder={username}
           />
         </div>
 
-        {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
+        {error && <Alert variant="error">{error}</Alert>}
 
         <Button
           type="submit"
@@ -205,7 +204,7 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
           {loading ? t("Registering...") : t("Register as Premium")}
         </Button>
 
-        <p style={{ color: colors.textMuted, fontSize: '0.75rem', marginTop: '1rem', textAlign: 'center' }}>
+        <p className="text-muted" style={{ fontSize: '0.75rem', marginTop: '1rem', textAlign: 'center' }}>
           {t("You will be automatically logged in on future visits.")}
         </p>
 
@@ -224,26 +223,25 @@ export default function Register({ token, username, onSuccess }: RegisterProps) 
 
       {isPremiumUsername && (
         <div className="container-info">
-          <p style={{ color: colors.textMuted, fontSize: '0.875rem', margin: 0 }}>
+          <p className="text-muted" style={{ fontSize: '0.875rem', margin: 0 }}>
             {t("Registering with password. You will need to log in manually each time.")}
           </p>
         </div>
       )}
 
-      {error && <div style={{ color: colors.error, marginBottom: '1rem' }}>{error}</div>}
+      {error && <Alert variant="error">{error}</Alert>}
 
       <Stack gap="1rem">
         <Input
           type="password"
           value={p1}
-          onChange={(e) => setP1(e.target.value)}
+          onChange={(e) => setP1(e.currentTarget.value)}
           placeholder={t("Password")}
-          autoFocus
         />
         <Input
           type="password"
           value={p2}
-          onChange={(e) => setP2(e.target.value)}
+          onChange={(e) => setP2(e.currentTarget.value)}
           placeholder={t("Confirm Password")}
         />
 

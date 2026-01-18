@@ -16,14 +16,14 @@ import xyz.kyngs.librelogin.common.web.handler.FrontendHandler;
 
 /**
  * Manages the embedded Jetty web server instance.
- * <p>
- * This class handles:
+ *
+ * <p>This class handles:
+ *
  * <ul>
- * <li>Server lifecycle (Start/Stop)</li>
- * <li>Dependency Injection (Session & RateLimit managers)</li>
- * <li>Route registry (/api/* and static content)</li>
+ *   <li>Server lifecycle (Start/Stop)
+ *   <li>Dependency Injection (Session & RateLimit managers)
+ *   <li>Route registry (/api/* and static content)
  * </ul>
- * </p>
  */
 public class WebServer {
 
@@ -38,7 +38,7 @@ public class WebServer {
      * Constructs the WebServer.
      *
      * @param plugin The main plugin instance (for logging/config).
-     * @param port   The port to bind the Jetty server to.
+     * @param port The port to bind the Jetty server to.
      */
     public WebServer(AuthenticLibreLogin<?, ?> plugin, int port) {
         this.plugin = plugin;
@@ -57,22 +57,23 @@ public class WebServer {
 
         // API Handler
         context.addServlet(
-                new ServletHolder(new ApiHandler(plugin, sessionManager, rateLimitManager, gson)), "/api/*");
+                new ServletHolder(new ApiHandler(plugin, sessionManager, rateLimitManager, gson)),
+                "/api/*");
 
         // Frontend Handler (Static files)
         context.addServlet(
                 new ServletHolder(new FrontendHandler(plugin.getClass(), sessionManager)), "/*");
 
         new Thread(
-                () -> {
-                    try {
-                        server.start();
-                        server.join();
-                        plugin.getLogger().info("Web server started on port " + port);
-                    } catch (Exception e) {
-                        plugin.getLogger().error("Failed to start web server", e);
-                    }
-                })
+                        () -> {
+                            try {
+                                server.start();
+                                server.join();
+                                plugin.getLogger().info("Web server started on port " + port);
+                            } catch (Exception e) {
+                                plugin.getLogger().error("Failed to start web server", e);
+                            }
+                        })
                 .start();
     }
 

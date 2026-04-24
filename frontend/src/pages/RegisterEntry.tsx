@@ -1,12 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { useEffect, useState } from 'react'
+import { render } from 'preact'
+import { useEffect, useState } from 'preact/hooks'
 import { Loader2 } from 'lucide-preact'
 import Register from '../features/register/Register'
 import Authorized from '../components/Authorized'
 import { TokenInfo } from '../lib/types'
-import '../lib/i18n'
 import { I18nProvider } from '../lib/i18n'
+import { Admonition } from '../components/ui'
 import '../index.css'
 
 if (import.meta.env.DEV) {
@@ -50,12 +49,6 @@ export default function RegisterEntry() {
 
   const checkToken = async (t: string) => {
     try {
-      const sessionId = localStorage.getItem('session_id')
-      if (sessionId && !window.location.search.includes('no_session_check')) {
-        window.location.href = `/sessionauth.html?token=${t}`
-        return
-      }
-
       const res = await fetch('/api/check-token', {
         method: 'POST',
         body: JSON.stringify({ token: t })
@@ -92,15 +85,15 @@ export default function RegisterEntry() {
   return (
     <I18nProvider>
       {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
-      {view === 'error' && <div className="alert-error">{error}</div>}
+      {view === 'error' && (
+        <Admonition variant="danger" title="Error">
+          {error}
+        </Admonition>
+      )}
       {view === 'register' && <Register token={token} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
       {view === 'authorized' && <Authorized />}
     </I18nProvider>
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <RegisterEntry />
-  </React.StrictMode>,
-)
+render(<RegisterEntry />, document.getElementById('root')!)

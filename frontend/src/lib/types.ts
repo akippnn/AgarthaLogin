@@ -24,6 +24,7 @@ export interface AltUser {
 export interface TokenInfo {
   username: string;
   type: 'LOGIN' | 'REGISTER' | 'ADMIN_ACCESS';
+  premium: boolean;
 }
 
 export interface SessionUser {
@@ -56,6 +57,7 @@ export interface RegisterResponse {
 
 export interface CheckPremiumResponse {
   isPremium: boolean;
+  suggestedUsername?: string;
 }
 
 export interface AdminVerifyResponse {

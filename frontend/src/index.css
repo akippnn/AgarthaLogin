@@ -290,6 +290,23 @@ select {
   justify-content: center;
 }
 
+/* Text Button */
+.text-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary);
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.875rem;
+  transition: color 0.2s;
+}
+
+.text-button:hover {
+  color: #339af0;
+  /* lighter blue */
+}
+
 /* Inputs */
 .input-wrapper {
   display: flex;

@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks'
 import { ShieldCheck, LogOut } from 'lucide-preact'
-import { Button } from '../../components/ui/Button'
+import { Button, Stack, Admonition } from '../../components/ui'
 
 
 import { useTranslation } from '../../lib/i18n';
@@ -41,33 +41,37 @@ export default function SessionAuth({ token, sessionId, username, onSuccess, onL
   }
 
   return (
-    <div>
-      <h1 className="typography-heading" style={{ marginBottom: '1.5rem' }}>{t("Welcome Back!")}</h1>
-      <div style={{ marginBottom: '2rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <ShieldCheck size={48} color="var(--color-success)" style={{ marginBottom: '1rem' }} />
-        <p style={{ marginBottom: '0.5rem' }}>{t("You are logged in as")} <b>{username}</b>.</p>
-        <p className="text-secondary" style={{ fontSize: '0.9rem' }}>{t("Do you want to authorize this game session?")}</p>
-      </div>
+    <Stack gap="1.5rem">
+      <h1 className="typography-heading">{t("Welcome Back!")}</h1>
 
-      {error && <div className="alert-error" style={{ marginBottom: '1rem' }}>{error}</div>}
+      <Stack gap="1rem" align="center">
+        <ShieldCheck size={48} color="var(--color-success)" />
+        <div style={{ textAlign: 'center' }}>
+          <p style={{ marginBottom: '0.25rem' }}>{t("You are logged in as")} <b>{username}</b>.</p>
+          <p className="text-secondary" style={{ fontSize: '0.9rem' }}>{t("Do you want to authorize this game session?")}</p>
+        </div>
+      </Stack>
 
-      <Button
-        onClick={handleConfirm}
-        loading={loading}
-        fullWidth
-        style={{ marginBottom: '0.5rem' }}
-      >
-        {loading ? t("Authorizing...") : t("Yes, Authorize Game")}
-      </Button>
+      {error && <Admonition variant="danger">{error}</Admonition>}
 
-      <Button
-        onClick={onLogout}
-        variant="secondary"
-        fullWidth
-        icon={<LogOut size={16} />}
-      >
-        {t("No, Logout")}
-      </Button>
-    </div>
+      <Stack gap="0.75rem">
+        <Button
+          onClick={handleConfirm}
+          loading={loading}
+          fullWidth
+        >
+          {loading ? t("Authorizing...") : t("Yes, Authorize Game")}
+        </Button>
+
+        <Button
+          onClick={onLogout}
+          variant="secondary"
+          fullWidth
+          icon={<LogOut size={16} />}
+        >
+          {t("No, Logout")}
+        </Button>
+      </Stack>
+    </Stack>
   )
 }

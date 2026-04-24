@@ -28,16 +28,15 @@ export function setupMockApi() {
              // We can use the URL or a hack to determine context, OR just return what's needed based on standard flow.
              // Simpler: Check window.location.pathname
              if (window.location.pathname.includes('admin.html')) {
-                 return mockResponse({ username: 'DevAdmin', type: 'ADMIN_ACCESS' });
+                 return mockResponse({ username: 'DevAdmin', type: 'ADMIN_ACCESS', premium: true });
              }
              if (window.location.pathname.includes('register.html')) {
-                 return mockResponse({ username: 'DevUser', type: 'REGISTER' });
+                 return mockResponse({ username: 'DevUser', type: 'REGISTER', premium: true });
              }
              if (window.location.pathname.includes('sessionauth.html')) {
-                 // SessionAuth checks session first usually.
-                 return mockResponse({ username: 'DevUser', type: 'LOGIN' }); 
+                 return mockResponse({ username: 'DevUser', type: 'LOGIN', premium: true }); 
              }
-             return mockResponse({ username: 'DevUser', type: 'LOGIN' } as TokenInfo);
+             return mockResponse({ username: 'DevUser', type: 'LOGIN', premium: true } as TokenInfo);
         }
         return mockResponse({ error: 'Invalid mock token' });
     }
@@ -116,7 +115,11 @@ export function setupMockApi() {
             && user.toLowerCase() !== 'crackeduser' 
             && user.toLowerCase() !== 'offline'
             && user.toLowerCase() !== 'offlineuser';
-        return mockResponse({ isPremium } as CheckPremiumResponse);
+        
+        return mockResponse({ 
+          isPremium,
+          suggestedUsername: isPremium ? `${user}_` : undefined
+        } as CheckPremiumResponse);
     }
 
     // /api/admin/verify

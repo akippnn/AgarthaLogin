@@ -10,23 +10,13 @@ export interface InputProps extends JSX.HTMLAttributes<HTMLInputElement> {
 }
 
 export function Input({ icon, className = '', ...props }: InputProps) {
-  if (icon) {
-    return (
-      <div className={`input-wrapper ${className}`}>
-        <span className="input-icon">{icon}</span>
-        <input
-          {...props}
-          className="input-field"
-        />
-      </div>
-    );
-  }
-
   return (
-    <input
-      {...props}
-      className={`input-wrapper input-field ${className}`}
-      style={{ display: 'block' }} // override flex display from input-wrapper if applied directly
-    />
+    <div className={`input-wrapper ${className}`}>
+      {icon && <span className="input-icon">{icon}</span>}
+      <input
+        {...props}
+        className="input-field"
+      />
+    </div>
   );
 }

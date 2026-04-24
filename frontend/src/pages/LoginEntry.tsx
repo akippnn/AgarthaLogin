@@ -1,12 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { useEffect, useState } from 'react'
+import { render } from 'preact'
+import { useEffect, useState } from 'preact/hooks'
 import { Loader2 } from 'lucide-preact'
 import Login from '../features/login/Login'
 import Authorized from '../components/Authorized'
 import { TokenInfo } from '../lib/types'
-import '../lib/i18n'
 import { I18nProvider } from '../lib/i18n'
+import { Admonition } from '../components/ui'
 import '../index.css'
 
 if (import.meta.env.DEV) {
@@ -48,9 +47,6 @@ export default function LoginEntry() {
       const sessionId = localStorage.getItem('session_id')
       if (sessionId) {
         // Optimistic check: if session exists, try session auth page
-        // But we need to verify if the session is actually valid for this user?
-        // We'll let SessionAuthEntry handle the heavy lifting.
-        // But we shouldn't redirect infinitely.
         if (!window.location.search.includes('no_session_check')) {
           window.location.href = `/sessionauth.html?token=${t}`
           return
@@ -94,15 +90,15 @@ export default function LoginEntry() {
   return (
     <I18nProvider>
       {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
-      {view === 'error' && <div className="alert-error">{error}</div>}
-      {view === 'login' && <Login token={token} username={tokenInfo?.username ?? ''} onSuccess={onAuthorized} />}
+      {view === 'error' && (
+        <Admonition variant="danger" title="Error">
+          {error}
+        </Admonition>
+      )}
+      {view === 'login' && <Login token={token} username={tokenInfo?.username ?? ''} isPremium={tokenInfo?.premium ?? false} onSuccess={onAuthorized} />}
       {view === 'authorized' && <Authorized />}
     </I18nProvider>
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <LoginEntry />
-  </React.StrictMode>,
-)
+render(<LoginEntry />, document.getElementById('root')!)

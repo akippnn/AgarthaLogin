@@ -2,8 +2,8 @@ import { render } from 'preact'
 import { useEffect, useState } from 'preact/hooks'
 import { Loader2 } from 'lucide-preact'
 import Admin from '../features/admin/Admin'
-import '../lib/i18n'
 import { I18nProvider } from '../lib/i18n'
+import { Admonition } from '../components/ui'
 import '../index.css'
 
 if (import.meta.env.DEV) {
@@ -71,7 +71,11 @@ export default function AdminEntry() {
       )}
       {view === 'error' && (
         <div className="flex-center min-h-screen">
-          <div className="alert-error">{error}</div>
+          <div style={{ maxWidth: '400px', width: '100%', padding: '2rem' }}>
+            <Admonition variant="danger" title="Access Denied">
+              {error}
+            </Admonition>
+          </div>
         </div>
       )}
       {view === 'admin' && <Admin token={token} onSuccess={() => { }} />}

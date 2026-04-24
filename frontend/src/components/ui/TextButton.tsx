@@ -9,16 +9,7 @@ export function TextButton({ style, className = '', children, ...props }: TextBu
     <button
       type="button"
       className={`text-button ${className}`}
-      style={{
-        background: 'none',
-        border: 'none',
-        padding: 0,
-        color: 'var(--color-primary)',
-        cursor: 'pointer',
-        textDecoration: 'underline',
-        fontSize: '0.875rem',
-        ...(typeof style === 'object' ? style : {})
-      }}
+      style={typeof style === 'object' ? style : {}}
       {...props}
     >
       {children}

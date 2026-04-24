@@ -1,12 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { useEffect, useState } from 'react'
+import { render } from 'preact'
+import { useEffect, useState } from 'preact/hooks'
 import { Loader2 } from 'lucide-preact'
 import SessionAuth from '../features/session/SessionAuth'
 import Authorized from '../components/Authorized'
 import { TokenInfo, SessionUser } from '../lib/types'
-import '../lib/i18n'
 import { I18nProvider } from '../lib/i18n'
+import { Admonition } from '../components/ui'
 import '../index.css'
 
 export default function SessionAuthEntry() {
@@ -18,7 +17,6 @@ export default function SessionAuthEntry() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    // Dev mode bypass
     // Dev mode bypass
     if (import.meta.env.DEV) {
       const username = 'OfflineUser';
@@ -106,15 +104,15 @@ export default function SessionAuthEntry() {
   return (
     <I18nProvider>
       {view === 'loading' && <div style={{ display: 'flex', justifyContent: 'center' }}><Loader2 className="animate-spin" /> Loading...</div>}
-      {view === 'error' && <div className="alert-error">{error}</div>}
+      {view === 'error' && (
+        <Admonition variant="danger" title="Error">
+          {error}
+        </Admonition>
+      )}
       {view === 'prompt' && <SessionAuth token={token} sessionId={sessionId!} username={sessionUser?.username ?? ''} onSuccess={onAuthorized} onLogout={onLogout} />}
       {view === 'authorized' && <Authorized />}
     </I18nProvider>
   )
 }
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <SessionAuthEntry />
-  </React.StrictMode>,
-)
+render(<SessionAuthEntry />, document.getElementById('root')!)

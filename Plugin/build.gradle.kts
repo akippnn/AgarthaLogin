@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id("java")
-    id("io.github.goooler.shadow") version "8.1.8"
+    id("com.gradleup.shadow") version "8.3.1"
     id("net.kyori.blossom").version("1.3.1")
     id("java-library")
     id("xyz.kyngs.libby.plugin").version("1.2.1")
@@ -109,10 +109,10 @@ dependencies {
     libby("com.zaxxer:HikariCP:7.0.2")
 
     //SQLite
-    libby("org.xerial:sqlite-jdbc:3.50.3.0")
+    libby("org.xerial:sqlite-jdbc:3.53.0.0")
 
     //PostgreSQL
-    libby("org.postgresql:postgresql:42.7.8")
+    libby("org.postgresql:postgresql:42.7.9")
 
     //ACF
     libby("com.github.kyngs.commands:acf-velocity:7d5bf7cac0")
@@ -144,8 +144,8 @@ dependencies {
     compileOnly("org.apache.logging.log4j:log4j-core:2.25.3")
 
     //Jetty
-    implementation("org.eclipse.jetty:jetty-server:11.0.24")
-    implementation("org.eclipse.jetty:jetty-servlet:11.0.24")
+    implementation("org.eclipse.jetty:jetty-server:11.0.28")
+    implementation("org.eclipse.jetty:jetty-servlet:11.0.28")
     implementation("com.google.code.gson:gson:2.10.1")
 
     //Libby
@@ -156,7 +156,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
     testImplementation("com.github.kyngs.commands:acf-velocity:7d5bf7cac0")
     testImplementation("org.bstats:bstats-velocity:3.1.0")
-    testImplementation("com.google.guava:guava:33.3.1-jre")
+    testImplementation("com.google.guava:guava:33.4.0-jre")
     testImplementation("com.github.ben-manes.caffeine:caffeine:3.2.3")
     testImplementation("org.spongepowered:configurate-hocon:4.2.0")
 }
@@ -165,7 +165,7 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        force("org.yaml:snakeyaml:2.2")
+        force("org.yaml:snakeyaml:2.4")
     }
 }
 

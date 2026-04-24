@@ -7,7 +7,7 @@ plugins {
 
 defaultTasks("updateLicenses", "shadowJar")
 
-version = "0.50.0"
+version = "0.50.1"
 if (project.hasProperty("prodVersion")) {
     version = project.property("prodVersion")
 }
@@ -15,6 +15,12 @@ if (project.hasProperty("prodVersion")) {
 subprojects {
     version = rootProject.version
     group = "xyz.kyngs.librelogin"
+
+    configurations.all {
+        resolutionStrategy {
+            force("org.codehaus.plexus:plexus-utils:3.6.1")
+        }
+    }
 
     apply {
         plugin("org.cadixdev.licenser")

@@ -68,8 +68,8 @@ public class WebServer {
                         () -> {
                             try {
                                 server.start();
-                                server.join();
                                 plugin.getLogger().info("Web server started on port " + port);
+                                server.join();
                             } catch (Exception e) {
                                 plugin.getLogger().error("Failed to start web server", e);
                             }

@@ -35,21 +35,38 @@ public class FrontendHandler extends HttpServlet {
             return;
         }
 
+        // Fix for Typed Tokens on Root/Login:
+        // If the user lands on /login.html (default) but has a valid token of a
+        // different type
+        // (e.g. REGISTER), we redirect the internal path to the correct page to avoid
+        // 401.
+        if (path.equals("/login.html")) {
+            String tokenParam = req.getParameter("token");
+            if (tokenParam != null) {
+                var tokenData = sessionManager.getToken(tokenParam);
+                if (tokenData != null) {
+                    if (tokenData.type == WebSessionManager.TokenType.REGISTER) {
+                        path = "/register.html";
+                    } else if (tokenData.type == WebSessionManager.TokenType.ADMIN_ACCESS) {
+                        path = "/admin.html";
+                    } else if (tokenData.type == WebSessionManager.TokenType.LOGIN) {
+                        // Explicitly fine
+                    }
+                }
+            }
+        }
+
         // Logic to protect specific entry points
-        // If the user requests a protected page, we check the token
-        // If INVALID -> serve /login.html (so frontend can show "No token provided" or
-        // "Invalid
-        // token")
-        // If VALID but WRONG TYPE -> serve /login.html (frontend will redirect if it
-        // wants, or show
-        // error)
         if (isProtected(path)) {
             String tokenParam = req.getParameter("token");
             boolean authorized = false;
 
+            System.out.println("FrontendHandler: Request to " + path + " with token=" + tokenParam);
+
             if (tokenParam != null) {
                 var tokenData = sessionManager.getToken(tokenParam);
                 if (tokenData != null) {
+                    System.out.println("FrontendHandler: Token found. Type=" + tokenData.type);
                     if (path.equals("/admin.html")
                             && tokenData.type == WebSessionManager.TokenType.ADMIN_ACCESS) {
                         authorized = true;
@@ -63,12 +80,19 @@ public class FrontendHandler extends HttpServlet {
                             && tokenData.type == WebSessionManager.TokenType.LOGIN) {
                         authorized = true;
                     }
+                } else {
+                    System.out.println("FrontendHandler: Token not found or expired.");
                 }
+            } else {
+                System.out.println("FrontendHandler: No token param.");
             }
 
             if (!authorized) {
+                System.out.println("FrontendHandler: Unauthorized access to " + path);
                 resp.setStatus(401);
                 path = "/error.html";
+            } else {
+                System.out.println("FrontendHandler: Authorized access to " + path);
             }
         }
 

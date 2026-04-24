@@ -39,10 +39,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import xyz.kyngs.librelogin.api.database.User;
 import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
 import xyz.kyngs.librelogin.common.config.ConfigurationKeys;
@@ -83,6 +80,7 @@ public class PaperListeners extends AuthenticListeners<PaperLibreLogin, Player, 
     private final Cache<UUID, String> ipCache;
     private final Cache<UUID, User> readOnlyUserCache;
     private final Cache<UUID, Location> spawnLocationCache;
+    private final Cache<UUID, Location> joinedWhileDead;
 
     public PaperListeners(PaperLibreLogin plugin) {
         super(plugin);
@@ -94,6 +92,8 @@ public class PaperListeners extends AuthenticListeners<PaperLibreLogin, Player, 
         readOnlyUserCache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
 
         spawnLocationCache = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
+
+        joinedWhileDead = Caffeine.newBuilder().expireAfterWrite(2, TimeUnit.MINUTES).build();
     }
 
     public Cache<UUID, Location> getSpawnLocationCache() {
@@ -102,13 +102,21 @@ public class PaperListeners extends AuthenticListeners<PaperLibreLogin, Player, 
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        // checking is done here instead of in AsyncPlayerSpawnLocationEvent's handler
-        // cuz there is no (Player) object available in that event
-        var player = event.getPlayer();
-        if (player.getHealth() == 0) {
-            player.setHealth(player.getMaxHealth());
-        }
         GeneralUtil.runAsync(() -> onPlayerDisconnect(event.getPlayer()));
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        var location = joinedWhileDead.getIfPresent(event.getPlayer().getUniqueId());
+        if (location == null) {
+            return;
+        }
+
+        if (event.getRespawnReason() != PlayerRespawnEvent.RespawnReason.PLUGIN) {
+            return;
+        }
+
+        event.setRespawnLocation(location);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -118,13 +126,25 @@ public class PaperListeners extends AuthenticListeners<PaperLibreLogin, Player, 
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent event) {
-        var data = readOnlyUserCache.getIfPresent(event.getPlayer().getUniqueId());
-        if (data == null && !plugin.fromFloodgate(event.getPlayer().getName())) {
-            event.getPlayer().kick(Component.text("Internal error, please try again later."));
+        var player = event.getPlayer();
+        var puuid = player.getUniqueId();
+
+        var data = readOnlyUserCache.getIfPresent(puuid);
+        if (data == null && !plugin.fromFloodgate(player.getName())) {
+            player.kick(Component.text("Internal error, please try again later."));
             return;
         }
-        readOnlyUserCache.invalidate(event.getPlayer().getUniqueId());
-        onPostLogin(event.getPlayer(), data);
+
+        readOnlyUserCache.invalidate(puuid);
+        if (player.isDead()) {
+            spawnLocationCache.invalidate(puuid);
+
+            player.spigot().respawn();
+        } else {
+            joinedWhileDead.invalidate(puuid);
+        }
+
+        onPostLogin(player, data);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -162,7 +182,6 @@ public class PaperListeners extends AuthenticListeners<PaperLibreLogin, Player, 
 
         var world = chooseServer(puuid, ip, readOnlyUserCache.getIfPresent(puuid));
         ipCache.invalidate(puuid);
-        spawnLocationCache.invalidate(puuid);
         if (world.value() == null) {
             Bukkit.getScheduler()
                     .runTask(
@@ -178,6 +197,7 @@ public class PaperListeners extends AuthenticListeners<PaperLibreLogin, Player, 
                                                                                     : "limbo"))));
         } else {
             // This is terrible, but should work
+            var loc = world.value().getSpawnLocation();
             if (!event.isNewPlayer()
                     && !plugin.getConfiguration()
                             .get(ConfigurationKeys.LIMBO)
@@ -187,11 +207,14 @@ public class PaperListeners extends AuthenticListeners<PaperLibreLogin, Player, 
                         .contains(world.value().getName())) {
                     spawnLocationCache.put(puuid, event.getSpawnLocation());
                 } else {
+                    joinedWhileDead.put(puuid, loc);
+                    event.setSpawnLocation(loc);
                     return;
                 }
             }
 
-            event.setSpawnLocation(world.value().getSpawnLocation());
+            joinedWhileDead.put(puuid, loc);
+            event.setSpawnLocation(loc);
         }
     }
 

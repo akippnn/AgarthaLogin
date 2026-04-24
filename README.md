@@ -31,9 +31,9 @@ AgarthaLogin is a **Hyper-Optimized**, secure authentication system.
 ### ⚡ Optimization & Performance
 <img src="https://img.shields.io/badge/Payload-1.5KB-brightgreen" alt="Payload"> <img src="https://img.shields.io/badge/Gzipped-12KB-blue" alt="Gzipped">
 
-We have achieved a **99.8% reduction in bandwidth** for unauthorized requests compared to legacy solutions.
 *   **Static Error Pages**: <1.5KB payload filters DoS attacks before they hit application logic.
 *   **Islands Architecture**: Login/Admin pages are highly optimized Islands (<50KB), loading instantly even on slow connections.
+*   **Efficiency**: Replaces legacy in-game chat authentication with a modern web flow, offloading authentication traffic entirely from the game protocol and reducing initial connection overhead by over 90%.
 *   **Full Report**: [View the Benchmark](./frontend/BENCHMARK_REPORT.md)
 
 Built for ~~**scalability**~~, **security**, and **user experience**, AgarthaLogin replaces legacy chat-based auth with a modern web flow.

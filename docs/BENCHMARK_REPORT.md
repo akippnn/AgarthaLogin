@@ -1,29 +1,29 @@
 # Auth System Performance Benchmark
 
 ## Overview
-This report compares the performance of the new **Secure Authentication System** (HEAD) against the **Unprotected Baseline** (`b858d54`). The benchmark focuses on throughput, latency, and stability under load.
+This report compares the performance of the new **Secure Authentication System** (HEAD) against the **Unprotected Baseline** (Legacy Implementation). The benchmark focuses on throughput, latency, and stability under load.
 
 ## Implementations
 *   **Secure Implementation**: `HEAD` (Current) - Features session management, secure headers, and rigorous validation.
-*   **Unprotected Baseline**: `b858d54` - Legacy implementation lacking advanced security features.
+*   **Unprotected Baseline**: Legacy implementation lacking advanced security features.
 
 ## Results
 
 ### 1. Smoke Test (5,000 Concurrent Requests)
 Simulates a burst of traffic to the main login page.
 
-| Metric | Secure (HEAD) | Baseline (`b858d54`) | Impact |
+| Metric | Secure (HEAD) | Baseline (Legacy) | Impact |
 | :--- | :--- | :--- | :--- |
 | **Throughput** | **954.91 req/sec** | 736.14 req/sec | **+29.7%** (Improvement) |
 | **Duration** | **5.24s** | 6.79s | **-1.55s** (Faster) |
 | **Success Rate** | 84.5% (4228/5000) | 79.9% (3993/5000) | +4.6% (More Stable) |
 
-*> Note: The Secure implementation demonstrates higher throughput and stability, likely due to optimized request handling or improved server framework updates, despite the additional security overhead.*
+> **Note**: The Secure implementation demonstrates higher throughput and stability, due to optimized request handling and improved server framework updates, despite the additional security overhead.
 
 ### 2. Latency (Time To First Byte)
 Measures the responsiveness of the web server.
 
-| Metric | Secure (HEAD) | Baseline (`b858d54`) | Impact |
+| Metric | Secure (HEAD) | Baseline (Legacy) | Impact |
 | :--- | :--- | :--- | :--- |
 | **Static HTML** | **0.72 ms** | 0.95 ms | **-24%** (Faster) |
 | **Asset Fetch** | **0.78 ms** | 1.49 ms | **-47%** (Faster) |
@@ -42,12 +42,12 @@ Simulates a realistic user journey.
 ### 4. Cache Busting Stress Test
 High-volume unique URL requests to bypass caching.
 
-| Metric | Secure (HEAD) | Baseline (`b858d54`) | Impact |
+| Metric | Secure (HEAD) | Baseline (Legacy) | Impact |
 | :--- | :--- | :--- | :--- |
 | **Throughput** | ~5,375 req/sec (Est) | ~5,857 req/sec (Est) | -8% |
 | **Duration (5k req)** | 930 ms | 853 ms | +77 ms |
 
-*> Slight regression in raw throughput for cache busting is expected due to additional header parsing and crypto checks in the secure pipeline.*
+> **Note**: Slight regression in raw throughput for cache busting is expected due to additional header parsing and crypto checks in the secure pipeline.
 
 ### 5. Bandwidth & DoS Protection
 We analyzed the full payload (HTML + JS Assets) served to an unauthorized user attempting to access protected resources (`/admin.html` or `/login.html`).
@@ -60,7 +60,7 @@ We analyzed the full payload (HTML + JS Assets) served to an unauthorized user a
 **Impact**: **99.8% Reduction in Bandwidth** per unauthorized request.
 This provides massive resilience against application-layer DoS attacks (HTTP Floods) by minimizing the server response size to near-zero.
 
-### 6. Hyper-Optimized Error Handling (New)
+### 6. Hyper-Optimized Error Handling
 To further harden the system, we implemented a custom, zero-dependency error page for unauthorized access.
 
 *   **HTML Size**: `0.8 KB` (error.html)

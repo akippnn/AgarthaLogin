@@ -1,7 +1,7 @@
 import { useState } from 'preact/hooks'
 import { JSX } from 'preact'
 import { UserPlus } from 'lucide-preact'
-import { Button, Input, Card, Alert } from '../ui'
+import { Button, Input, Card, Admonition, Stack } from '../ui'
 
 
 interface AddUserTabProps {
@@ -24,6 +24,7 @@ export default function AddUserTab({ sessionId }: AddUserTabProps) {
   const handleSubmit = async (e: JSX.TargetedEvent<HTMLFormElement>) => {
     e.preventDefault()
     setLoading(true)
+    setMessage(null)
     try {
       const res = await fetch(`${API_BASE}/admin/user/register`, {
         method: 'POST',
@@ -32,60 +33,67 @@ export default function AddUserTab({ sessionId }: AddUserTabProps) {
       })
       const data = await res.json()
       if (data.success) {
-        setMessage({ type: 'success', text: `User ${username} created with UUID: ${data.uuid}` })
+        setMessage({ type: 'success', text: `User ${username} created successfully.` })
         setUsername('')
         setPassword('')
       } else {
-        setMessage({ type: 'error', text: data.error })
+        throw new Error(data.error || "Failed to create user")
       }
     } catch (e) {
       setMessage({ type: 'error', text: e instanceof Error ? e.message : 'Unknown error' })
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
     <Card>
-      <h2 style={{ color: 'white', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <UserPlus size={20} /> Register New User
-      </h2>
+      <Stack gap="1.5rem">
+        <h2 style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '0.5rem', margin: 0 }}>
+          <UserPlus size={20} /> Register New User
+        </h2>
 
-      {message && (
-        <Alert variant={message.type}>
-          {message.text}
-        </Alert>
-      )}
+        {message && (
+          <Admonition variant={message.type === 'success' ? 'success' : 'danger'}>
+            {message.text}
+          </Admonition>
+        )}
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label className="text-muted" style={{ display: 'block', marginBottom: '0.5rem' }}>Username</label>
-          <Input
-            value={username}
-            onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setUsername(e.currentTarget.value)}
-            required
-            placeholder="Username"
-          />
-        </div>
+        <form onSubmit={handleSubmit}>
+          <Stack gap="1.5rem">
+            <Stack gap="0.5rem">
+              <label className="typography-label">Username</label>
+              <Input
+                value={username}
+                onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setUsername(e.currentTarget.value)}
+                required
+                placeholder="Username"
+              />
+            </Stack>
 
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem' }}>Password</label>
-          <Input
-            type="password"
-            value={password}
-            onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}
-            required
-            placeholder="Password"
-          />
-        </div>
-        <Button
-          variant="success"
-          type="submit"
-          loading={loading}
-          icon={<UserPlus size={16} />}
-        >
-          Create User
-        </Button>
-      </form>
+            <Stack gap="0.5rem">
+              <label className="typography-label">Password</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e: JSX.TargetedEvent<HTMLInputElement>) => setPassword(e.currentTarget.value)}
+                required
+                placeholder="Password"
+              />
+            </Stack>
+
+            <Button
+              variant="success"
+              type="submit"
+              loading={loading}
+              icon={<UserPlus size={16} />}
+              fullWidth
+            >
+              Create User
+            </Button>
+          </Stack>
+        </form>
+      </Stack>
     </Card>
   )
 }

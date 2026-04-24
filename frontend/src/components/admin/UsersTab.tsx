@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'preact/hooks'
 import {
   Users, RefreshCw, Search, ChevronLeft, ChevronRight,
   Crown, User as UserIcon, UserMinus, Trash2, Check, X, AlertTriangle
 } from 'lucide-preact'
-import { Button, Input, Card, Badge, Alert, ConfirmDialog } from '../ui'
+import { Button, Input, Card, Badge, Admonition, ConfirmDialog } from '../ui'
 
 import type { User, UsersResponse } from '../../lib/types'
 import UserModal from './UserModal'
@@ -141,9 +141,9 @@ export default function UsersTab({ sessionId }: UsersTabProps) {
   return (
     <div>
       {message && (
-        <Alert variant={message.type}>
+        <Admonition variant={message.type === 'success' ? 'success' : 'danger'}>
           {message.text}
-        </Alert>
+        </Admonition>
       )}
 
       <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>

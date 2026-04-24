@@ -94,8 +94,11 @@ msgstr "If you do not own this Minecraft account, you will NOT be able to access
 msgid "Premium accounts authenticate automatically via Microsoft. If this is not your account,"
 msgstr "Premium accounts authenticate automatically via Microsoft. If this is not your account,"
 
-msgid "you will be locked out when the real owner logs in."
-msgstr "you will be locked out when the real owner logs in."
+msgid "you will be permanently unable to log in."
+msgstr "you will be permanently unable to log in."
+
+msgid "If you own this account, you will not need to perform any login flows."
+msgstr "If you own this account, you will not need to perform any login flows."
 
 msgid "If you have made a mistake, close this window and select \"I do not own this account\"."
 msgstr "If you have made a mistake, close this window and select \"I do not own this account\"."
@@ -118,9 +121,6 @@ msgstr "Register as Premium"
 msgid "You will be automatically logged in via Microsoft on future visits."
 msgstr "You will be automatically logged in via Microsoft on future visits."
 
-msgid "Registering with password. You will need to log in manually each time."
-msgstr "Registering with password. You will need to log in manually each time."
-
 msgid "Confirm Password"
 msgstr "Confirm Password"
 
@@ -132,6 +132,15 @@ msgstr "Password is required"
 
 msgid "Registration failed"
 msgstr "Registration failed"
+
+msgid "Note that the username"
+msgstr "Note that the username"
+
+msgid "associated with this account can claim ownership. When this happens and you lose access, you will need to login as"
+msgstr "associated with this account can claim ownership. When this happens and you lose access, you will need to login as"
+
+msgid "when you are unable to sign in."
+msgstr "when you are unable to sign in."
 
 msgid "← Back to options"
 msgstr "← Back to options"

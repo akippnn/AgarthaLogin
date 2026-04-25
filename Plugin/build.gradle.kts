@@ -144,8 +144,8 @@ dependencies {
     compileOnly("org.apache.logging.log4j:log4j-core:2.25.3")
 
     //Jetty
-    implementation("org.eclipse.jetty:jetty-server:11.0.28")
-    implementation("org.eclipse.jetty:jetty-servlet:11.0.28")
+    implementation("org.eclipse.jetty:jetty-server:12.1.8")
+    implementation("org.eclipse.jetty.ee9:jetty-ee9-servlet:12.1.8")
     implementation("com.google.code.gson:gson:2.10.1")
 
     //Libby

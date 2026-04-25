@@ -9,7 +9,7 @@ defaultTasks("updateLicenses", "shadowJar")
 
 version = "0.50.1.1"
 if (project.hasProperty("prodVersion")) {
-    version = project.property("prodVersion")
+    version = project.property("prodVersion").toString()
 }
 
 subprojects {

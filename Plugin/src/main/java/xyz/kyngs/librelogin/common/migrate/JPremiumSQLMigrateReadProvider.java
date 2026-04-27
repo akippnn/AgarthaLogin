@@ -73,7 +73,7 @@ public class JPremiumSQLMigrateReadProvider extends SQLMigrateReadProvider {
 
                             users.add(
                                     new AuthenticUser(
-                                            GeneralUtil.fromUnDashedUUID(uniqueIdString),
+                                            GeneralUtil.fromUnDashedUUID(uniqueIdString, null),
                                             premiumIdString == null
                                                     ? null
                                                     : GeneralUtil.fromUnDashedUUID(premiumIdString),

@@ -49,7 +49,7 @@ public class DBASQLMigrateReadProvider extends SQLMigrateReadProvider {
                             users.add(
                                     new AuthenticUser(
                                             uuid,
-                                            rs.getBoolean("premium") ? uuid : null,
+                                            rs.getBoolean("premium", null) ? uuid : null,
                                             password,
                                             name,
                                             rs.getTimestamp("firstjoin"),

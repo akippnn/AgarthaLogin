@@ -14,6 +14,8 @@ import xyz.kyngs.librelogin.api.database.User;
 /**
  * An abstract event for events, that include player info
  *
+ * @param <P> the player type
+ * @param <S> the sender type
  * @author kyngs
  */
 public interface PlayerBasedEvent<P, S> extends Event<P, S> {

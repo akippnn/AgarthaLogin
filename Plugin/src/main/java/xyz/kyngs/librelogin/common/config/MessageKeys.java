@@ -785,6 +785,40 @@ This message is displayed when the player executes /librelogin about.
                     ConfigurateHelper::getString);
 
     /*
+    Invites related
+     */
+
+    public static final ConfigurationKey<String> ERROR_INVITE_LIMIT_REACHED =
+            new ConfigurationKey<>(
+                    "error-invite-limit-reached",
+                    "You have reached the maximum amount of active invites!",
+                    "This message is displayed when the player has reached the maximum amount of"
+                            + " active invites.",
+                    ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<String> INFO_INVITE_CREATED =
+            new ConfigurationKey<>(
+                    "info-invite-created",
+                    "Invite code created: %code% (expires in 24h)",
+                    "This message is displayed when an invite code is successfully created.",
+                    ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<String> ERROR_INVITE_INVALID =
+            new ConfigurationKey<>(
+                    "error-invite-invalid",
+                    "Invalid or expired invite code.",
+                    "This message is displayed when the player attempts to use an invalid or"
+                            + " expired invite code.",
+                    ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<String> INFO_INVITE_REDEEMED =
+            new ConfigurationKey<>(
+                    "info-invite-redeemed",
+                    "Invite code redeemed successfully! You can now register.",
+                    "This message is displayed when an invite code is successfully redeemed.",
+                    ConfigurateHelper::getString);
+
+    /*
     Titles
      */
 

@@ -749,3 +749,16 @@ msgstr "code newPassword newPassword"
 
 msgid "Press \"t\" and click the link to open your browser."
 msgstr "Press \"t\" and click the link to open your browser."
+
+msgid "error-invite-limit-reached"
+msgstr "You have reached the maximum amount of active invites!"
+
+msgid "info-invite-created"
+msgstr "Invite code created: %code% (expires in 24h)"
+
+msgid "error-invite-invalid"
+msgstr "Invalid or expired invite code."
+
+msgid "info-invite-redeemed"
+msgstr "Invite code redeemed successfully! You can now register."
+

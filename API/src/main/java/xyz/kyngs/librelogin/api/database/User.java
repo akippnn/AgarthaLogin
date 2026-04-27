@@ -185,4 +185,18 @@ public interface User {
      * @param email the email address to be set
      */
     void setEmail(@Nullable String email);
+    /**
+     * Retrieves the UUID of the player who invited this user.
+     *
+     * @return the inviter's UUID, or null if not invited
+     */
+    @Nullable
+    UUID getInvitedBy();
+
+    /**
+     * Sets the UUID of the player who invited this user.
+     *
+     * @param invitedBy the inviter's UUID
+     */
+    void setInvitedBy(@Nullable UUID invitedBy);
 }

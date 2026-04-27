@@ -25,6 +25,7 @@ public class AuthenticUser implements User {
     private Timestamp lastAuthentication;
     private String lastServer;
     private String email;
+    private UUID invitedBy;
 
     public AuthenticUser(
             UUID uuid,
@@ -37,7 +38,8 @@ public class AuthenticUser implements User {
             String ip,
             Timestamp lastAuthentication,
             String lastServer,
-            String email) {
+            String email,
+            UUID invitedBy) {
         this.uuid = uuid;
         this.premiumUUID = premiumUUID;
         this.hashedPassword = hashedPassword;
@@ -49,6 +51,7 @@ public class AuthenticUser implements User {
         this.lastAuthentication = lastAuthentication;
         this.lastServer = lastServer;
         this.email = email;
+        this.invitedBy = invitedBy;
     }
 
     public Timestamp getLastAuthentication() {
@@ -156,5 +159,15 @@ public class AuthenticUser implements User {
 
     public void setLastServer(String lastServer) {
         this.lastServer = lastServer;
+    }
+
+    @Override
+    public UUID getInvitedBy() {
+        return invitedBy;
+    }
+
+    @Override
+    public void setInvitedBy(UUID invitedBy) {
+        this.invitedBy = invitedBy;
     }
 }

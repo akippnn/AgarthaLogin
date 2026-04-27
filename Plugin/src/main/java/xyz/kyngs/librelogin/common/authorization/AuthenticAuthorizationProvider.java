@@ -180,8 +180,22 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         // AgarthaLogin Web Auth Flow
         if (plugin.getWebServer() != null) {
             java.util.UUID uuid = platformHandle.getUUIDForPlayer(player);
+            var user = plugin.getDatabaseProvider().getByUUID(uuid);
+            
+            boolean needsInvite = false;
+            if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED) && user != null && user.getInvitedBy() == null) {
+                boolean immune = false;
+                if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
+                    var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
+                    if (adminList != null && adminList.contains(user.getLastNickname())) {
+                        immune = true;
+                    }
+                }
+                needsInvite = !immune;
+            }
+
             xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type =
-                    !registered
+                    !registered || needsInvite
                             ? xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.REGISTER
                             : xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.LOGIN;
 
@@ -189,12 +203,21 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
             // I18n: Pass player's locale to the frontend
             java.util.Locale playerLocale = platformHandle.getLocale(player);
             String locale = playerLocale.toLanguageTag();
-            String url =
-                    plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL)
-                            + "?token="
-                            + token
-                            + "&lang="
-                            + locale;
+            
+            String url;
+            if (needsInvite) {
+                url = plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL)
+                        + "/error.html?action=invite&token="
+                        + token
+                        + "&lang="
+                        + locale;
+            } else {
+                url = plugin.getConfiguration().get(ConfigurationKeys.WEB_PUBLIC_URL)
+                        + "?token="
+                        + token
+                        + "&lang="
+                        + locale;
+            }
 
             Component link =
                     Component.text(url)

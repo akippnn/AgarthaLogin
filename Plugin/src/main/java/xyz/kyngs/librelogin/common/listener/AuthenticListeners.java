@@ -328,6 +328,7 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
                                 ip.getHostAddress(),
                                 null,
                                 null,
+                                null,
                                 null);
             } else {
                 if (premiumUser != null && !premiumUser.reliable()) {
@@ -346,6 +347,7 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
                                 Timestamp.valueOf(LocalDateTime.now()),
                                 null,
                                 ip.getHostAddress(),
+                                null,
                                 null,
                                 null,
                                 null);
@@ -377,6 +379,19 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
             user = null;
         } else if (user == null) {
             user = plugin.getDatabaseProvider().getByUUID(uuid);
+        }
+
+        if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED) && user != null && user.getInvitedBy() == null) {
+            boolean immune = false;
+            if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
+                var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
+                if (adminList != null && adminList.contains(user.getLastNickname())) {
+                    immune = true;
+                }
+            }
+            if (!immune) {
+                return new BiHolder<>(false, plugin.getServerHandler().chooseLimboServer(user, null));
+            }
         }
 
         if (fromFloodgate

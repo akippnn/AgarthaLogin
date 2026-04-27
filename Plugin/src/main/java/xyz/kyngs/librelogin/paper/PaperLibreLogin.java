@@ -180,7 +180,7 @@ public class PaperLibreLogin extends AuthenticLibreLogin<Player, World> {
 
         Bukkit.getPluginManager().registerEvents(listeners, bootstrap);
         Bukkit.getPluginManager().registerEvents(new Blockers(this), bootstrap);
-        PacketEvents.getAPI().getEventManager().registerListener(new PacketListener(listeners));
+        PacketEvents.getAPI().getEventManager().registerListener(new PacketListener(this, listeners));
 
         started = true;
     }

@@ -185,7 +185,7 @@ public class MockLibreLogin extends AuthenticLibreLogin<Object, Object> {
                 ip,
                 lastAuthentication,
                 lastServer,
-                email);
+                email, null);
     }
 
     @Override

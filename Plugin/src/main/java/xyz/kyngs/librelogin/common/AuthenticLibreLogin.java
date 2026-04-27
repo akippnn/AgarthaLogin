@@ -180,7 +180,8 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
                 ip,
                 lastAuthentication,
                 lastServer,
-                email);
+                email,
+                null);
     }
 
     public void registerDatabaseConnector(

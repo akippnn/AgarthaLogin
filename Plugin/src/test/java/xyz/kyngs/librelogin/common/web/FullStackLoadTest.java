@@ -73,7 +73,7 @@ public class FullStackLoadTest {
                         null,
                         hash,
                         "TestUser",
-                        new Timestamp(System.currentTimeMillis()),
+                        new Timestamp(System.currentTimeMillis(, null)),
                         new Timestamp(System.currentTimeMillis()),
                         null,
                         "127.0.0.1",

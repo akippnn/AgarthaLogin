@@ -248,6 +248,10 @@ public abstract class AuthenticLibreLogin<P, S> implements LibreLoginPlugin<P, S
         return serverHandler;
     }
 
+    public void invalidateInviteCache(UUID uuid) {
+        // Default empty implementation, overridden in platform-specific plugins
+    }
+
     protected void enable() {
         version = SemanticVersion.parse(getVersion());
         if (logger == null) logger = provideLogger();

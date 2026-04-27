@@ -79,7 +79,7 @@ public class WebSessionManager {
             }
         }
 
-        String token = generateRandomString(6);
+        String token = generateRandomString(24);
         // Short lived token for query string (e.g. 5 mins)
         tokens.put(
                 token,

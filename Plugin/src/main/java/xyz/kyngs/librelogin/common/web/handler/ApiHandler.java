@@ -29,6 +29,7 @@ import xyz.kyngs.librelogin.common.web.controller.UserController;
  */
 public class ApiHandler extends HttpServlet {
 
+    private final AuthenticLibreLogin<?, ?> plugin;
     private final RateLimitManager rateLimitManager;
     private final Gson gson;
 
@@ -41,6 +42,7 @@ public class ApiHandler extends HttpServlet {
             WebSessionManager sessionManager,
             RateLimitManager rateLimitManager,
             Gson gson) {
+        this.plugin = plugin;
         this.rateLimitManager = rateLimitManager;
         this.gson = gson;
 
@@ -65,13 +67,26 @@ public class ApiHandler extends HttpServlet {
     private boolean checkRateLimit(HttpServletRequest req, HttpServletResponse resp, int cost)
             throws IOException {
         String ip = req.getRemoteAddr();
-        // Forwarded header support if behind proxy (CAUTION: Spoofable if not
-        // configured correctly)
-        // AgarthaLogin recommends standard proxy setup where X-Forwarded-For is
-        // trustworthy
-        String forwarded = req.getHeader("X-Forwarded-For");
-        if (forwarded != null) {
-            ip = forwarded.split(",")[0].trim();
+        
+        java.util.List<String> trustedProxies = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.WEB_TRUSTED_PROXIES);
+        boolean isTrusted = false;
+
+        if (trustedProxies != null && !trustedProxies.isEmpty()) {
+            for (String proxy : trustedProxies) {
+                if (proxy.equals(ip) || (proxy.contains("/") && ip.startsWith(proxy.substring(0, proxy.indexOf('/'))))) {
+                    isTrusted = true;
+                    break;
+                }
+            }
+        } else {
+            isTrusted = true; // Default to old behavior if no proxies defined
+        }
+
+        if (isTrusted) {
+            String forwarded = req.getHeader("X-Forwarded-For");
+            if (forwarded != null) {
+                ip = forwarded.split(",")[0].trim();
+            }
         }
 
         if (!rateLimitManager.tryAcquire(ip, cost)) {

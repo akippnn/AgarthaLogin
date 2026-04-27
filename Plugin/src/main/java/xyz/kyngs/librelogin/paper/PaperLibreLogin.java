@@ -40,6 +40,7 @@ public class PaperLibreLogin extends AuthenticLibreLogin<Player, World> {
     private final PaperBootstrap bootstrap;
     private PaperListeners listeners;
     private boolean started;
+    private PacketListener packetListener;
 
     public PaperLibreLogin(PaperBootstrap bootstrap) {
         this.bootstrap = bootstrap;
@@ -108,6 +109,13 @@ public class PaperLibreLogin extends AuthenticLibreLogin<Player, World> {
     @Override
     protected boolean mainThread() {
         return Bukkit.isPrimaryThread() && started;
+    }
+
+    @Override
+    public void invalidateInviteCache(java.util.UUID uuid) {
+        if (packetListener != null) {
+            packetListener.invalidateInviteCache(uuid);
+        }
     }
 
     @Override
@@ -180,7 +188,8 @@ public class PaperLibreLogin extends AuthenticLibreLogin<Player, World> {
 
         Bukkit.getPluginManager().registerEvents(listeners, bootstrap);
         Bukkit.getPluginManager().registerEvents(new Blockers(this), bootstrap);
-        PacketEvents.getAPI().getEventManager().registerListener(new PacketListener(this, listeners));
+        packetListener = new PacketListener(this, listeners);
+        PacketEvents.getAPI().getEventManager().registerListener(packetListener);
 
         started = true;
     }

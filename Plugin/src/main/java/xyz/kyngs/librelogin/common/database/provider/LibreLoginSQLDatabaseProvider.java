@@ -283,14 +283,15 @@ public abstract class LibreLoginSQLDatabaseProvider
         });
     }
 
-    public void redeemInvite(String code, UUID usedBy) {
+    public boolean redeemInvite(String code, UUID usedBy) {
         plugin.reportMainThread();
-        connector.runQuery(connection -> {
-            var ps = connection.prepareStatement("UPDATE librepremium_invites SET used_by_uuid = ?, used_at = ? WHERE code = ?");
+        return connector.runQuery(connection -> {
+            var ps = connection.prepareStatement("UPDATE librepremium_invites SET used_by_uuid = ?, used_at = ? WHERE code = ? AND used_by_uuid IS NULL");
             ps.setString(1, usedBy.toString());
             ps.setTimestamp(2, new java.sql.Timestamp(System.currentTimeMillis()));
             ps.setString(3, code);
-            ps.executeUpdate();
+            int updated = ps.executeUpdate();
+            return updated == 1;
         });
     }
 

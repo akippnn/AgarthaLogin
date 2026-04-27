@@ -12,17 +12,27 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import xyz.kyngs.librelogin.paper.PaperListeners;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import java.util.concurrent.TimeUnit;
+import java.util.UUID;
 import xyz.kyngs.librelogin.common.config.ConfigurationKeys;
 import xyz.kyngs.librelogin.paper.PaperLibreLogin;
 
 public class PacketListener extends PacketListenerAbstract {
     private final PaperLibreLogin plugin;
     private final PaperListeners delegate;
+    private final Cache<UUID, Boolean> needsInviteCache;
 
     public PacketListener(PaperLibreLogin plugin, PaperListeners delegate) {
         super(PacketListenerPriority.HIGHEST);
         this.plugin = plugin;
         this.delegate = delegate;
+        this.needsInviteCache = Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
+    }
+
+    public void invalidateInviteCache(UUID uuid) {
+        needsInviteCache.invalidate(uuid);
     }
 
     @Override
@@ -33,16 +43,22 @@ public class PacketListener extends PacketListenerAbstract {
             var pUser = event.getUser();
             if (pUser != null && pUser.getUUID() != null) {
                 if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED)) {
-                    var user = plugin.getDatabaseProvider().getByUUID(pUser.getUUID());
-                    if (user != null && user.getInvitedBy() == null) {
-                        boolean immune = false;
-                        if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
-                            var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
-                            if (adminList != null && adminList.contains(user.getLastNickname())) {
-                                immune = true;
+                    Boolean needsInvite = needsInviteCache.get(pUser.getUUID(), k -> {
+                        var user = plugin.getDatabaseProvider().getByUUID(k);
+                        if (user != null && user.getInvitedBy() == null) {
+                            boolean immune = false;
+                            if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
+                                var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
+                                if (adminList != null && adminList.contains(user.getLastNickname())) {
+                                    immune = true;
+                                }
                             }
+                            return !immune;
                         }
-                        if (!immune) {
+                        return false;
+                    });
+
+                    if (Boolean.TRUE.equals(needsInvite)) {
                             if (event.getPacketType() != PacketType.Play.Client.KEEP_ALIVE
                                     && event.getPacketType() != PacketType.Play.Client.PONG
                                     && event.getPacketType() != PacketType.Play.Client.PLUGIN_MESSAGE

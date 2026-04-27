@@ -61,12 +61,9 @@ public class FrontendHandler extends HttpServlet {
             String tokenParam = req.getParameter("token");
             boolean authorized = false;
 
-            System.out.println("FrontendHandler: Request to " + path + " with token=" + tokenParam);
-
             if (tokenParam != null) {
                 var tokenData = sessionManager.getToken(tokenParam);
                 if (tokenData != null) {
-                    System.out.println("FrontendHandler: Token found. Type=" + tokenData.type);
                     if (path.equals("/admin.html")
                             && tokenData.type == WebSessionManager.TokenType.ADMIN_ACCESS) {
                         authorized = true;
@@ -80,19 +77,12 @@ public class FrontendHandler extends HttpServlet {
                             && tokenData.type == WebSessionManager.TokenType.LOGIN) {
                         authorized = true;
                     }
-                } else {
-                    System.out.println("FrontendHandler: Token not found or expired.");
                 }
-            } else {
-                System.out.println("FrontendHandler: No token param.");
             }
 
             if (!authorized) {
-                System.out.println("FrontendHandler: Unauthorized access to " + path);
                 resp.setStatus(401);
                 path = "/error.html";
-            } else {
-                System.out.println("FrontendHandler: Authorized access to " + path);
             }
         }
 

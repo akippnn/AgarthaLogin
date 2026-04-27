@@ -297,17 +297,28 @@ public class AuthController {
                 return;
             }
 
+            if (!sqlProvider.redeemInvite(code, user.getUuid())) {
+                resp.setStatus(400);
+                resp.getWriter().write(gson.toJson(new ErrorResponse("Invite code already used or expired.")));
+                return;
+            }
+
             user.setInvitedBy(inviter);
             sqlProvider.updateUser(user);
-            sqlProvider.redeemInvite(code, user.getUuid());
+            plugin.invalidateInviteCache(user.getUuid());
 
             Object player = plugin.getPlatformHandle().getPlayer(user.getUuid());
             if (player != null) {
                 plugin.getPlatformHandle().sendMessage(player, plugin.getMessages().getMessage("info-invite-redeemed"));
             }
 
+            sessionManager.invalidateToken(tokenStr);
+            WebSessionManager.TokenType nextStep = user.getHashedPassword() != null ? WebSessionManager.TokenType.LOGIN : WebSessionManager.TokenType.REGISTER;
+            String nextToken = sessionManager.createToken(user.getUuid(), nextStep);
+
             JsonObject response = new JsonObject();
             response.addProperty("success", true);
+            response.addProperty("nextToken", nextToken);
             resp.getWriter().write(gson.toJson(response));
         } else {
             resp.setStatus(500);

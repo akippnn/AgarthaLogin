@@ -430,6 +430,13 @@ Verifies whether the IP the players had used when authenticating to Mojang match
                     "The public URL for the authentication page.",
                     ConfigurateHelper::getString);
 
+    public static final ConfigurationKey<List<String>> WEB_TRUSTED_PROXIES =
+            new ConfigurationKey<>(
+                    "web-server.trusted-proxies",
+                    List.of(),
+                    "List of trusted proxy IP CIDRs allowed to set the X-Forwarded-For header.",
+                    ConfigurateHelper::getStringList);
+
     public static final ConfigurationKey<List<String>> ADMIN_LIST =
             new ConfigurationKey<>(
                     "admin-list",

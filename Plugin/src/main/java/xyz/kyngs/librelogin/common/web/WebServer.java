@@ -60,6 +60,21 @@ public class WebServer {
                 new ServletHolder(new ApiHandler(plugin, sessionManager, rateLimitManager, gson)),
                 "/api/*");
 
+        // Security Headers Filter
+        context.addFilter(new org.eclipse.jetty.ee9.servlet.FilterHolder(new jakarta.servlet.Filter() {
+            @Override
+            public void doFilter(jakarta.servlet.ServletRequest request, jakarta.servlet.ServletResponse response, jakarta.servlet.FilterChain chain) throws IOException, jakarta.servlet.ServletException {
+                if (response instanceof jakarta.servlet.http.HttpServletResponse res) {
+                    res.setHeader("X-Frame-Options", "DENY");
+                    res.setHeader("X-Content-Type-Options", "nosniff");
+                    res.setHeader("X-XSS-Protection", "1; mode=block");
+                    res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
+                    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+                }
+                chain.doFilter(request, response);
+            }
+        }), "/*", java.util.EnumSet.of(jakarta.servlet.DispatcherType.REQUEST));
+
         // Frontend Handler (Static files)
         context.addServlet(
                 new ServletHolder(new FrontendHandler(plugin.getClass(), sessionManager)), "/*");

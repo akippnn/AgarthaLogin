@@ -475,6 +475,11 @@ public class AdminController {
         } catch (Exception ignored) {
         }
 
+        UUID invitedBy = null;
+        if (plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_ENABLED)) {
+            invitedBy = UUID.fromString("00000000-0000-0000-0000-000000000001");
+        }
+
         User user =
                 new AuthenticUser(
                         plugin.generateNewUUID(username, premiumUuid),
@@ -488,7 +493,7 @@ public class AdminController {
                         Timestamp.valueOf(LocalDateTime.now()),
                         null,
                         null,
-                        null);
+                        invitedBy);
 
         plugin.getDatabaseProvider().insertUser(user);
 

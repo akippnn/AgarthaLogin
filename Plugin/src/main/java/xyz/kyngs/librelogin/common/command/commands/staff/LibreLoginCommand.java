@@ -452,6 +452,7 @@ public class LibreLoginCommand<P> extends StaffCommand<P> {
                                     null,
                                     Timestamp.valueOf(LocalDateTime.now()),
                                     null,
+                                    null,
                                     null);
 
                     getDatabaseProvider().insertUser(user);

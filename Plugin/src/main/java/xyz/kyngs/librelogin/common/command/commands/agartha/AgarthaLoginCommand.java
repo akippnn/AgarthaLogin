@@ -58,6 +58,49 @@ public class AgarthaLoginCommand<P> extends Command<P> {
                     .expireAfterWrite(15, java.util.concurrent.TimeUnit.SECONDS)
                     .build();
 
+    @Subcommand("invite")
+    public void onInvite(CommandIssuer issuer) {
+        P player = plugin.getPlayerFromIssuer(issuer);
+        if (player == null) return;
+
+        java.util.UUID uuid = plugin.getPlatformHandle().getUUIDForPlayer(player);
+        xyz.kyngs.librelogin.api.database.User user = plugin.getDatabaseProvider().getByUUID(uuid);
+
+        if (user == null) return;
+
+        if (!plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_ENABLED)) {
+            plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
+                    Component.text("Invite system is not enabled.", NamedTextColor.RED));
+            return;
+        }
+
+        var provider = plugin.getDatabaseProvider();
+        if (provider instanceof xyz.kyngs.librelogin.common.database.provider.LibreLoginSQLDatabaseProvider sqlProvider) {
+            int max = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_MAX_ACTIVE_PER_USER);
+            int active = sqlProvider.countActiveInvites(uuid);
+
+            if (active >= max) {
+                plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
+                        plugin.getMessages().getMessage("error-invite-limit-reached"));
+                return;
+            }
+
+            int length = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_CODE_LENGTH);
+            String code = xyz.kyngs.librelogin.common.util.GeneralUtil.generateRandomString(length);
+
+            int expiryHours = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_EXPIRY_HOURS);
+            java.sql.Timestamp expiry = new java.sql.Timestamp(System.currentTimeMillis() + java.time.Duration.ofHours(expiryHours).toMillis());
+
+            sqlProvider.createInvite(code, uuid, expiry);
+
+            plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
+                    plugin.getMessages().getMessage("info-invite-created", "%code%", code));
+        } else {
+            plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
+                    Component.text("Unsupported database provider.", NamedTextColor.RED));
+        }
+    }
+
     @Subcommand("verify")
     public void onVerify(CommandIssuer issuer, String code) {
         P player = plugin.getPlayerFromIssuer(issuer);

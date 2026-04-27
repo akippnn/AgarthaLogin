@@ -1,0 +1,16 @@
+FROM eclipse-temurin:21-jdk AS builder
+
+WORKDIR /app
+
+# Copy the project files
+COPY . .
+
+# Install Node.js 22 for frontend build
+RUN apt-get update && apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
+    apt-get install -y nodejs
+
+# Run the build
+RUN ./gradlew build --no-daemon
+
+# The jars will be in Plugin/build/libs/ and other subprojects

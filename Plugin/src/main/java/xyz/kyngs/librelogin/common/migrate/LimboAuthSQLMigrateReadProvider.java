@@ -89,7 +89,7 @@ public class LimboAuthSQLMigrateReadProvider extends SQLMigrateReadProvider {
 
                             users.add(
                                     new AuthenticUser(
-                                            UUID.fromString(uniqueIdString, null),
+                                            UUID.fromString(uniqueIdString),
                                             premiumIdString == null
                                                     ? null
                                                     : UUID.fromString(premiumIdString),

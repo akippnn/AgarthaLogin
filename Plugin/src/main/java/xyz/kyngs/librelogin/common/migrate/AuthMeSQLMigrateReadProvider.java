@@ -64,7 +64,7 @@ public class AuthMeSQLMigrateReadProvider extends SQLMigrateReadProvider {
 
                             users.add(
                                     new AuthenticUser(
-                                            GeneralUtil.getCrackedUUIDFromName(nickname, null),
+                                            GeneralUtil.getCrackedUUIDFromName(nickname),
                                             null,
                                             password,
                                             nickname,

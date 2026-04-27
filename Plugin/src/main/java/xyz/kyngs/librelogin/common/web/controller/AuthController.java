@@ -293,7 +293,8 @@ public class AuthController {
             java.util.UUID inviter = sqlProvider.getInviteInviter(code);
             if (inviter == null) {
                 resp.setStatus(400);
-                resp.getWriter().write(gson.toJson(new ErrorResponse(plugin.getMessages().getMessage("error-invite-invalid"))));
+                String msg = ((xyz.kyngs.librelogin.common.config.HoconMessages) plugin.getMessages()).getRawMessage("error-invite-invalid");
+                resp.getWriter().write(gson.toJson(new ErrorResponse(msg)));
                 return;
             }
 
@@ -307,9 +308,9 @@ public class AuthController {
             sqlProvider.updateUser(user);
             plugin.invalidateInviteCache(user.getUuid());
 
-            Object player = plugin.getPlatformHandle().getPlayer(user.getUuid());
+            var player = plugin.getPlatformHandle().getPlayer(user.getUuid());
             if (player != null) {
-                plugin.getPlatformHandle().sendMessage(player, plugin.getMessages().getMessage("info-invite-redeemed"));
+                ((xyz.kyngs.librelogin.api.PlatformHandle) plugin.getPlatformHandle()).getAudienceForPlayer(player).sendMessage(plugin.getMessages().getMessage("info-invite-redeemed"));
             }
 
             sessionManager.invalidateToken(tokenStr);

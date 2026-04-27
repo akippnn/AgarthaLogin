@@ -46,7 +46,7 @@ public class AuthySQLMigrateReadProvider extends SQLMigrateReadProvider {
 
                             users.add(
                                     new AuthenticUser(
-                                            UUID.fromString(uuid, null),
+                                            UUID.fromString(uuid),
                                             null,
                                             password,
                                             username,

@@ -64,7 +64,7 @@ public class AegisSQLMigrateReadProvider extends SQLMigrateReadProvider {
                             users.add(
                                     new AuthenticUser(
                                             uuid,
-                                            onlineID == null || !rs.getBoolean("premium", null)
+                                            onlineID == null || !rs.getBoolean("premium")
                                                     ? null
                                                     : UUID.fromString(
                                                             onlineID.replace(

@@ -438,5 +438,55 @@ Verifies whether the IP the players had used when authenticating to Mojang match
                             + " adminpanel",
                     ConfigurateHelper::getStringList);
 
+    public static final ConfigurationKey<?> INVITES =
+            ConfigurationKey.getComment(
+                    "invites",
+                    """
+                    Configuration for the invite system. This system restricts access to the server
+                    to only players who have been invited, via web verification.
+                    """);
+
+    public static final ConfigurationKey<Boolean> INVITES_ENABLED =
+            new ConfigurationKey<>(
+                    "invites.enabled",
+                    false,
+                    "Master switch for the invite system.",
+                    ConfigurateHelper::getBoolean);
+
+    public static final ConfigurationKey<Boolean> INVITES_ADMINS_IMMUNE =
+            new ConfigurationKey<>(
+                    "invites.admins-immune",
+                    true,
+                    "If true, players in the admin-list bypass the invite requirements.",
+                    ConfigurateHelper::getBoolean);
+
+    public static final ConfigurationKey<Boolean> INVITES_REQUIRE_FOR_REGISTRATION =
+            new ConfigurationKey<>(
+                    "invites.require-invite-for-registration",
+                    true,
+                    "If true, unregistered players must redeem an invite before registering.",
+                    ConfigurateHelper::getBoolean);
+
+    public static final ConfigurationKey<Integer> INVITES_EXPIRY_HOURS =
+            new ConfigurationKey<>(
+                    "invites.invite-expiry-hours",
+                    24,
+                    "Hours until an unused invite code expires.",
+                    ConfigurateHelper::getInt);
+
+    public static final ConfigurationKey<Integer> INVITES_CODE_LENGTH =
+            new ConfigurationKey<>(
+                    "invites.invite-code-length",
+                    8,
+                    "Character length of generated invite codes.",
+                    ConfigurateHelper::getInt);
+
+    public static final ConfigurationKey<Integer> INVITES_MAX_ACTIVE_PER_USER =
+            new ConfigurationKey<>(
+                    "invites.max-active-invites-per-user",
+                    3,
+                    "Maximum outstanding (unused) invites per player.",
+                    ConfigurateHelper::getInt);
+
     private ConfigurationKeys() {}
 }

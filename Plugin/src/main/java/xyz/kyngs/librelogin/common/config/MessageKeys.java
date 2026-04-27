@@ -1309,4 +1309,38 @@ This section contains autocompletes for commands. It is pretty large, so most pe
                     "This hint is displayed when the player starts typing the /confirmpasswordreset"
                             + " command.",
                     ConfigurateHelper::getString);
+    public static final ConfigurationKey<String> INVITE_REQUIRED =
+            new ConfigurationKey<>(
+                    "invite-required",
+                    "This server requires an invite code. Click the link below to enter yours.",
+                    "Message sent to uninvited players prompting them to enter an invite code.",
+                    ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<String> INVITE_CREATED =
+            new ConfigurationKey<>(
+                    "invite-created",
+                    "Invite code created: &e%code%&r (expires in %hours% hours)",
+                    "Message sent when a player generates an invite code.",
+                    ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<String> INVITE_LIMIT_REACHED =
+            new ConfigurationKey<>(
+                    "invite-limit-reached",
+                    "You have reached the maximum number of active invites (%limit%).",
+                    "Message sent when a player tries to generate too many invites.",
+                    ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<String> INVITE_REDEEMED =
+            new ConfigurationKey<>(
+                    "invite-redeemed",
+                    "Invite code accepted! Welcome.",
+                    "Message sent after an invite is successfully redeemed on the web.",
+                    ConfigurateHelper::getString);
+
+    public static final ConfigurationKey<String> INVITE_INVALID =
+            new ConfigurationKey<>(
+                    "invite-invalid",
+                    "Invalid or expired invite code.",
+                    "Message displayed on the web interface when an invalid code is entered.",
+                    ConfigurateHelper::getString);
 }

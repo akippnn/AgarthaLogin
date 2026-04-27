@@ -39,7 +39,7 @@ public class PacketListener extends PacketListenerAbstract {
     public void onPacketReceive(PacketReceiveEvent event) {
         if (event.isCancelled()) return;
 
-        if (event.getPacketType().name().startsWith("PLAY_")) {
+        if (event.getPacketType().getClass().getSimpleName().startsWith("Play")) {
             var pUser = event.getUser();
             if (pUser != null && pUser.getUUID() != null) {
                 if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED)) {
@@ -70,7 +70,6 @@ public class PacketListener extends PacketListenerAbstract {
                     }
                 }
             }
-        }
 
         if (event.getPacketType() != PacketType.Login.Client.LOGIN_START
                 && event.getPacketType() != PacketType.Login.Client.ENCRYPTION_RESPONSE) return;

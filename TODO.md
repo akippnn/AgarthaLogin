@@ -30,10 +30,14 @@
     - Verify all components use the same Inter font and CSS variable weights.
 
 ## 🛠 Technical Debt & Security
-- [ ] **Java Backend Cleanup**
-    - Fix raw type warnings for `AuthenticLibreLogin` and `CommandManager`.
-    - Fix unchecked cast warnings in `AdminController.java` and `AuthController.java`.
-    - Parameterize generic types properly to satisfy the compiler.
+- [x] **Java Backend Cleanup**
+    - [x] Fix raw type warnings for `AuthenticLibreLogin` and `CommandManager`.
+    - [x] Fix unchecked cast warnings in `AdminController.java` and `AuthController.java`.
+    - [x] Parameterize generic types properly to satisfy the compiler.
+- [x] **Security Hardening**
+    - [x] Mitigate RCE via rate-limited, low-payload error pages.
+    - [x] Prevent DDoS via packet-level filtering for unauthenticated users.
+    - [x] Implement robust invite-only gate for registrations.
 - [x] **Tree-shaking Verification**
     - [x] Verify that `lucide-preact` icons are being properly tree-shaken and not bloating the bundle.
     - [x] Aim for < 10KB target for main islands (Optimized by removing `react-dom` dependencies).

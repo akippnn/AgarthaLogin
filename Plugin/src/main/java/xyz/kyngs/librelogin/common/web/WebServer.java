@@ -11,6 +11,7 @@ import org.eclipse.jetty.ee9.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee9.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
+import java.io.IOException;
 import xyz.kyngs.librelogin.common.web.handler.ApiHandler;
 import xyz.kyngs.librelogin.common.web.handler.FrontendHandler;
 

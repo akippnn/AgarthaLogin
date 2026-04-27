@@ -64,7 +64,7 @@ public class LogItSQLMigrateReadProvider extends SQLMigrateReadProvider {
 
                             users.add(
                                     new AuthenticUser(
-                                            UUID.fromString(uuid, null),
+                                            UUID.fromString(uuid),
                                             null,
                                             parsedPassword,
                                             nickname,

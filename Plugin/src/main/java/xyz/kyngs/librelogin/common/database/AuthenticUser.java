@@ -38,6 +38,33 @@ public class AuthenticUser implements User {
             String ip,
             Timestamp lastAuthentication,
             String lastServer,
+            String email) {
+        this(
+                uuid,
+                premiumUUID,
+                hashedPassword,
+                lastNickname,
+                joinDate,
+                lastSeen,
+                secret,
+                ip,
+                lastAuthentication,
+                lastServer,
+                email,
+                null);
+    }
+
+    public AuthenticUser(
+            UUID uuid,
+            UUID premiumUUID,
+            HashedPassword hashedPassword,
+            String lastNickname,
+            Timestamp joinDate,
+            Timestamp lastSeen,
+            String secret,
+            String ip,
+            Timestamp lastAuthentication,
+            String lastServer,
             String email,
             UUID invitedBy) {
         this.uuid = uuid;

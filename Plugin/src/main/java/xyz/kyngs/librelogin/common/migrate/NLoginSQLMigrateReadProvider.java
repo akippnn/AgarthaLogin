@@ -65,7 +65,7 @@ public class NLoginSQLMigrateReadProvider extends SQLMigrateReadProvider {
 
                             users.add(
                                     new AuthenticUser(
-                                            GeneralUtil.fromUnDashedUUID(uniqueIdString, null),
+                                            GeneralUtil.fromUnDashedUUID(uniqueIdString),
                                             premiumIdString == null
                                                     ? null
                                                     : GeneralUtil.fromUnDashedUUID(premiumIdString),

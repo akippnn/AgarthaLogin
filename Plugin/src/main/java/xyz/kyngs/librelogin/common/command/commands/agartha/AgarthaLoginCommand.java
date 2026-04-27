@@ -86,7 +86,7 @@ public class AgarthaLoginCommand<P> extends Command<P> {
             }
 
             int length = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_CODE_LENGTH);
-            String code = xyz.kyngs.librelogin.common.util.GeneralUtil.generateRandomString(length);
+            String code = xyz.kyngs.librelogin.common.util.GeneralUtil.generateAlphanumericText(length);
 
             int expiryHours = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_EXPIRY_HOURS);
             java.sql.Timestamp expiry = new java.sql.Timestamp(System.currentTimeMillis() + java.time.Duration.ofHours(expiryHours).toMillis());

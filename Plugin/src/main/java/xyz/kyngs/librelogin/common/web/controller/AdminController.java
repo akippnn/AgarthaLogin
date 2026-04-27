@@ -487,6 +487,7 @@ public class AdminController {
                         null,
                         Timestamp.valueOf(LocalDateTime.now()),
                         null,
+                        null,
                         null);
 
         plugin.getDatabaseProvider().insertUser(user);

@@ -263,6 +263,58 @@ public class AuthController {
         }
     }
 
+    public void handleInviteRedeem(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        JsonObject body = gson.fromJson(req.getReader(), JsonObject.class);
+        String tokenStr = body.get("token").getAsString();
+        String code = body.get("code").getAsString();
+
+        WebSessionManager.TokenInfo info = sessionManager.getToken(tokenStr);
+        if (info == null) {
+            resp.setStatus(400);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("Invalid token for invite redemption")));
+            return;
+        }
+
+        User user = plugin.getDatabaseProvider().getByUUID(info.playerUuid);
+        if (user == null) {
+            resp.setStatus(400);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("User not found")));
+            return;
+        }
+
+        if (user.getInvitedBy() != null) {
+            resp.setStatus(400);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("You have already used an invite code.")));
+            return;
+        }
+
+        var provider = plugin.getDatabaseProvider();
+        if (provider instanceof xyz.kyngs.librelogin.common.database.provider.LibreLoginSQLDatabaseProvider sqlProvider) {
+            java.util.UUID inviter = sqlProvider.getInviteInviter(code);
+            if (inviter == null) {
+                resp.setStatus(400);
+                resp.getWriter().write(gson.toJson(new ErrorResponse(plugin.getMessages().getMessage("error-invite-invalid"))));
+                return;
+            }
+
+            user.setInvitedBy(inviter);
+            sqlProvider.updateUser(user);
+            sqlProvider.redeemInvite(code, user.getUuid());
+
+            Object player = plugin.getPlatformHandle().getPlayer(user.getUuid());
+            if (player != null) {
+                plugin.getPlatformHandle().sendMessage(player, plugin.getMessages().getMessage("info-invite-redeemed"));
+            }
+
+            JsonObject response = new JsonObject();
+            response.addProperty("success", true);
+            resp.getWriter().write(gson.toJson(response));
+        } else {
+            resp.setStatus(500);
+            resp.getWriter().write(gson.toJson(new ErrorResponse("Unsupported database provider for invites.")));
+        }
+    }
+
     public void handleAdminVerify(HttpServletRequest req, HttpServletResponse resp)
             throws IOException {
         JsonObject body = gson.fromJson(req.getReader(), JsonObject.class);

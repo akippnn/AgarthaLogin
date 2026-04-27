@@ -104,6 +104,8 @@ public class ApiHandler extends HttpServlet {
                 authController.handleRegister(req, resp);
             } else if ("/session-auth".equals(path)) {
                 authController.handleSessionAuth(req, resp);
+            } else if ("/invite/redeem".equals(path)) {
+                authController.handleInviteRedeem(req, resp);
             } else if ("/admin/verify".equals(path)) {
                 authController.handleAdminVerify(req, resp);
             } else if (path != null && path.startsWith("/admin/")) {

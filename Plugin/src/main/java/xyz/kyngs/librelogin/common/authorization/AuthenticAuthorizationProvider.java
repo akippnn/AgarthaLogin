@@ -64,6 +64,80 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         return passwordResetCache;
     }
 
+    public AuthenticLibreLogin<P, S> getPlugin() {
+        return plugin;
+    }
+
+    // Rate limiting: 1 attempt per 5 seconds per player
+    private final Cache<P, Long> geyserInviteRateLimit =
+            Caffeine.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
+    private final Cache<P, Integer> geyserInviteSpamCounter =
+            Caffeine.newBuilder().expireAfterWrite(60, TimeUnit.SECONDS).build();
+
+    private static final int MAX_SPAM_ATTEMPTS = 10;
+    private static final long RATE_LIMIT_MS = 5000;
+
+    public void handleGeyserInviteAttempt(P player, String rawMessage) {
+        String code = rawMessage.trim();
+        if (code.isEmpty()) return;
+
+        var audience = platformHandle.getAudienceForPlayer(player);
+
+        // Rate limit check
+        Long lastAttempt = geyserInviteRateLimit.getIfPresent(player);
+        if (lastAttempt != null && System.currentTimeMillis() - lastAttempt < RATE_LIMIT_MS) {
+            audience.sendMessage(plugin.getMessages().getMessage("error-invite-rate-limit"));
+            return;
+        }
+        geyserInviteRateLimit.put(player, System.currentTimeMillis());
+
+        // Spam counter
+        int spamCount = geyserInviteSpamCounter.get(player, k -> 0) + 1;
+        geyserInviteSpamCounter.put(player, spamCount);
+        if (spamCount > MAX_SPAM_ATTEMPTS) {
+            platformHandle.kick(player, plugin.getMessages().getMessage("kick-invite-spam"));
+            return;
+        }
+
+        // Try to redeem
+        var uuid = platformHandle.getUUIDForPlayer(player);
+        var user = plugin.getDatabaseProvider().getByUUID(uuid);
+
+        if (user == null || user.getInvitedBy() != null) {
+            // Already invited or user doesn't exist — should not happen
+            return;
+        }
+
+        var dbProvider = plugin.getDatabaseProvider();
+        if (!(dbProvider
+                instanceof
+                xyz.kyngs.librelogin.common.database.provider.LibreLoginSQLDatabaseProvider
+                        sqlProvider)) {
+            return;
+        }
+
+        UUID inviter = sqlProvider.getInviteInviter(code);
+        if (inviter == null) {
+            audience.sendMessage(plugin.getMessages().getMessage("error-invite-invalid"));
+            return;
+        }
+
+        if (!sqlProvider.redeemInvite(code, uuid)) {
+            audience.sendMessage(plugin.getMessages().getMessage("error-invite-invalid"));
+            return;
+        }
+
+        // Success!
+        user.setInvitedBy(inviter);
+        sqlProvider.updateUser(user);
+        plugin.invalidateInviteCache(uuid);
+
+        audience.sendMessage(plugin.getMessages().getMessage("info-invite-redeemed"));
+
+        // Authorize the Geyser player (Floodgate auto-login)
+        authorize(user, player, AuthenticatedEvent.AuthenticationReason.PREMIUM);
+    }
+
     public void onExit(P player) {
         stopTracking(player);
         awaiting2FA.remove(player);
@@ -196,6 +270,12 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
             boolean needsInvite =
                     xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(plugin, user);
 
+            // Geyser players can't click links — use chat-based invite input
+            if (plugin.fromFloodgate(uuid) && needsInvite) {
+                sendGeyserInvitePrompt(player);
+                return;
+            }
+
             xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type =
                     !registered || needsInvite
                             ? xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType.REGISTER
@@ -305,6 +385,40 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
                                 Duration.ofMillis(0),
                                 Duration.ofMillis(toRefresh > 0 ? (long) (toRefresh * 1.1) : 9000),
                                 Duration.ofMillis(0))));
+    }
+
+    private void sendGeyserInvitePrompt(P player) {
+        var audience = platformHandle.getAudienceForPlayer(player);
+        java.util.Locale locale = platformHandle.getLocale(player);
+
+        Component message =
+                Component.text("\n".repeat(13))
+                        .append(
+                                plugin.getMessages()
+                                        .getMessage("This server is powered by", locale)
+                                        .color(
+                                                net.kyori.adventure.text.format.NamedTextColor
+                                                        .YELLOW))
+                        .append(
+                                Component.text(" AgarthaLogin")
+                                        .color(net.kyori.adventure.text.format.NamedTextColor.GOLD))
+                        .append(Component.newline())
+                        .append(Component.newline())
+                        .append(
+                                plugin.getMessages()
+                                        .getMessage("prompt-geyser-invite", locale)
+                                        .color(net.kyori.adventure.text.format.NamedTextColor.GRAY))
+                        .append(Component.newline())
+                        .append(Component.newline())
+                        .append(
+                                plugin.getMessages()
+                                        .getMessage("prompt-geyser-invite-hint", locale)
+                                        .color(
+                                                net.kyori.adventure.text.format.NamedTextColor
+                                                        .DARK_GRAY))
+                        .append(Component.newline());
+
+        audience.sendMessage(message);
     }
 
     public void stopTracking(P player) {

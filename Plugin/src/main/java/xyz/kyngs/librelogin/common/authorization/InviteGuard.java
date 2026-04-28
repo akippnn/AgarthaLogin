@@ -51,4 +51,24 @@ public final class InviteGuard {
 
         return true; // Needs invite
     }
+
+    /**
+     * Checks if a player should be blocked from transferring to a non-limbo server. Call this from
+     * Velocity Blockers.onServerConnect and Paper Blockers.onTeleport.
+     *
+     * @return true if the transfer should be DENIED (player needs invite or is unauthorized).
+     */
+    public static <P, S> boolean shouldBlockServerTransfer(
+            AuthenticLibreLogin<P, S> plugin, P player, S targetServer) {
+        var uuid = plugin.getPlatformHandle().getUUIDForPlayer(player);
+        var user = plugin.getDatabaseProvider().getByUUID(uuid);
+
+        if (!needsInvite(plugin, user)) {
+            return false; // Player has an invite, allow transfer
+        }
+
+        // Check if target is a limbo server — if so, allow it
+        // (they need to be IN limbo, not blocked FROM limbo)
+        return !plugin.getServerHandler().getLimboServers().contains(targetServer);
+    }
 }

@@ -34,9 +34,37 @@ public class Blockers {
 
     @Subscribe(order = PostOrder.FIRST)
     public void onChat(PlayerChatEvent event) {
-        if (!authorizationProvider.isAuthorized(event.getPlayer())
-                || authorizationProvider.isAwaiting2FA(event.getPlayer()))
+        var player = event.getPlayer();
+        if (!authorizationProvider.isAuthorized(player)
+                || authorizationProvider.isAwaiting2FA(player)) {
+            // Check if Geyser player needing invite
+            if (((xyz.kyngs.librelogin.common.authorization.AuthenticAuthorizationProvider<
+                                            Player, ?>)
+                                    authorizationProvider)
+                            .getPlugin()
+                            .fromFloodgate(player.getUniqueId())
+                    && xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(
+                            ((xyz.kyngs.librelogin.common.authorization
+                                                            .AuthenticAuthorizationProvider<
+                                                    Player, ?>)
+                                            authorizationProvider)
+                                    .getPlugin(),
+                            ((xyz.kyngs.librelogin.common.authorization
+                                                            .AuthenticAuthorizationProvider<
+                                                    Player, ?>)
+                                            authorizationProvider)
+                                    .getPlugin()
+                                    .getDatabaseProvider()
+                                    .getByUUID(player.getUniqueId()))) {
+                event.setResult(PlayerChatEvent.ChatResult.denied());
+                ((xyz.kyngs.librelogin.common.authorization.AuthenticAuthorizationProvider<
+                                        Player, ?>)
+                                authorizationProvider)
+                        .handleGeyserInviteAttempt(player, event.getMessage());
+                return;
+            }
             event.setResult(PlayerChatEvent.ChatResult.denied());
+        }
     }
 
     @Subscribe(order = PostOrder.FIRST)
@@ -57,10 +85,11 @@ public class Blockers {
 
     @Subscribe(order = PostOrder.FIRST)
     public void onServerConnect(ServerPreConnectEvent event) {
-        if (authorizationProvider.isAwaiting2FA(event.getPlayer())) {
-            if (!configuration
-                    .get(ConfigurationKeys.LIMBO)
-                    .contains(event.getOriginalServer().getServerInfo().getName())) {
+        var player = event.getPlayer();
+        if (!authorizationProvider.isAuthorized(player)
+                || authorizationProvider.isAwaiting2FA(player)) {
+            String targetName = event.getOriginalServer().getServerInfo().getName();
+            if (!configuration.get(ConfigurationKeys.LIMBO).contains(targetName)) {
                 event.setResult(ServerPreConnectEvent.ServerResult.denied());
             }
         }

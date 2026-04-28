@@ -68,6 +68,38 @@ public class Blockers implements Listener {
 
     @EventHandler(priority = org.bukkit.event.EventPriority.LOWEST)
     public void onChat(AsyncChatEvent event) {
+        if (!inLimbo(event.getPlayer())) return;
+
+        var player = event.getPlayer();
+        var uuid = player.getUniqueId();
+
+        if (((xyz.kyngs.librelogin.common.authorization.AuthenticAuthorizationProvider<Player, ?>)
+                                authorizationProvider)
+                        .getPlugin()
+                        .fromFloodgate(uuid)
+                && xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(
+                        ((xyz.kyngs.librelogin.common.authorization.AuthenticAuthorizationProvider<
+                                                Player, ?>)
+                                        authorizationProvider)
+                                .getPlugin(),
+                        ((xyz.kyngs.librelogin.common.authorization.AuthenticAuthorizationProvider<
+                                                Player, ?>)
+                                        authorizationProvider)
+                                .getPlugin()
+                                .getDatabaseProvider()
+                                .getByUUID(uuid))) {
+            event.setCancelled(true);
+
+            String messageStr =
+                    net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer
+                            .plainText()
+                            .serialize(event.message());
+            ((xyz.kyngs.librelogin.common.authorization.AuthenticAuthorizationProvider<Player, ?>)
+                            authorizationProvider)
+                    .handleGeyserInviteAttempt(player, messageStr);
+            return;
+        }
+
         cancelIfNeeded(event);
     }
 

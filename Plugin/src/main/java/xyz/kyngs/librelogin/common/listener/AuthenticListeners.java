@@ -43,16 +43,57 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
     protected void onPostLogin(P player, User user) {
         var ip = platformHandle.getIP(player);
         var uuid = platformHandle.getUUIDForPlayer(player);
-        if (plugin.fromFloodgate(uuid)) return;
+        boolean fromFloodgate = plugin.fromFloodgate(uuid);
 
         if (user == null) {
             user = plugin.getDatabaseProvider().getByUUID(uuid);
         }
+
+        boolean invitesEnabled = plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED);
+        boolean needsInvite = false;
+
+        if (invitesEnabled) {
+            if (fromFloodgate && user == null) {
+                user =
+                        new AuthenticUser(
+                                uuid,
+                                null,
+                                null,
+                                platformHandle.getUsernameForPlayer(player),
+                                Timestamp.valueOf(LocalDateTime.now()),
+                                Timestamp.valueOf(LocalDateTime.now()),
+                                null,
+                                ip,
+                                null,
+                                null,
+                                null,
+                                null);
+                plugin.getDatabaseProvider().insertUser(user);
+            }
+
+            if (user != null && user.getInvitedBy() == null) {
+                boolean immune = false;
+                if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
+                    var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
+                    if (adminList != null && adminList.contains(user.getLastNickname())) {
+                        immune = true;
+                    }
+                }
+                needsInvite = !immune;
+            }
+        }
+
+        if (fromFloodgate && !needsInvite) {
+            return;
+        }
+
         var sessionTime =
                 Duration.ofSeconds(
                         plugin.getConfiguration().get(ConfigurationKeys.SESSION_TIMEOUT));
 
-        if (user.autoLoginEnabled()) {
+        if (needsInvite) {
+            plugin.getAuthorizationProvider().startTracking(user, player);
+        } else if (user.autoLoginEnabled()) {
             if (!plugin.getMessages().isEmpty("info-premium-logged-in"))
                 plugin.delay(
                         () ->
@@ -376,22 +417,33 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
                         plugin.getConfiguration().get(ConfigurationKeys.SESSION_TIMEOUT));
 
         if (fromFloodgate) {
-            user = null;
+            user = plugin.getDatabaseProvider().getByUUID(uuid);
         } else if (user == null) {
             user = plugin.getDatabaseProvider().getByUUID(uuid);
         }
 
-        if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED) && user != null && user.getInvitedBy() == null) {
-            boolean immune = false;
-            if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
-                var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
-                if (adminList != null && adminList.contains(user.getLastNickname())) {
-                    immune = true;
+        boolean invitesEnabled = plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED);
+        boolean needsInvite = false;
+
+        if (invitesEnabled) {
+            if (fromFloodgate && user == null) {
+                needsInvite = true;
+            } else if (user != null && user.getInvitedBy() == null) {
+                boolean immune = false;
+                if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
+                    var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
+                    if (adminList != null && adminList.contains(user.getLastNickname())) {
+                        immune = true;
+                    }
                 }
+                needsInvite = !immune;
+            } else if (user == null) {
+                needsInvite = true;
             }
-            if (!immune) {
-                return new BiHolder<>(false, plugin.getServerHandler().chooseLimboServer(user, null));
-            }
+        }
+
+        if (needsInvite) {
+            return new BiHolder<>(false, plugin.getServerHandler().chooseLimboServer(user, null));
         }
 
         if (fromFloodgate

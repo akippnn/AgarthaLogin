@@ -48,22 +48,8 @@ public class PacketListener extends PacketListenerAbstract {
                                     pUser.getUUID(),
                                     k -> {
                                         var user = plugin.getDatabaseProvider().getByUUID(k);
-                                        if (user != null && user.getInvitedBy() == null) {
-                                            boolean immune = false;
-                                            if (plugin.getConfiguration()
-                                                    .get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
-                                                var adminList =
-                                                        plugin.getConfiguration()
-                                                                .get(ConfigurationKeys.ADMIN_LIST);
-                                                if (adminList != null
-                                                        && adminList.contains(
-                                                                user.getLastNickname())) {
-                                                    immune = true;
-                                                }
-                                            }
-                                            return !immune;
-                                        }
-                                        return false;
+                                        return xyz.kyngs.librelogin.common.authorization.InviteGuard
+                                                .needsInvite(plugin, user);
                                     });
 
                     if (Boolean.TRUE.equals(needsInvite)) {

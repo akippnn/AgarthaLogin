@@ -49,39 +49,8 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
             user = plugin.getDatabaseProvider().getByUUID(uuid);
         }
 
-        boolean invitesEnabled = plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED);
-        boolean needsInvite = false;
-
-        if (invitesEnabled) {
-            if (fromFloodgate && user == null) {
-                user =
-                        new AuthenticUser(
-                                uuid,
-                                null,
-                                null,
-                                platformHandle.getUsernameForPlayer(player),
-                                Timestamp.valueOf(LocalDateTime.now()),
-                                Timestamp.valueOf(LocalDateTime.now()),
-                                null,
-                                ip,
-                                null,
-                                null,
-                                null,
-                                null);
-                plugin.getDatabaseProvider().insertUser(user);
-            }
-
-            if (user != null && user.getInvitedBy() == null) {
-                boolean immune = false;
-                if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
-                    var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
-                    if (adminList != null && adminList.contains(user.getLastNickname())) {
-                        immune = true;
-                    }
-                }
-                needsInvite = !immune;
-            }
-        }
+        boolean needsInvite =
+                xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(plugin, user);
 
         if (fromFloodgate && !needsInvite) {
             return;
@@ -416,38 +385,19 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
                 Duration.ofSeconds(
                         plugin.getConfiguration().get(ConfigurationKeys.SESSION_TIMEOUT));
 
-        if (fromFloodgate) {
-            user = plugin.getDatabaseProvider().getByUUID(uuid);
-        } else if (user == null) {
+        if (user == null) {
             user = plugin.getDatabaseProvider().getByUUID(uuid);
         }
 
-        boolean invitesEnabled = plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED);
-        boolean needsInvite = false;
-
-        if (invitesEnabled) {
-            if (fromFloodgate && user == null) {
-                needsInvite = true;
-            } else if (user != null && user.getInvitedBy() == null) {
-                boolean immune = false;
-                if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
-                    var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
-                    if (adminList != null && adminList.contains(user.getLastNickname())) {
-                        immune = true;
-                    }
-                }
-                needsInvite = !immune;
-            } else if (user == null) {
-                needsInvite = true;
-            }
-        }
+        boolean needsInvite =
+                xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(plugin, user);
 
         if (needsInvite) {
             return new BiHolder<>(false, plugin.getServerHandler().chooseLimboServer(user, null));
         }
 
         if (fromFloodgate
-                || user.autoLoginEnabled()
+                || (user != null && user.autoLoginEnabled())
                 || (sessionTime != null
                         && user.getLastAuthentication() != null
                         && ip.equals(user.getIp())

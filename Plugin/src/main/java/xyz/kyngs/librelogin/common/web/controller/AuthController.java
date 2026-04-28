@@ -73,6 +73,13 @@ public class AuthController {
             return;
         }
 
+        if (xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(plugin, user)) {
+            resp.setStatus(403);
+            resp.getWriter()
+                    .write(gson.toJson(new ErrorResponse("You must redeem an invite code first.")));
+            return;
+        }
+
         // Check if user is registered (has password)
         if (user.getHashedPassword() == null) {
             resp.setStatus(400);
@@ -138,6 +145,13 @@ public class AuthController {
             // Should not happen if flow is correct
             resp.setStatus(500);
             resp.getWriter().write(gson.toJson(new ErrorResponse("User state error")));
+            return;
+        }
+
+        if (xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(plugin, user)) {
+            resp.setStatus(403);
+            resp.getWriter()
+                    .write(gson.toJson(new ErrorResponse("You must redeem an invite code first.")));
             return;
         }
 

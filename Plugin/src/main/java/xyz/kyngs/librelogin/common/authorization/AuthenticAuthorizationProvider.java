@@ -86,6 +86,17 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
         if (isAuthorized(player)) {
             throw new IllegalStateException("Player is already authorized");
         }
+
+        // CRITICAL: Block authorization if the player still needs an invite
+        if (xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(plugin, user)) {
+            plugin.getLogger()
+                    .warn(
+                            "Blocked authorize() for "
+                                    + (user != null ? user.getLastNickname() : "unknown user")
+                                    + " - invite not yet redeemed.");
+            return;
+        }
+
         stopTracking(player);
 
         user.setLastAuthentication(Timestamp.valueOf(LocalDateTime.now()));
@@ -182,19 +193,8 @@ public class AuthenticAuthorizationProvider<P, S> extends AuthenticHandler<P, S>
             java.util.UUID uuid = platformHandle.getUUIDForPlayer(player);
             var user = plugin.getDatabaseProvider().getByUUID(uuid);
 
-            boolean needsInvite = false;
-            if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ENABLED)
-                    && user != null
-                    && user.getInvitedBy() == null) {
-                boolean immune = false;
-                if (plugin.getConfiguration().get(ConfigurationKeys.INVITES_ADMINS_IMMUNE)) {
-                    var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
-                    if (adminList != null && adminList.contains(user.getLastNickname())) {
-                        immune = true;
-                    }
-                }
-                needsInvite = !immune;
-            }
+            boolean needsInvite =
+                    xyz.kyngs.librelogin.common.authorization.InviteGuard.needsInvite(plugin, user);
 
             xyz.kyngs.librelogin.common.web.WebSessionManager.TokenType type =
                     !registered || needsInvite

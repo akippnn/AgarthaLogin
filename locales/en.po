@@ -762,3 +762,14 @@ msgstr "Invalid or expired invite code."
 msgid "info-invite-redeemed"
 msgstr "Invite code redeemed successfully! You can now register."
 
+msgid "prompt-geyser-invite"
+msgstr "Please type your invite code in chat to continue."
+
+msgid "prompt-geyser-invite-hint"
+msgstr "Press \"t\" and type your invite code, then press Enter."
+
+msgid "error-invite-rate-limit"
+msgstr "Please wait a few seconds before trying again."
+
+msgid "kick-invite-spam"
+msgstr "Too many invalid invite attempts."

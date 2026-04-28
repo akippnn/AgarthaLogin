@@ -67,13 +67,19 @@ public class ApiHandler extends HttpServlet {
     private boolean checkRateLimit(HttpServletRequest req, HttpServletResponse resp, int cost)
             throws IOException {
         String ip = req.getRemoteAddr();
-        
-        java.util.List<String> trustedProxies = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.WEB_TRUSTED_PROXIES);
+
+        java.util.List<String> trustedProxies =
+                plugin.getConfiguration()
+                        .get(
+                                xyz.kyngs.librelogin.common.config.ConfigurationKeys
+                                        .WEB_TRUSTED_PROXIES);
         boolean isTrusted = false;
 
         if (trustedProxies != null && !trustedProxies.isEmpty()) {
             for (String proxy : trustedProxies) {
-                if (proxy.equals(ip) || (proxy.contains("/") && ip.startsWith(proxy.substring(0, proxy.indexOf('/'))))) {
+                if (proxy.equals(ip)
+                        || (proxy.contains("/")
+                                && ip.startsWith(proxy.substring(0, proxy.indexOf('/'))))) {
                     isTrusted = true;
                     break;
                 }

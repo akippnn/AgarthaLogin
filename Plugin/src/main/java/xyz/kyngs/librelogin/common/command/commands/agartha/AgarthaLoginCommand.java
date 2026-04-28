@@ -68,36 +68,63 @@ public class AgarthaLoginCommand<P> extends Command<P> {
 
         if (user == null) return;
 
-        if (!plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_ENABLED)) {
-            plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
-                    Component.text("Invite system is not enabled.", NamedTextColor.RED));
+        if (!plugin.getConfiguration()
+                .get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_ENABLED)) {
+            plugin.getPlatformHandle()
+                    .getAudienceForPlayer(player)
+                    .sendMessage(
+                            Component.text("Invite system is not enabled.", NamedTextColor.RED));
             return;
         }
 
         var provider = plugin.getDatabaseProvider();
-        if (provider instanceof xyz.kyngs.librelogin.common.database.provider.LibreLoginSQLDatabaseProvider sqlProvider) {
-            int max = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_MAX_ACTIVE_PER_USER);
+        if (provider
+                instanceof
+                xyz.kyngs.librelogin.common.database.provider.LibreLoginSQLDatabaseProvider
+                        sqlProvider) {
+            int max =
+                    plugin.getConfiguration()
+                            .get(
+                                    xyz.kyngs.librelogin.common.config.ConfigurationKeys
+                                            .INVITES_MAX_ACTIVE_PER_USER);
             int active = sqlProvider.countActiveInvites(uuid);
 
             if (active >= max) {
-                plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
-                        plugin.getMessages().getMessage("error-invite-limit-reached"));
+                plugin.getPlatformHandle()
+                        .getAudienceForPlayer(player)
+                        .sendMessage(plugin.getMessages().getMessage("error-invite-limit-reached"));
                 return;
             }
 
-            int length = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_CODE_LENGTH);
-            String code = xyz.kyngs.librelogin.common.util.GeneralUtil.generateAlphanumericText(length);
+            int length =
+                    plugin.getConfiguration()
+                            .get(
+                                    xyz.kyngs.librelogin.common.config.ConfigurationKeys
+                                            .INVITES_CODE_LENGTH);
+            String code =
+                    xyz.kyngs.librelogin.common.util.GeneralUtil.generateAlphanumericText(length);
 
-            int expiryHours = plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_EXPIRY_HOURS);
-            java.sql.Timestamp expiry = new java.sql.Timestamp(System.currentTimeMillis() + java.time.Duration.ofHours(expiryHours).toMillis());
+            int expiryHours =
+                    plugin.getConfiguration()
+                            .get(
+                                    xyz.kyngs.librelogin.common.config.ConfigurationKeys
+                                            .INVITES_EXPIRY_HOURS);
+            java.sql.Timestamp expiry =
+                    new java.sql.Timestamp(
+                            System.currentTimeMillis()
+                                    + java.time.Duration.ofHours(expiryHours).toMillis());
 
             sqlProvider.createInvite(code, uuid, expiry);
 
-            plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
-                    plugin.getMessages().getMessage("info-invite-created", "%code%", code));
+            plugin.getPlatformHandle()
+                    .getAudienceForPlayer(player)
+                    .sendMessage(
+                            plugin.getMessages().getMessage("info-invite-created", "%code%", code));
         } else {
-            plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(
-                    Component.text("Unsupported database provider.", NamedTextColor.RED));
+            plugin.getPlatformHandle()
+                    .getAudienceForPlayer(player)
+                    .sendMessage(
+                            Component.text("Unsupported database provider.", NamedTextColor.RED));
         }
     }
 

@@ -38,11 +38,13 @@
   "Registering...": "Registering...",
   "Register as Premium": "Register as Premium",
   "You will be automatically logged in via Microsoft on future visits.": "You will be automatically logged in via Microsoft on future visits.",
-  "Registering with password. You will need to log in manually each time.": "Registering with password. You will need to log in manually each time.",
   "Confirm Password": "Confirm Password",
   "Passwords do not match": "Passwords do not match",
   "Password is required": "Password is required",
   "Registration failed": "Registration failed",
+  "Note that the username": "Note that the username",
+  "associated with this account can claim ownership. When this happens and you lose access, you will need to login as": "associated with this account can claim ownership. When this happens and you lose access, you will need to login as",
+  "when you are unable to sign in.": "when you are unable to sign in.",
   "← Back to options": "← Back to options",
   "Welcome Back!": "Welcome Back!",
   "You are logged in as": "You are logged in as",
@@ -195,5 +197,9 @@
   "autocomplete.email-test": "address",
   "autocomplete.set-email": "address password",
   "autocomplete.verify-email": "code",
-  "autocomplete.confirm-password-reset": "code newPassword newPassword"
+  "autocomplete.confirm-password-reset": "code newPassword newPassword",
+  "error-invite-limit-reached": "You have reached the maximum amount of active invites!",
+  "info-invite-created": "Invite code created: %code% (expires in 24h)",
+  "error-invite-invalid": "Invalid or expired invite code.",
+  "info-invite-redeemed": "Invite code redeemed successfully! You can now register."
 }

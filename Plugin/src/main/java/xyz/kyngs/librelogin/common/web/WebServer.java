@@ -7,11 +7,11 @@
 package xyz.kyngs.librelogin.common.web;
 
 import com.google.gson.Gson;
+import java.io.IOException;
 import org.eclipse.jetty.ee9.servlet.ServletContextHandler;
 import org.eclipse.jetty.ee9.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 import xyz.kyngs.librelogin.common.AuthenticLibreLogin;
-import java.io.IOException;
 import xyz.kyngs.librelogin.common.web.handler.ApiHandler;
 import xyz.kyngs.librelogin.common.web.handler.FrontendHandler;
 
@@ -62,19 +62,32 @@ public class WebServer {
                 "/api/*");
 
         // Security Headers Filter
-        context.addFilter(new org.eclipse.jetty.ee9.servlet.FilterHolder(new jakarta.servlet.Filter() {
-            @Override
-            public void doFilter(jakarta.servlet.ServletRequest request, jakarta.servlet.ServletResponse response, jakarta.servlet.FilterChain chain) throws IOException, jakarta.servlet.ServletException {
-                if (response instanceof jakarta.servlet.http.HttpServletResponse res) {
-                    res.setHeader("X-Frame-Options", "DENY");
-                    res.setHeader("X-Content-Type-Options", "nosniff");
-                    res.setHeader("X-XSS-Protection", "1; mode=block");
-                    res.setHeader("Content-Security-Policy", "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'");
-                    res.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
-                }
-                chain.doFilter(request, response);
-            }
-        }), "/*", java.util.EnumSet.of(jakarta.servlet.DispatcherType.REQUEST));
+        context.addFilter(
+                new org.eclipse.jetty.ee9.servlet.FilterHolder(
+                        new jakarta.servlet.Filter() {
+                            @Override
+                            public void doFilter(
+                                    jakarta.servlet.ServletRequest request,
+                                    jakarta.servlet.ServletResponse response,
+                                    jakarta.servlet.FilterChain chain)
+                                    throws IOException, jakarta.servlet.ServletException {
+                                if (response
+                                        instanceof jakarta.servlet.http.HttpServletResponse res) {
+                                    res.setHeader("X-Frame-Options", "DENY");
+                                    res.setHeader("X-Content-Type-Options", "nosniff");
+                                    res.setHeader("X-XSS-Protection", "1; mode=block");
+                                    res.setHeader(
+                                            "Content-Security-Policy",
+                                            "default-src 'self'; script-src 'self'; style-src"
+                                                    + " 'self' 'unsafe-inline'");
+                                    res.setHeader(
+                                            "Referrer-Policy", "strict-origin-when-cross-origin");
+                                }
+                                chain.doFilter(request, response);
+                            }
+                        }),
+                "/*",
+                java.util.EnumSet.of(jakarta.servlet.DispatcherType.REQUEST));
 
         // Frontend Handler (Static files)
         context.addServlet(

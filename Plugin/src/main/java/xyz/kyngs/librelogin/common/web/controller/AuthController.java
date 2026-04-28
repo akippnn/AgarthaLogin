@@ -263,7 +263,8 @@ public class AuthController {
         }
     }
 
-    public void handleInviteRedeem(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    public void handleInviteRedeem(HttpServletRequest req, HttpServletResponse resp)
+            throws IOException {
         JsonObject body = gson.fromJson(req.getReader(), JsonObject.class);
         String tokenStr = body.get("token").getAsString();
         String code = body.get("code").getAsString();
@@ -271,7 +272,8 @@ public class AuthController {
         WebSessionManager.TokenInfo info = sessionManager.getToken(tokenStr);
         if (info == null) {
             resp.setStatus(400);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("Invalid token for invite redemption")));
+            resp.getWriter()
+                    .write(gson.toJson(new ErrorResponse("Invalid token for invite redemption")));
             return;
         }
 
@@ -284,23 +286,32 @@ public class AuthController {
 
         if (user.getInvitedBy() != null) {
             resp.setStatus(400);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("You have already used an invite code.")));
+            resp.getWriter()
+                    .write(gson.toJson(new ErrorResponse("You have already used an invite code.")));
             return;
         }
 
         var provider = plugin.getDatabaseProvider();
-        if (provider instanceof xyz.kyngs.librelogin.common.database.provider.LibreLoginSQLDatabaseProvider sqlProvider) {
+        if (provider
+                instanceof
+                xyz.kyngs.librelogin.common.database.provider.LibreLoginSQLDatabaseProvider
+                        sqlProvider) {
             java.util.UUID inviter = sqlProvider.getInviteInviter(code);
             if (inviter == null) {
                 resp.setStatus(400);
-                String msg = ((xyz.kyngs.librelogin.common.config.HoconMessages) plugin.getMessages()).getRawMessage("error-invite-invalid");
+                String msg =
+                        ((xyz.kyngs.librelogin.common.config.HoconMessages) plugin.getMessages())
+                                .getRawMessage("error-invite-invalid");
                 resp.getWriter().write(gson.toJson(new ErrorResponse(msg)));
                 return;
             }
 
             if (!sqlProvider.redeemInvite(code, user.getUuid())) {
                 resp.setStatus(400);
-                resp.getWriter().write(gson.toJson(new ErrorResponse("Invite code already used or expired.")));
+                resp.getWriter()
+                        .write(
+                                gson.toJson(
+                                        new ErrorResponse("Invite code already used or expired.")));
                 return;
             }
 
@@ -310,11 +321,16 @@ public class AuthController {
 
             var player = plugin.getPlatformHandle().getPlayer(user.getUuid());
             if (player != null) {
-                ((xyz.kyngs.librelogin.api.PlatformHandle) plugin.getPlatformHandle()).getAudienceForPlayer(player).sendMessage(plugin.getMessages().getMessage("info-invite-redeemed"));
+                ((xyz.kyngs.librelogin.api.PlatformHandle) plugin.getPlatformHandle())
+                        .getAudienceForPlayer(player)
+                        .sendMessage(plugin.getMessages().getMessage("info-invite-redeemed"));
             }
 
             sessionManager.invalidateToken(tokenStr);
-            WebSessionManager.TokenType nextStep = user.getHashedPassword() != null ? WebSessionManager.TokenType.LOGIN : WebSessionManager.TokenType.REGISTER;
+            WebSessionManager.TokenType nextStep =
+                    user.getHashedPassword() != null
+                            ? WebSessionManager.TokenType.LOGIN
+                            : WebSessionManager.TokenType.REGISTER;
             String nextToken = sessionManager.createToken(user.getUuid(), nextStep);
 
             JsonObject response = new JsonObject();
@@ -323,7 +339,11 @@ public class AuthController {
             resp.getWriter().write(gson.toJson(response));
         } else {
             resp.setStatus(500);
-            resp.getWriter().write(gson.toJson(new ErrorResponse("Unsupported database provider for invites.")));
+            resp.getWriter()
+                    .write(
+                            gson.toJson(
+                                    new ErrorResponse(
+                                            "Unsupported database provider for invites.")));
         }
     }
 

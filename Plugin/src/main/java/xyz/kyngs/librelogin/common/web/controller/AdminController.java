@@ -476,7 +476,8 @@ public class AdminController {
         }
 
         UUID invitedBy = null;
-        if (plugin.getConfiguration().get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_ENABLED)) {
+        if (plugin.getConfiguration()
+                .get(xyz.kyngs.librelogin.common.config.ConfigurationKeys.INVITES_ENABLED)) {
             invitedBy = UUID.fromString("00000000-0000-0000-0000-000000000001");
         }
 

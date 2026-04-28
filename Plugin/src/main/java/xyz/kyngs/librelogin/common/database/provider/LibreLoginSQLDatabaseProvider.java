@@ -169,8 +169,8 @@ public abstract class LibreLoginSQLDatabaseProvider
                                     "INSERT INTO librepremium_data(uuid, premium_uuid,"
                                         + " hashed_password, salt, algo, last_nickname, joined,"
                                         + " last_seen, secret, ip, last_authentication,"
-                                        + " last_server, email, invited_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,"
-                                        + " ?, ?, ?, ?, ?)");
+                                        + " last_server, email, invited_by) VALUES (?, ?, ?, ?, ?,"
+                                        + " ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
                     insertToStatement(ps, user);
 
@@ -190,8 +190,8 @@ public abstract class LibreLoginSQLDatabaseProvider
                                             + " INTO librepremium_data(uuid, premium_uuid,"
                                             + " hashed_password, salt, algo, last_nickname, joined,"
                                             + " last_seen, secret, ip, last_authentication,"
-                                            + " last_server, email, invited_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?,"
-                                            + " ?, ?, ?, ?, ?, ?)"
+                                            + " last_server, email, invited_by) VALUES (?, ?, ?, ?,"
+                                            + " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                                             + getIgnoreSuffix());
 
                     for (User user : users) {
@@ -231,8 +231,8 @@ public abstract class LibreLoginSQLDatabaseProvider
                                     "UPDATE librepremium_data SET premium_uuid=?,"
                                             + " hashed_password=?, salt=?, algo=?, last_nickname=?,"
                                             + " joined=?, last_seen=?, secret=?, ip=?,"
-                                            + " last_authentication=?, last_server=?, email=?, invited_by=? WHERE"
-                                            + " uuid=?");
+                                            + " last_authentication=?, last_server=?, email=?,"
+                                            + " invited_by=? WHERE uuid=?");
 
                     ps.setString(
                             1,
@@ -262,7 +262,9 @@ public abstract class LibreLoginSQLDatabaseProvider
                     ps.setTimestamp(10, user.getLastAuthentication());
                     ps.setString(11, user.getLastServer());
                     ps.setString(12, user.getEmail());
-                    ps.setString(13, user.getInvitedBy() == null ? null : user.getInvitedBy().toString());
+                    ps.setString(
+                            13,
+                            user.getInvitedBy() == null ? null : user.getInvitedBy().toString());
                     ps.setString(14, user.getUuid().toString());
                     ps.executeUpdate();
                 });
@@ -270,53 +272,71 @@ public abstract class LibreLoginSQLDatabaseProvider
 
     public UUID getInviteInviter(String code) {
         plugin.reportMainThread();
-        return connector.runQuery(connection -> {
-            var ps = connection.prepareStatement("SELECT inviter_uuid, expires_at, used_by_uuid FROM librepremium_invites WHERE code = ?");
-            ps.setString(1, code);
-            var rs = ps.executeQuery();
-            if (rs.next()) {
-                if (rs.getString("used_by_uuid") != null) return null; // Already used
-                if (rs.getTimestamp("expires_at").before(new java.sql.Timestamp(System.currentTimeMillis()))) return null; // Expired
-                return UUID.fromString(rs.getString("inviter_uuid"));
-            }
-            return null;
-        });
+        return connector.runQuery(
+                connection -> {
+                    var ps =
+                            connection.prepareStatement(
+                                    "SELECT inviter_uuid, expires_at, used_by_uuid FROM"
+                                            + " librepremium_invites WHERE code = ?");
+                    ps.setString(1, code);
+                    var rs = ps.executeQuery();
+                    if (rs.next()) {
+                        if (rs.getString("used_by_uuid") != null) return null; // Already used
+                        if (rs.getTimestamp("expires_at")
+                                .before(new java.sql.Timestamp(System.currentTimeMillis())))
+                            return null; // Expired
+                        return UUID.fromString(rs.getString("inviter_uuid"));
+                    }
+                    return null;
+                });
     }
 
     public boolean redeemInvite(String code, UUID usedBy) {
         plugin.reportMainThread();
-        return connector.runQuery(connection -> {
-            var ps = connection.prepareStatement("UPDATE librepremium_invites SET used_by_uuid = ?, used_at = ? WHERE code = ? AND used_by_uuid IS NULL");
-            ps.setString(1, usedBy.toString());
-            ps.setTimestamp(2, new java.sql.Timestamp(System.currentTimeMillis()));
-            ps.setString(3, code);
-            int updated = ps.executeUpdate();
-            return updated == 1;
-        });
+        return connector.runQuery(
+                connection -> {
+                    var ps =
+                            connection.prepareStatement(
+                                    "UPDATE librepremium_invites SET used_by_uuid = ?, used_at = ?"
+                                            + " WHERE code = ? AND used_by_uuid IS NULL");
+                    ps.setString(1, usedBy.toString());
+                    ps.setTimestamp(2, new java.sql.Timestamp(System.currentTimeMillis()));
+                    ps.setString(3, code);
+                    int updated = ps.executeUpdate();
+                    return updated == 1;
+                });
     }
 
     public int countActiveInvites(UUID inviter) {
         plugin.reportMainThread();
-        return connector.runQuery(connection -> {
-            var ps = connection.prepareStatement("SELECT COUNT(*) FROM librepremium_invites WHERE inviter_uuid = ? AND used_by_uuid IS NULL AND expires_at > ?");
-            ps.setString(1, inviter.toString());
-            ps.setTimestamp(2, new java.sql.Timestamp(System.currentTimeMillis()));
-            var rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1);
-            return 0;
-        });
+        return connector.runQuery(
+                connection -> {
+                    var ps =
+                            connection.prepareStatement(
+                                    "SELECT COUNT(*) FROM librepremium_invites WHERE inviter_uuid ="
+                                            + " ? AND used_by_uuid IS NULL AND expires_at > ?");
+                    ps.setString(1, inviter.toString());
+                    ps.setTimestamp(2, new java.sql.Timestamp(System.currentTimeMillis()));
+                    var rs = ps.executeQuery();
+                    if (rs.next()) return rs.getInt(1);
+                    return 0;
+                });
     }
 
     public void createInvite(String code, UUID inviterUuid, java.sql.Timestamp expiresAt) {
         plugin.reportMainThread();
-        connector.runQuery(connection -> {
-            var ps = connection.prepareStatement("INSERT INTO librepremium_invites(code, inviter_uuid, created_at, expires_at) VALUES (?, ?, ?, ?)");
-            ps.setString(1, code);
-            ps.setString(2, inviterUuid.toString());
-            ps.setTimestamp(3, new java.sql.Timestamp(System.currentTimeMillis()));
-            ps.setTimestamp(4, expiresAt);
-            ps.executeUpdate();
-        });
+        connector.runQuery(
+                connection -> {
+                    var ps =
+                            connection.prepareStatement(
+                                    "INSERT INTO librepremium_invites(code, inviter_uuid,"
+                                            + " created_at, expires_at) VALUES (?, ?, ?, ?)");
+                    ps.setString(1, code);
+                    ps.setString(2, inviterUuid.toString());
+                    ps.setTimestamp(3, new java.sql.Timestamp(System.currentTimeMillis()));
+                    ps.setTimestamp(4, expiresAt);
+                    ps.executeUpdate();
+                });
     }
 
     @Override

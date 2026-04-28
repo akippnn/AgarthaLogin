@@ -96,7 +96,8 @@ public class UniqueCodeAuthSQLMigrateReadProvider extends SQLMigrateReadProvider
                                             null,
                                             null,
                                             null,
-                                            null, null));
+                                            null,
+                                            null));
                         } catch (Exception e) {
                             e.printStackTrace();
                             logger.error("Error while reading user from database");

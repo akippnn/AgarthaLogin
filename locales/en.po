@@ -773,3 +773,7 @@ msgstr "Please wait a few seconds before trying again."
 
 msgid "kick-invite-spam"
 msgstr "Too many invalid invite attempts."
+
+msgid "info-uninvited-join"
+msgstr "Player <yellow>%name%</yellow> is trying to join but is not invited. <click:run_command:/agarthalogin invite><hover:show_text:'Click to generate invite code'><aqua><u>Click to generate invite code</u></aqua></hover></click> and send it to them manually."
+

@@ -40,6 +40,13 @@ public interface PlatformHandle<P, S> {
     P getPlayer(UUID uuid);
 
     /**
+     * Retrieves a collection of all online players.
+     *
+     * @return a collection of all online players
+     */
+    Collection<P> getOnlinePlayers();
+
+    /**
      * Retrieves the audience associated with the given player.
      *
      * @param player the player for which to retrieve the audience

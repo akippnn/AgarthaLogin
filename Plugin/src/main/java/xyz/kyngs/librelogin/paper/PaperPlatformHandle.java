@@ -42,6 +42,11 @@ public class PaperPlatformHandle implements PlatformHandle<Player, World> {
     }
 
     @Override
+    public Collection<Player> getOnlinePlayers() {
+        return (Collection<Player>) Bukkit.getOnlinePlayers();
+    }
+
+    @Override
     public Audience getAudienceForPlayer(Player player) {
         return player;
     }

@@ -120,9 +120,9 @@ public class AgarthaLoginCommand<P> extends Command<P> {
             net.kyori.adventure.text.Component codeComponent =
                     net.kyori.adventure.text.minimessage.MiniMessage.miniMessage()
                             .deserialize(
-                                    "<click:copy_to_clipboard:'"
+                                    "<click:copy_to_clipboard:"
                                             + code
-                                            + "'><hover:show_text:'Click to copy'><aqua><u>"
+                                            + "><hover:show_text:'Click to copy'><aqua><u>"
                                             + code
                                             + "</u></aqua></hover></click>");
 

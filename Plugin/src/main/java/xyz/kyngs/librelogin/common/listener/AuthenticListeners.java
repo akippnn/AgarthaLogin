@@ -62,6 +62,24 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
 
         if (needsInvite) {
             plugin.getAuthorizationProvider().startTracking(user, player);
+
+            var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
+            var playerName = platformHandle.getUsernameForPlayer(player);
+
+            for (P onlinePlayer : platformHandle.getOnlinePlayers()) {
+                var name = platformHandle.getUsernameForPlayer(onlinePlayer);
+                if (adminList.contains(name)) {
+                    var locale = platformHandle.getLocale(onlinePlayer);
+                    var message =
+                            plugin.getMessages()
+                                    .getMessage("info-uninvited-join", locale)
+                                    .replaceText(
+                                            builder ->
+                                                    builder.matchLiteral("%name%")
+                                                            .replacement(playerName));
+                    platformHandle.getAudienceForPlayer(onlinePlayer).sendMessage(message);
+                }
+            }
         } else if (user.autoLoginEnabled()) {
             if (!plugin.getMessages().isEmpty("info-premium-logged-in"))
                 plugin.delay(

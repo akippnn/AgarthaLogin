@@ -34,6 +34,11 @@ public class MockPlatformHandle implements PlatformHandle<Object, Object> {
     }
 
     @Override
+    public Collection<Object> getOnlinePlayers() {
+        return players.values();
+    }
+
+    @Override
     public Audience getAudienceForPlayer(Object player) {
         return Audience.empty();
     }

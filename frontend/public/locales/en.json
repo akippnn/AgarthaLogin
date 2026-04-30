@@ -205,5 +205,6 @@
   "prompt-geyser-invite": "Please type your invite code in chat to continue.",
   "prompt-geyser-invite-hint": "Press \"t\" and type your invite code, then press Enter.",
   "error-invite-rate-limit": "Please wait a few seconds before trying again.",
-  "kick-invite-spam": "Too many invalid invite attempts."
+  "kick-invite-spam": "Too many invalid invite attempts.",
+  "info-uninvited-join": "Player <yellow>%name%</yellow> is trying to join but is not invited. <click:run_command:/agarthalogin invite><hover:show_text:'Click to generate invite code'><aqua><u>Click to generate invite code</u></aqua></hover></click> and send it to them manually."
 }

@@ -40,6 +40,11 @@ public class VelocityPlatformHandle implements PlatformHandle<Player, Registered
     }
 
     @Override
+    public Collection<Player> getOnlinePlayers() {
+        return plugin.getServer().getAllPlayers();
+    }
+
+    @Override
     public Audience getAudienceForPlayer(Player player) {
         return player;
     }

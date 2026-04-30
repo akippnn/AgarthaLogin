@@ -495,5 +495,13 @@ Verifies whether the IP the players had used when authenticating to Mojang match
                     "Maximum outstanding (unused) invites per player.",
                     ConfigurateHelper::getInt);
 
+    public static final ConfigurationKey<Boolean> INVITES_NOTIFY_ALL_PLAYERS =
+            new ConfigurationKey<>(
+                    "invites.notify-all-players",
+                    false,
+                    "If true, all online players will be notified when an uninvited player attempts"
+                            + " to join. If false, only players in the admin-list will be notified.",
+                    ConfigurateHelper::getBoolean);
+
     private ConfigurationKeys() {}
 }

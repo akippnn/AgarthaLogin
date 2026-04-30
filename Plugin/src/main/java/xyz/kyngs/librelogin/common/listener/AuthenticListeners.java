@@ -65,10 +65,12 @@ public class AuthenticListeners<Plugin extends AuthenticLibreLogin<P, S>, P, S> 
 
             var adminList = plugin.getConfiguration().get(ConfigurationKeys.ADMIN_LIST);
             var playerName = platformHandle.getUsernameForPlayer(player);
+            boolean notifyAll =
+                    plugin.getConfiguration().get(ConfigurationKeys.INVITES_NOTIFY_ALL_PLAYERS);
 
             for (P onlinePlayer : platformHandle.getOnlinePlayers()) {
                 var name = platformHandle.getUsernameForPlayer(onlinePlayer);
-                if (adminList.contains(name)) {
+                if (notifyAll || adminList.contains(name)) {
                     var locale = platformHandle.getLocale(onlinePlayer);
                     var message =
                             plugin.getMessages()

@@ -116,10 +116,25 @@ public class AgarthaLoginCommand<P> extends Command<P> {
 
             sqlProvider.createInvite(code, uuid, expiry);
 
-            plugin.getPlatformHandle()
-                    .getAudienceForPlayer(player)
-                    .sendMessage(
-                            plugin.getMessages().getMessage("info-invite-created", "%code%", code));
+            java.util.Locale locale = plugin.getPlatformHandle().getLocale(player);
+            net.kyori.adventure.text.Component codeComponent =
+                    net.kyori.adventure.text.minimessage.MiniMessage.miniMessage()
+                            .deserialize(
+                                    "<click:copy_to_clipboard:'"
+                                            + code
+                                            + "'><hover:show_text:'Click to copy'><aqua><u>"
+                                            + code
+                                            + "</u></aqua></hover></click>");
+
+            net.kyori.adventure.text.Component message =
+                    plugin.getMessages()
+                            .getMessage("info-invite-created", locale)
+                            .replaceText(
+                                    builder ->
+                                            builder.matchLiteral("%code%")
+                                                    .replacement(codeComponent));
+
+            plugin.getPlatformHandle().getAudienceForPlayer(player).sendMessage(message);
         } else {
             plugin.getPlatformHandle()
                     .getAudienceForPlayer(player)
